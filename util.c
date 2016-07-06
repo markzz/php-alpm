@@ -1,4 +1,3 @@
-//#include "php_alpm.h"
 #include "pkg.h"
 #include "util.h"
 
@@ -20,19 +19,20 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
 void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     pkg_object *pkgo;
-    zval *obj = (zval*)emalloc(sizeof(zval));
+    zval *obj;
 
-    array_init(zv);
+            array_init(zv);
     if (zv == NULL) {
         return;
     }
 
     for (item = list; item; item = alpm_list_next(item)) {
+        obj = (zval*)emalloc(sizeof(zval));
         object_init_ex(obj, alpm_ce_pkg);
         pkgo = Z_PKGO_P(obj);
         pkgo->pkg = (alpm_pkg_t*)item->data;
-
         add_next_index_zval(zv, obj);
+        efree(obj);
     }
 }
 
@@ -67,18 +67,3 @@ void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
     add_assoc_zval(zv, grp->name, inner);
     efree(inner);
 }
-
-//static PyObject* _pyobject_from_pmgrp(void *group) {
-//    const alpm_group_t* grp = (alpm_group_t*)group;
-//    if (!grp)
-//        Py_RETURN_NONE;
-//    else {
-//        PyObject *fst = PyUnicode_FromString(grp->name);
-//        PyObject *snd = alpmlist_to_pylist(grp->packages,
-//                                           pyalpm_package_from_pmpkg);
-//        PyObject *tuple = PyTuple_Pack(2, fst, snd);
-//        Py_DECREF(fst);
-//        Py_DECREF(snd);
-//        return tuple;
-//    }
-//}

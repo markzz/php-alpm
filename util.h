@@ -16,4 +16,4 @@ void alpm_group_to_zval(alpm_group_t *grp, zval *zv);
 #define GETTER_METHOD(func, o) if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) { RETURN_NULL() } handle_object *intern = Z_HANDLEO_P(getThis()); RETURN_STRING(func(intern->o))
 #define INT_GETTER_METHOD(func, o) if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) { RETURN_NULL() } handle_object *intern = Z_HANDLEO_P(getThis()); RETURN_LONG(func(intern->o))
 
-#endif //PHP_ALPM_UTIL_H
+#endif /* PHP_ALPM_UTIL_H */

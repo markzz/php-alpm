@@ -47,7 +47,7 @@ zend_object *create_db_struct(zend_class_entry *ce TSRMLS_DC) {
 void alpm_init_db(TSRMLS_D) {
     zend_class_entry ce;
 
-    INIT_CLASS_ENTRY(ce, "Db", db_methods);
+    INIT_CLASS_ENTRY(ce, "AlpmDb", db_methods);
     alpm_ce_db = zend_register_internal_class(&ce TSRMLS_CC);
 
     ce.create_object = create_db_struct;

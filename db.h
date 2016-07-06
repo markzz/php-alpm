@@ -39,4 +39,4 @@ static inline db_object *alpm_db_from_obj(zend_object *obj) {
 zend_object *create_db_struct(zend_class_entry *ce TSRMLS_DC);
 void free_alpm_db(void *object TSRMLS_DC);
 
-#endif //PHP_ALPM_DB_H
+#endif /* PHP_ALPM_DB_H */

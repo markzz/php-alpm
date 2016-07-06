@@ -5,7 +5,8 @@
 static zend_object_handlers pkg_object_handlers;
 
 static zend_function_entry pkg_methods[] = {
-    PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
+    /* TODO: For some reason this function is already declared, find out why? */
+    /* PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
 
     PHP_ME(Pkg, compute_requiredby, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_arch,           NULL, ZEND_ACC_PUBLIC)
@@ -25,9 +26,11 @@ static zend_function_entry pkg_methods[] = {
     PHP_ME(Pkg, get_isize,          NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_licenses,       NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_md5sum,         NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(Pkg, get_name,           NULL, ZEND_ACC_PUBLIC)
+    /* TODO: For some reason this function is already declared, find out why? Use AlpmPkg::pkgname instead. */
+    /* PHP_ME(Pkg, get_name,           NULL, ZEND_ACC_PUBLIC) */
     PHP_ME(Pkg, get_optdepends,     NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_packager,       NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Pkg, get_pkgname,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_provides,       NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_reason,         NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_replaces,       NULL, ZEND_ACC_PUBLIC)
@@ -63,7 +66,7 @@ zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC) {
 void alpm_init_pkg(TSRMLS_D) {
     zend_class_entry ce;
 
-    INIT_CLASS_ENTRY(ce, "Pkg", pkg_methods);
+    INIT_CLASS_ENTRY(ce, "AlpmPkg", pkg_methods);
     alpm_ce_pkg = zend_register_internal_class(&ce TSRMLS_CC);
 
     ce.create_object = create_pkg_struct;
@@ -189,7 +192,6 @@ PHP_METHOD(Pkg, get_files) {
         RETURN_NULL()
     }
 
-//    alpm_list_to_zval(alpm_pkg_get_files(intern->pkg), return_value);
     alpm_filelist_to_zval(alpm_pkg_get_files(intern->pkg), return_value);
     return;
 }
@@ -261,7 +263,7 @@ PHP_METHOD(Pkg, get_md5sum) {
     RETURN_STRING(alpm_pkg_get_md5sum(intern->pkg))
 }
 
-PHP_METHOD(Pkg, get_name) {
+PHP_METHOD(Pkg, get_pkgname) {
     pkg_object *intern = Z_PKGO_P(getThis());
 
     if (zend_parse_parameters_none() == FAILURE) {

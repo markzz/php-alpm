@@ -28,7 +28,7 @@ PHP_METHOD(Pkg, get_installdate);
 PHP_METHOD(Pkg, get_isize);
 PHP_METHOD(Pkg, get_licenses);
 PHP_METHOD(Pkg, get_md5sum);
-PHP_METHOD(Pkg, get_name);
+PHP_METHOD(Pkg, get_pkgname);
 PHP_METHOD(Pkg, get_optdepends);
 PHP_METHOD(Pkg, get_packager);
 PHP_METHOD(Pkg, get_provides);
@@ -52,4 +52,4 @@ static inline pkg_object *alpm_pkg_from_obj(zend_object *obj) {
 
 zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC);
 
-#endif //PHP_ALPM_PKG_H
+#endif /* PHP_ALPM_PKG_H */

@@ -126,24 +126,24 @@ zend_object *create_handle_struct(zend_class_entry *class TSRMLS_DC) {
 void alpm_init_handle(TSRMLS_D) {
     zend_class_entry ce;
 
-    INIT_CLASS_ENTRY(ce, "Handle", handle_methods);
+    INIT_CLASS_ENTRY(ce, "AlpmHandle", handle_methods);
     alpm_ce_handle = zend_register_internal_class(&ce TSRMLS_CC);
 
     ce.create_object = create_handle_struct;
 
-//    zend_declare_property_string(alpm_ce_handle, "dbpath", sizeof("dbpath") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-//    zend_declare_property_double(alpm_ce_handle, "deltaratio", sizeof("deltaratio") - 1, 0.0, ZEND_ACC_PUBLIC TSRMLS_CC);
-////    zend_declare_property_string(alpm_ce_handle, "dlcb", sizeof("dlcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-////    zend_declare_property_string(alpm_ce_handle, "eventcb", sizeof("eventcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-////    zend_declare_property_string(alpm_ce_handle, "fetchcb", sizeof("fetchcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-//    zend_declare_property_string(alpm_ce_handle, "gpgdir", sizeof("gpgdir") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-////    zend_declare_property_string(alpm_ce_handle, "logcb", sizeof("logcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-//    zend_declare_property_string(alpm_ce_handle, "logfile", sizeof("logfile") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-////    zend_declare_property_string(alpm_ce_handle, "progresscb", sizeof("progresscb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-////    zend_declare_property_string(alpm_ce_handle, "questioncb", sizeof("questioncb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-//    zend_declare_property_string(alpm_ce_handle, "root", sizeof("root") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-////    zend_declare_property_string(alpm_ce_handle, "totaldlcb", sizeof("totaldlcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
-//    zend_declare_property_long(alpm_ce_handle, "usesyslog", sizeof("usesyslog") - 1, 0, ZEND_ACC_PUBLIC TSRMLS_CC);
+    /* TODO: Make more functions to set these and to figure out how to properly do callbacks.
+    zend_declare_property_double(alpm_ce_handle, "deltaratio", sizeof("deltaratio") - 1, 0.0, ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "dlcb", sizeof("dlcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "eventcb", sizeof("eventcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "fetchcb", sizeof("fetchcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "gpgdir", sizeof("gpgdir") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "logcb", sizeof("logcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "logfile", sizeof("logfile") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "progresscb", sizeof("progresscb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "questioncb", sizeof("questioncb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_string(alpm_ce_handle, "totaldlcb", sizeof("totaldlcb") - 1, "", ZEND_ACC_PUBLIC TSRMLS_CC);
+    zend_declare_property_long(alpm_ce_handle, "usesyslog", sizeof("usesyslog") - 1, 0, ZEND_ACC_PUBLIC TSRMLS_CC);
+    */
 }
 
 PHP_METHOD(Handle, __construct) {

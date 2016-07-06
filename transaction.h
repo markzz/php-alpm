@@ -27,4 +27,4 @@ static inline trans_object *alpm_trans_from_obj(zend_object *obj) {
 
 #define Z_TRANSO_P(zv) alpm_trans_from_obj(Z_OBJ_P(zv))
 
-#endif //PHP_ALPM_TRANSACTION_H
+#endif /* PHP_ALPM_TRANSACTION_H */

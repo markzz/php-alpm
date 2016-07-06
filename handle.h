@@ -51,4 +51,4 @@ static inline handle_object *alpm_handle_from_obj(zend_object *obj) {
 zend_object *create_handle_struct(zend_class_entry *class TSRMLS_DC);
 void free_alpm_handle(void *object TSRMLS_DC);
 
-#endif //PHP_ALPM_HANDLE_H
+#endif /* PHP_ALPM_HANDLE_H */
