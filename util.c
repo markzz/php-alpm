@@ -1,4 +1,5 @@
 //#include "php_alpm.h"
+#include "pkg.h"
 #include "util.h"
 
 void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
@@ -14,6 +15,25 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
     }
 
     alpm_list_free(item);
+}
+
+void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
+    alpm_list_t *item;
+    pkg_object *pkgo;
+    zval *obj = (zval*)emalloc(sizeof(zval));
+
+    array_init(zv);
+    if (zv == NULL) {
+        return;
+    }
+
+    for (item = list; item; item = alpm_list_next(item)) {
+        object_init_ex(obj, alpm_ce_pkg);
+        pkgo = Z_PKGO_P(obj);
+        pkgo->pkg = (alpm_pkg_t*)item->data;
+
+        add_next_index_zval(zv, obj);
+    }
 }
 
 void zval_to_alpm_list(zval *zv, alpm_list_t *list) {
@@ -40,11 +60,12 @@ void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
 }
 
 void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
-    zval *inner = NULL;
+    zval *inner = (zval*)emalloc(sizeof(zval));
 
     array_init(zv);
-    alpm_list_to_zval(grp->packages, inner);
+    alpm_list_to_pkg_array(grp->packages, inner);
     add_assoc_zval(zv, grp->name, inner);
+    efree(inner);
 }
 
 //static PyObject* _pyobject_from_pmgrp(void *group) {

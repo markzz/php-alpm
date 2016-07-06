@@ -100,38 +100,6 @@ static zend_function_entry handle_methods[] = {
     {NULL, NULL, NULL}
 };
 
-//static zend_function_entry handle_methods[] = {
-//        PHP_ME(Handle, __construct,      NULL,       ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
-//
-//        PHP_ME(Handle, add_cachedir,     NULL,   ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, add_ignoregrp,    NULL,      ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, add_ignorepkg,    NULL,    ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, add_noextract,    NULL,    ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, add_noupgrade,    NULL,    ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_arch,         NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_dbpath,       NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_cachedirs,    NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_checkspace,   NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_ignoregrps,   NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_localdb,      NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_noextracts,   NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_noupgrades,   NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, get_syncdbs,      NULL,            ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, init_transaction, NULL,      ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, load_pkg,         NULL,        ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, register_syncdb,  NULL, ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, remove_cachedir,  NULL,   ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, remove_ignoregrp, NULL,      ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, remove_ignorepkg, NULL,    ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, remove_noextract, NULL,    ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, remove_noupgrade, NULL,    ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, set_arch,         NULL,        ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, set_checkspace,   NULL,  ZEND_ACC_PUBLIC)
-//        PHP_ME(Handle, set_pkgreason,    NULL,   ZEND_ACC_PUBLIC)
-//
-//        {NULL, NULL, NULL}
-//};
-
 static void handle_free_storage(zend_object *obj TSRMLS_DC) {
     handle_object *intern = alpm_handle_from_obj(obj);
     if (!intern) {

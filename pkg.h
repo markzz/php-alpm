@@ -50,4 +50,6 @@ static inline pkg_object *alpm_pkg_from_obj(zend_object *obj) {
 
 #define Z_PKGO_P(zv) alpm_pkg_from_obj(Z_OBJ_P(zv))
 
+zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC);
+
 #endif //PHP_ALPM_PKG_H
