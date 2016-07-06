@@ -28,7 +28,7 @@ PHP_METHOD(Pkg, get_installdate);
 PHP_METHOD(Pkg, get_isize);
 PHP_METHOD(Pkg, get_licenses);
 PHP_METHOD(Pkg, get_md5sum);
-PHP_METHOD(Pkg, get_pkgname);
+PHP_METHOD(Pkg, get_name);
 PHP_METHOD(Pkg, get_optdepends);
 PHP_METHOD(Pkg, get_packager);
 PHP_METHOD(Pkg, get_provides);

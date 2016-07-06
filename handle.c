@@ -45,7 +45,7 @@ ZEND_BEGIN_ARG_INFO_EX(handle_set_checkspace_args, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(handle_set_pkgreason_args, 0, 0, 2)
-    ZEND_ARG_OBJ_INFO(0, package, Pkg, 0)
+    ZEND_ARG_OBJ_INFO(0, package, AlpmPkg, 0)
     ZEND_ARG_INFO(0, reason)
 ZEND_END_ARG_INFO()
 

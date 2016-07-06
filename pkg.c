@@ -5,8 +5,7 @@
 static zend_object_handlers pkg_object_handlers;
 
 static zend_function_entry pkg_methods[] = {
-    /* TODO: For some reason this function is already declared, find out why? */
-    /* PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
+    PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR)
 
     PHP_ME(Pkg, compute_requiredby, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_arch,           NULL, ZEND_ACC_PUBLIC)
@@ -26,11 +25,9 @@ static zend_function_entry pkg_methods[] = {
     PHP_ME(Pkg, get_isize,          NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_licenses,       NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_md5sum,         NULL, ZEND_ACC_PUBLIC)
-    /* TODO: For some reason this function is already declared, find out why? Use AlpmPkg::pkgname instead. */
-    /* PHP_ME(Pkg, get_name,           NULL, ZEND_ACC_PUBLIC) */
+    PHP_ME(Pkg, get_name,           NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_optdepends,     NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_packager,       NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(Pkg, get_pkgname,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_provides,       NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_reason,         NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_replaces,       NULL, ZEND_ACC_PUBLIC)
@@ -38,6 +35,8 @@ static zend_function_entry pkg_methods[] = {
     PHP_ME(Pkg, get_size,           NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_url,            NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_version,        NULL, ZEND_ACC_PUBLIC)
+
+    {NULL, NULL, NULL}
 };
 
 static void pkg_free_storage(zend_object *obj TSRMLS_DC) {
@@ -270,7 +269,7 @@ PHP_METHOD(Pkg, get_md5sum) {
     RETURN_STRING(alpm_pkg_get_md5sum(intern->pkg))
 }
 
-PHP_METHOD(Pkg, get_pkgname) {
+PHP_METHOD(Pkg, get_name) {
     pkg_object *intern = Z_PKGO_P(getThis());
 
     if (zend_parse_parameters_none() == FAILURE) {
