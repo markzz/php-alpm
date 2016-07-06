@@ -77,7 +77,14 @@ PHP_METHOD(Pkg, __construct) {
 }
 
 PHP_METHOD(Pkg, compute_requiredby) {
-    RETURN_NULL()
+    pkg_object *intern = Z_PKGO_P(getThis());
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(alpm_pkg_compute_requiredby(intern->pkg), return_value);
+    return;
 }
 
 PHP_METHOD(Pkg, get_arch) {
