@@ -45,12 +45,15 @@ static void pkg_free_storage(zend_object *obj TSRMLS_DC) {
         return;
     }
 
-    alpm_pkg_free(intern->pkg);
+    if (intern->pkg) {
+        alpm_pkg_free(intern->pkg);
+    }
+
     efree(intern);
 }
 
 zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC) {
-    pkg_object *intern = ecalloc(1, sizeof(pkg_object) + zend_object_properties_size(class));
+    pkg_object *intern = ecalloc(1, sizeof(pkg_object) + sizeof(zval) * (class->default_properties_count - 1));
 
     zend_object_std_init(&intern->std, class TSRMLS_CC);
     object_properties_init(&intern->std, class);
@@ -134,7 +137,7 @@ PHP_METHOD(Pkg, get_conflicts) {
         RETURN_NULL()
     }
 
-    alpm_list_to_zval(alpm_pkg_get_conflicts(intern->pkg), return_value);
+    alpm_list_to_pkg_array(alpm_pkg_get_conflicts(intern->pkg), return_value);
     return;
 }
 
@@ -157,7 +160,7 @@ PHP_METHOD(Pkg, get_depends) {
         RETURN_NULL()
     }
 
-    alpm_list_to_zval(alpm_pkg_get_depends(intern->pkg), return_value);
+    alpm_list_to_pkg_array(alpm_pkg_get_depends(intern->pkg), return_value);
     return;
 }
 
@@ -192,6 +195,8 @@ PHP_METHOD(Pkg, get_filename) {
 }
 
 PHP_METHOD(Pkg, get_files) {
+    /* TODO: FIX THIS METHOD */
+
     pkg_object *intern = Z_PKGO_P(getThis());
 
     if (zend_parse_parameters_none() == FAILURE) {
@@ -222,9 +227,9 @@ PHP_METHOD(Pkg, get_has_scriptlet) {
     }
 
     if (alpm_pkg_has_scriptlet(intern->pkg) != 0) {
-        RETURN_TRUE
+        RETURN_BOOL(1)
     } else {
-        RETURN_FALSE
+        RETURN_BOOL(0)
     }
 }
 
@@ -286,7 +291,7 @@ PHP_METHOD(Pkg, get_optdepends) {
         RETURN_NULL()
     }
 
-    alpm_list_to_zval(alpm_pkg_get_optdepends(intern->pkg), return_value);
+    alpm_list_to_pkg_array(alpm_pkg_get_optdepends(intern->pkg), return_value);
     return;
 }
 

@@ -37,7 +37,6 @@ PHP_METHOD(Handle, set_checkspace);
 PHP_METHOD(Handle, set_pkgreason);
 
 typedef struct _handle_object {
-    alpm_errno_t err;
     alpm_handle_t *handle;
     zend_object std;
 } handle_object;

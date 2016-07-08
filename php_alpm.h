@@ -13,6 +13,12 @@
 ZEND_BEGIN_MODULE_GLOBALS(alpm)
 ZEND_END_MODULE_GLOBALS(alpm)
 
+zend_class_entry *php_alpm_exception_class_entry;
+zend_class_entry *php_alpm_handle_exception_class_entry;
+zend_class_entry *php_alpm_db_exception_class_entry;
+zend_class_entry *php_alpm_pkg_exception_class_entry;
+zend_class_entry *php_alpm_transaction_exception_class_entry;
+
 #ifdef ZTS
 #define ALPM_G(v) TSRMG(alpm_globals_id, zend_hello_globals *, v)
 #else

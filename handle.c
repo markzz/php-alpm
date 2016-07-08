@@ -102,11 +102,21 @@ static zend_function_entry handle_methods[] = {
 
 static void handle_free_storage(zend_object *obj TSRMLS_DC) {
     handle_object *intern = alpm_handle_from_obj(obj);
+    int err;
+
     if (!intern) {
         return;
     }
 
-    alpm_release(intern->handle);
+    if (intern->handle) {
+        err = alpm_release(intern->handle);
+        if (err) {
+            zend_error(E_ERROR, "Could not release AlpmHandle object, please open issue at https://github.com/markzz/php-alpm.");
+        }
+
+        efree(intern->handle);
+    }
+    zend_object_std_dtor(&intern->std TSRMLS_CC);
     efree(intern);
 }
 
@@ -125,6 +135,8 @@ zend_object *create_handle_struct(zend_class_entry *class TSRMLS_DC) {
 
 void alpm_init_handle(TSRMLS_D) {
     zend_class_entry ce;
+
+    memcpy(&handle_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
     INIT_CLASS_ENTRY(ce, "AlpmHandle", handle_methods);
     alpm_ce_handle = zend_register_internal_class(&ce TSRMLS_CC);
@@ -150,6 +162,7 @@ PHP_METHOD(Handle, __construct) {
     char *rootpath;
     char *dbpath;
     size_t rp, dp;
+    enum _alpm_errno_t errcode = 0;
 
     if (ZEND_NUM_ARGS() == 0) {
         rootpath = emalloc(sizeof(char) * strlen(DEFAULT_ROOTDIR));
@@ -157,9 +170,6 @@ PHP_METHOD(Handle, __construct) {
 
         strcpy(rootpath, DEFAULT_ROOTDIR);
         strcpy(dbpath, DEFAULT_DBPATH);
-
-        rp = strlen(rootpath);
-        dp = strlen(dbpath);
 
         goto create;
     }
@@ -171,8 +181,14 @@ PHP_METHOD(Handle, __construct) {
     object_init_ex(return_value, alpm_ce_handle);
 
     handle_object *intern = Z_HANDLEO_P(getThis());
+    /* handle_object *intern = Z_HANDLEO_P(return_value); */
 
-    alpm_handle_t *h = alpm_initialize(rootpath, dbpath, &intern->err);
+    alpm_handle_t *h = alpm_initialize(rootpath, dbpath, &errcode);
+    if (!h) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to create handle object", 0);
+        RETURN_NULL()
+    }
+
     intern->handle = h;
 
     if (ZEND_NUM_ARGS() == 0) {
@@ -182,32 +198,92 @@ PHP_METHOD(Handle, __construct) {
 }
 
 PHP_METHOD(Handle, add_cachedir) {
-    ADD_METHOD_START()
-    alpm_option_add_cachedir(intern->handle, arg);
+    char *arg;
+    size_t arg_size;
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    err = alpm_option_add_cachedir(intern->handle, arg);
+    if (err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to add cachedir", 0);
+    }
+
     RETURN_NULL()
 }
 
 PHP_METHOD(Handle, add_ignoregrp) {
-    ADD_METHOD_START()
-    alpm_option_add_ignoregroup(intern->handle, arg);
+    char *arg;
+    size_t arg_size;
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    err = alpm_option_add_ignoregroup(intern->handle, arg);
+    if (err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to add ignoregrp", 0);
+    }
+
     RETURN_NULL()
 }
 
 PHP_METHOD(Handle, add_ignorepkg) {
-    ADD_METHOD_START()
-    alpm_option_add_ignorepkg(intern->handle, arg);
+    char *arg;
+    size_t arg_size;
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    err = alpm_option_add_ignorepkg(intern->handle, arg);
+    if (err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to add ignorepkg", 0);
+    }
+
     RETURN_NULL()
 }
 
 PHP_METHOD(Handle, add_noextract) {
-    ADD_METHOD_START()
-    alpm_option_add_noextract(intern->handle, arg);
+    char *arg;
+    size_t arg_size;
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    err = alpm_option_add_noextract(intern->handle, arg);
+    if (err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to add noextract", 0);
+    }
+
     RETURN_NULL()
 }
 
 PHP_METHOD(Handle, add_noupgrade) {
-    ADD_METHOD_START()
-    alpm_option_add_noupgrade(intern->handle, arg);
+    char *arg;
+    size_t arg_size;
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    err = alpm_option_add_noupgrade(intern->handle, arg);
+    if (err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to add noupgrade", 0);
+    }
+
     RETURN_NULL()
 }
 
@@ -220,11 +296,31 @@ PHP_METHOD(Handle, get_arch) {
 }
 
 PHP_METHOD(Handle, get_cachedirs) {
-    GET_ARRAY_METHOD(alpm_option_get_cachedirs, handle)
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list = alpm_option_get_cachedirs(intern->handle);
+    if (list == NULL) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to get cachedirs from libalpm", 0);
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+    alpm_list_free(list);
+    return;
+
 }
 
 PHP_METHOD(Handle, get_checkspace) {
-    INT_GETTER_METHOD(alpm_option_get_checkspace, handle)
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+
+    RETURN_LONG(alpm_option_get_checkspace(intern->handle))
 }
 
 PHP_METHOD(Handle, get_dbpath) {
@@ -240,11 +336,37 @@ PHP_METHOD(Handle, get_dbpath) {
 }
 
 PHP_METHOD(Handle, get_ignoregrps) {
-    GET_ARRAY_METHOD(alpm_option_get_ignoregroups, handle)
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list = alpm_option_get_ignoregroups(intern->handle);
+    if (list == NULL) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to get ignore groups from libalpm", 0);
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+    alpm_list_free(list);
+    return;
 }
 
 PHP_METHOD(Handle, get_ignorepkgs) {
-    GET_ARRAY_METHOD(alpm_option_get_ignorepkgs, handle)
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list = alpm_option_get_ignorepkgs(intern->handle);
+    if (list == NULL) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to get ignorepkgs from libalpm", 0);
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+    alpm_list_free(list);
+    return;
 }
 
 PHP_METHOD(Handle, get_localdb) {
@@ -260,15 +382,48 @@ PHP_METHOD(Handle, get_localdb) {
 }
 
 PHP_METHOD(Handle, get_noextracts) {
-    GET_ARRAY_METHOD(alpm_option_get_noextracts, handle)
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list = alpm_option_get_noextracts(intern->handle);
+    if (list == NULL) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to get noextracts from libalpm", 0);
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+    alpm_list_free(list);
+    return;
 }
 
 PHP_METHOD(Handle, get_noupgrades) {
-    GET_ARRAY_METHOD(alpm_option_get_noupgrades, handle)
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list = alpm_option_get_noupgrades(intern->handle);
+    if (list == NULL) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to get noupgrades from libalpm", 0);
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+    alpm_list_free(list);
+    return;
 }
 
 PHP_METHOD(Handle, get_syncdbs) {
-    GET_ARRAY_METHOD(alpm_get_syncdbs, handle)
+    handle_object *intern = Z_HANDLEO_P(getThis());
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_db_array(alpm_get_syncdbs(intern->handle),return_value);
+    return;
 }
 
 #define FLAGS(a) a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[8], a[9], \
@@ -292,7 +447,7 @@ PHP_METHOD(Handle, init_transaction) {
     ret = alpm_trans_init(intern->handle, flag_int);
 
     if (ret == -1) {
-        /* TODO: CREATE ERROR HANDLING */
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to initialize transaction", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -308,17 +463,24 @@ PHP_METHOD(Handle, load_pkg) {
     long check_sig = ALPM_SIG_PACKAGE_OPTIONAL;
     size_t fn_size;
     handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &filename, &fn_size, &check_sig) == FAILURE) {
         RETURN_NULL()
     }
 
-    alpm_pkg_load(intern->handle, filename, 1, check_sig, &pkg);
+    err = alpm_pkg_load(intern->handle, filename, 1, check_sig, &pkg);
+    if (err == -1) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to load package", 0);
+        RETURN_NULL()
+    }
 
     pkg_object *po;
     object_init_ex(return_value, alpm_ce_pkg);
-    po = Z_PKGO_P(return_value);
+    po = alpm_pkg_from_obj(return_value->value.obj);
     po->pkg = pkg;
+
+    return;
 }
 
 PHP_METHOD(Handle, register_syncdb) {
@@ -331,22 +493,33 @@ PHP_METHOD(Handle, register_syncdb) {
     }
 
     handle_object *intern = Z_HANDLEO_P(getThis());
-    db_object *db;
+
+    db_object *dbo;
     object_init_ex(return_value, alpm_ce_db);
-    db = Z_DBO_P(return_value);
-    db->db = alpm_register_syncdb(intern->handle, dbname, pgp_level);
+    dbo = Z_DBO_P(return_value);
+    dbo->db = alpm_register_syncdb(intern->handle, dbname, pgp_level);
+
+    if (!dbo->db || dbo->db == NULL) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to register syncdb", 0 TSRMLS_CC);
+        RETURN_NULL()
+    }
 }
 
 PHP_METHOD(Handle, remove_cachedir) {
     char *cd;
     size_t cd_size;
     handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cd, &cd_size) == FAILURE) {
         RETURN_NULL()
     }
 
-    alpm_option_remove_cachedir(intern->handle, cd);
+    err = alpm_option_remove_cachedir(intern->handle, cd);
+    if (!err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to remove cachedir", 0);
+    }
+
     RETURN_NULL()
 }
 
@@ -354,12 +527,17 @@ PHP_METHOD(Handle, remove_ignoregrp) {
     char *ig;
     size_t ig_size;
     handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ig, &ig_size) == FAILURE) {
         RETURN_NULL()
     }
 
-    alpm_option_remove_ignoregroup(intern->handle, ig);
+    err = alpm_option_remove_ignoregroup(intern->handle, ig);
+    if (!err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to remove ignoregrp", 0);
+    }
+
     RETURN_NULL()
 }
 
@@ -367,12 +545,17 @@ PHP_METHOD(Handle, remove_ignorepkg) {
     char *ip;
     size_t ip_size;
     handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ip, &ip_size) == FAILURE) {
         RETURN_NULL()
     }
 
-    alpm_option_remove_ignorepkg(intern->handle, ip);
+    err = alpm_option_remove_ignorepkg(intern->handle, ip);
+    if (!err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to remove ignorepkg", 0);
+    }
+
     RETURN_NULL()
 }
 
@@ -380,12 +563,17 @@ PHP_METHOD(Handle, remove_noextract) {
     char *ne;
     size_t ne_size;
     handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ne, &ne_size) == FAILURE) {
         RETURN_NULL()
     }
 
-    alpm_option_remove_noextract(intern->handle, ne);
+    err = alpm_option_remove_noextract(intern->handle, ne);
+    if (!err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to remove noextract", 0);
+    }
+
     RETURN_NULL()
 }
 
@@ -393,27 +581,60 @@ PHP_METHOD(Handle, remove_noupgrade) {
     char *nu;
     size_t nu_size;
     handle_object *intern = Z_HANDLEO_P(getThis());
+    int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &nu, &nu_size) == FAILURE) {
         RETURN_NULL()
     }
 
-    alpm_option_remove_noupgrade(intern->handle, nu);
+    err = alpm_option_remove_noupgrade(intern->handle, nu);
+    if (!err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to remove noupgrade", 0);
+    }
+
     RETURN_NULL()
 }
 
 PHP_METHOD(Handle, set_arch) {
-    SETTER_METHOD(alpm_option_set_arch, handle)
+    char *arg;
+    size_t arg_size;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    err = alpm_option_set_arch(intern->handle, arg);
+    if (err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to set arch", 0);
+    }
+
+    RETURN_NULL()
 }
 
 PHP_METHOD(Handle, set_checkspace) {
-    INT_SETTER_METHOD(alpm_option_set_checkspace, handle)
+    //INT_SETTER_METHOD(alpm_option_set_checkspace, handle)
+    int arg, err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &arg) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    handle_object *intern = Z_HANDLEO_P(getThis());
+    err = alpm_option_set_checkspace(intern->handle, arg);
+    if (err) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to set checkspace", 0);
+    }
+
+    RETURN_NULL()
 }
 
 PHP_METHOD(Handle, set_pkgreason) {
     pkg_object *pkg;
     zval *pzval;
-    long reason;
+    alpm_pkgreason_t reason;
+    int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ol", &pzval, &reason) == FAILURE) {
         RETURN_NULL()
@@ -421,13 +642,10 @@ PHP_METHOD(Handle, set_pkgreason) {
 
     pkg = Z_PKGO_P(pzval);
 
-    if (reason == 1) {
-        alpm_pkg_set_reason(pkg->pkg, ALPM_PKG_REASON_DEPEND);
-        RETURN_TRUE
-    } else if (reason == 0) {
-        alpm_pkg_set_reason(pkg->pkg, ALPM_PKG_REASON_EXPLICIT);
-        RETURN_TRUE
-    } else {
-        RETURN_FALSE
+    err = alpm_pkg_set_reason(pkg->pkg, reason);
+    if (err == -1) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to set package reason", 0);
     }
+
+    RETURN_NULL()
 }

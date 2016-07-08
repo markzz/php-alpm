@@ -1,5 +1,6 @@
 #include "pkg.h"
 #include "util.h"
+#include "db.h"
 
 void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
@@ -16,21 +17,56 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_free(item);
 }
 
+void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
+    alpm_list_t *item;
+    alpm_group_t *grp;
+
+    array_init(zv);
+    if (zv == NULL) {
+        return;
+    }
+
+    for (item = list; item; item = alpm_list_next(item)) {
+        grp = (alpm_group_t*)item->data;
+        add_next_index_string(zv, grp->name);
+    }
+
+    alpm_list_free(item);
+}
+
 void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     pkg_object *pkgo;
     zval *obj;
 
-            array_init(zv);
+    array_init(zv);
+    if (zv == NULL) {
+        return;
+    }
+
+    for (item = list; item; item = alpm_list_next(item)) {
+        object_init_ex(obj, alpm_ce_pkg);
+        pkgo = Z_PKGO_P(obj);
+        pkgo->pkg = (alpm_pkg_t*)item->data;
+        add_next_index_zval(zv, obj);
+    }
+}
+
+void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
+    alpm_list_t *item;
+    db_object *dbo;
+    zval *obj;
+
+    array_init(zv);
     if (zv == NULL) {
         return;
     }
 
     for (item = list; item; item = alpm_list_next(item)) {
         obj = (zval*)emalloc(sizeof(zval));
-        object_init_ex(obj, alpm_ce_pkg);
-        pkgo = Z_PKGO_P(obj);
-        pkgo->pkg = (alpm_pkg_t*)item->data;
+        object_init_ex(obj, alpm_ce_db);
+        dbo = Z_DBO_P(obj);
+        dbo->db = (alpm_db_t*)item->data;
         add_next_index_zval(zv, obj);
         efree(obj);
     }

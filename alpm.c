@@ -5,6 +5,8 @@
 #include "php.h"
 #include "php_alpm.h"
 
+#include "zend_exceptions.h"
+
 #include "handle.h"
 #include "db.h"
 #include "transaction.h"
@@ -23,6 +25,23 @@ static zend_function_entry alpm_functions[] = {
 };
 
 PHP_MINIT_FUNCTION(alpm) {
+    zend_class_entry ce;
+
+    INIT_CLASS_ENTRY(ce, "AlpmException", NULL);
+    php_alpm_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default(TSRMLS_C) TSRMLS_CC);
+
+    INIT_CLASS_ENTRY(ce, "AlpmHandleException", NULL);
+    php_alpm_handle_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default(TSRMLS_C) TSRMLS_CC);
+
+    INIT_CLASS_ENTRY(ce, "AlpmDbException", NULL);
+    php_alpm_db_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default(TSRMLS_C) TSRMLS_CC);
+
+    INIT_CLASS_ENTRY(ce, "AlpmPkgException", NULL);
+    php_alpm_pkg_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default(TSRMLS_C) TSRMLS_CC);
+
+    INIT_CLASS_ENTRY(ce, "AlpmTransactionException", NULL);
+    php_alpm_transaction_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default(TSRMLS_C) TSRMLS_CC);
+
     alpm_init_handle(TSRMLS_C);
     alpm_init_transaction(TSRMLS_C);
     alpm_init_pkg(TSRMLS_C);

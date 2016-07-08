@@ -19,7 +19,6 @@ PHP_METHOD(Db, get_pkg);
 PHP_METHOD(Db, get_pkgcache);
 PHP_METHOD(Db, get_servers);
 PHP_METHOD(Db, search);
-PHP_METHOD(Db, set_name);
 PHP_METHOD(Db, read_grp);
 PHP_METHOD(Db, remove_server);
 PHP_METHOD(Db, update);
