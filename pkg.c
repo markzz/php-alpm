@@ -49,7 +49,7 @@ static void pkg_free_storage(zend_object *obj TSRMLS_DC) {
         alpm_pkg_free(intern->pkg);
     }
 
-    //zend_object_std_dtor(&intern->std TSRMLS_CC);
+    zend_object_std_dtor(&intern->std);
 }
 
 static zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC) {

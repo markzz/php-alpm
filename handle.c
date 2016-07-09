@@ -115,6 +115,8 @@ static void handle_free_storage(zend_object *obj TSRMLS_DC) {
         }
 
     }
+
+    zend_object_std_dtor(&intern->std);
 }
 
 zend_object *create_handle_struct(zend_class_entry *class TSRMLS_DC) {
@@ -122,8 +124,6 @@ zend_object *create_handle_struct(zend_class_entry *class TSRMLS_DC) {
 
     zend_object_std_init(&intern->std, class TSRMLS_CC);
     object_properties_init(&intern->std, class);
-    handle_object_handlers.offset = XtOffsetOf(handle_object, std);
-    handle_object_handlers.free_obj = handle_free_storage;
 
     intern->std.handlers = &handle_object_handlers;
 
@@ -138,6 +138,8 @@ void alpm_init_handle(TSRMLS_D) {
 
     ce.create_object = create_handle_struct;
     memcpy(&handle_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+    handle_object_handlers.offset = XtOffsetOf(handle_object, std);
+    handle_object_handlers.free_obj = handle_free_storage;
 
     /* TODO: Make more functions to set these and to figure out how to properly do callbacks.
     zend_declare_property_double(alpm_ce_handle, "deltaratio", sizeof("deltaratio") - 1, 0.0, ZEND_ACC_PUBLIC TSRMLS_CC);

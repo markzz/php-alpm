@@ -31,7 +31,7 @@ static void db_free_storage(zend_object *obj TSRMLS_DC) {
         alpm_db_unregister(intern->db);
     }
 
-    //zend_object_std_dtor(&intern->std TSRMLS_CC);
+    zend_object_std_dtor(&intern->std TSRMLS_CC);
 }
 
 static zend_object *create_db_struct(zend_class_entry *ce TSRMLS_DC) {
@@ -126,10 +126,10 @@ PHP_METHOD(Db, get_name) {
 
 PHP_METHOD(Db, get_pkg) {
     char *pkgname;
-    size_t *pkgname_size;
+    size_t pkgname_size;
     alpm_pkg_t *pkg;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &pkgname, &pkgname_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &pkgname, &pkgname_size) == FAILURE) {
         RETURN_NULL()
     }
 
@@ -141,7 +141,12 @@ PHP_METHOD(Db, get_pkg) {
     }
 
     pkg = alpm_db_get_pkg(dbo->db, pkgname);
-    create_pkg_object(return_value, pkg TSRMLS_CC);
+
+    object_init_ex(return_value, alpm_ce_pkg);
+    pkg_object *pko = Z_PKGO_P(return_value);
+    pko->pkg = pkg;
+
+    //create_pkg_object(return_value, pkg TSRMLS_CC);
 }
 
 PHP_METHOD(Db, get_pkgcache) {
@@ -180,7 +185,7 @@ PHP_METHOD(Db, search) {
     db_object *db = Z_DBO_P(getThis());
     zval *arr;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &arr) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &arr) == FAILURE) {
         RETURN_NULL()
     }
 
@@ -196,7 +201,7 @@ PHP_METHOD(Db, read_grp) {
     size_t grpname_size;
     alpm_group_t *grp;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &grpname, &grpname_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &grpname, &grpname_size) == FAILURE) {
         RETURN_NULL()
     }
 
