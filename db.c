@@ -29,35 +29,42 @@ static void db_free_storage(zend_object *obj TSRMLS_DC) {
 
     if (intern->db) {
         alpm_db_unregister(intern->db);
-        efree(intern->db);
     }
 
-    zend_object_std_dtor(&intern->std TSRMLS_CC);
-    efree(intern);
+    //zend_object_std_dtor(&intern->std TSRMLS_CC);
 }
 
-zend_object *create_db_struct(zend_class_entry *ce TSRMLS_DC) {
+static zend_object *create_db_struct(zend_class_entry *ce TSRMLS_DC) {
     db_object *intern = ecalloc(1, sizeof(db_object) + sizeof(zval) * (ce->default_properties_count - 1));
 
     zend_object_std_init(&intern->std, ce TSRMLS_CC);
     object_properties_init(&intern->std, ce);
-    db_object_handlers.offset = XtOffsetOf(db_object, std);
-    db_object_handlers.free_obj = db_free_storage;
 
+    intern->db = NULL;
     intern->std.handlers = &db_object_handlers;
 
     return &intern->std;
 }
 
-void alpm_init_db(TSRMLS_D) {
+void alpm_init_db(TSRMLS_DC) {
     zend_class_entry ce;
-
-    memcpy(&db_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
     INIT_CLASS_ENTRY(ce, "AlpmDb", db_methods);
     alpm_ce_db = zend_register_internal_class(&ce TSRMLS_CC);
 
     ce.create_object = create_db_struct;
+
+    memcpy(&db_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+    db_object_handlers.offset = XtOffsetOf(db_object, std);
+    db_object_handlers.free_obj = db_free_storage;
+}
+
+static void create_pkg_object(zval *pzval, alpm_pkg_t *pkg TSRMLS_DC) {
+    pkg_object *p;
+
+    object_init_ex(pzval, alpm_ce_pkg);
+    p = Z_PKGO_P(pzval);
+    p->pkg = pkg;
 }
 
 #define DB_ERROR() if (!intern->db) { \
@@ -119,11 +126,10 @@ PHP_METHOD(Db, get_name) {
 
 PHP_METHOD(Db, get_pkg) {
     char *pkgname;
-    int *pkgname_int;
-    pkg_object *pkgo;
-    alpm_db_t *alpm_db;
+    size_t *pkgname_size;
+    alpm_pkg_t *pkg;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &pkgname, &pkgname_int) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &pkgname, &pkgname_size) == FAILURE) {
         RETURN_NULL()
     }
 
@@ -134,15 +140,8 @@ PHP_METHOD(Db, get_pkg) {
         RETURN_NULL()
     }
 
-    alpm_db = dbo->db;
-    object_init_ex(return_value, alpm_ce_pkg);
-    pkgo = Z_PKGO_P(return_value);
-    pkgo->pkg = alpm_db_get_pkg(alpm_db, pkgname);
-
-    if (pkgo->pkg == NULL) {
-        zend_throw_error(php_alpm_pkg_exception_class_entry, "pkg not initialized", 0);
-        RETURN_NULL()
-    }
+    pkg = alpm_db_get_pkg(dbo->db, pkgname);
+    create_pkg_object(return_value, pkg TSRMLS_CC);
 }
 
 PHP_METHOD(Db, get_pkgcache) {
@@ -158,7 +157,6 @@ PHP_METHOD(Db, get_pkgcache) {
         RETURN_NULL()
     }
     alpm_db_t *db_ptr = dbo->db;
-    php_log_err(alpm_db_get_name(db_ptr));
 
     alpm_list_to_pkg_array(alpm_db_get_pkgcache(db_ptr), return_value);
     return;
@@ -193,24 +191,35 @@ PHP_METHOD(Db, search) {
 }
 
 PHP_METHOD(Db, read_grp) {
-    db_object *dbo = Z_DBO_P(getThis());
-    alpm_db_t *alpm_db;
-    char *name;
-    size_t n_size;
+    db_object *self = Z_DBO_P(getThis());
+    char *grpname;
+    size_t grpname_size;
+    alpm_group_t *grp;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &n_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &grpname, &grpname_size) == FAILURE) {
         RETURN_NULL()
     }
 
-    if (!dbo->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm database error", 0);
-        RETURN_NULL()
-    }
-
-    alpm_db = dbo->db;
-
-    alpm_group_to_zval(alpm_db_get_group(dbo->db, name), return_value);
-    return;
+    grp = alpm_db_get_group(self->db, grpname);
+    alpm_group_to_zval(grp, return_value);
+//    db_object *dbo = Z_DBO_P(getThis());
+//    alpm_db_t *alpm_db;
+//    char *name;
+//    size_t n_size;
+//
+//    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &n_size) == FAILURE) {
+//        RETURN_NULL()
+//    }
+//
+//    if (dbo->db == NULL) {
+//        zend_throw_error(php_alpm_db_exception_class_entry, "alpm database error", 0);
+//        RETURN_NULL()
+//    }
+//
+//    alpm_db = dbo->db;
+//
+//    alpm_group_to_zval(alpm_db_get_group(dbo->db, name), return_value);
+//    return;
 }
 
 PHP_METHOD(Db, remove_server) {

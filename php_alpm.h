@@ -3,6 +3,8 @@
 
 #include <alpm.h>
 
+#include "php.h"
+
 #ifdef ZTS
 #include "TSRM.h"
 #endif

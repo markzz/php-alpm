@@ -114,10 +114,7 @@ static void handle_free_storage(zend_object *obj TSRMLS_DC) {
             zend_error(E_ERROR, "Could not release AlpmHandle object, please open issue at https://github.com/markzz/php-alpm.");
         }
 
-        efree(intern->handle);
     }
-    zend_object_std_dtor(&intern->std TSRMLS_CC);
-    efree(intern);
 }
 
 zend_object *create_handle_struct(zend_class_entry *class TSRMLS_DC) {
@@ -136,12 +133,11 @@ zend_object *create_handle_struct(zend_class_entry *class TSRMLS_DC) {
 void alpm_init_handle(TSRMLS_D) {
     zend_class_entry ce;
 
-    memcpy(&handle_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
-
     INIT_CLASS_ENTRY(ce, "AlpmHandle", handle_methods);
     alpm_ce_handle = zend_register_internal_class(&ce TSRMLS_CC);
 
     ce.create_object = create_handle_struct;
+    memcpy(&handle_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
     /* TODO: Make more functions to set these and to figure out how to properly do callbacks.
     zend_declare_property_double(alpm_ce_handle, "deltaratio", sizeof("deltaratio") - 1, 0.0, ZEND_ACC_PUBLIC TSRMLS_CC);

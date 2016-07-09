@@ -42,10 +42,10 @@ PHP_MINIT_FUNCTION(alpm) {
     INIT_CLASS_ENTRY(ce, "AlpmTransactionException", NULL);
     php_alpm_transaction_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default(TSRMLS_C) TSRMLS_CC);
 
+    alpm_init_db(TSRMLS_C);
     alpm_init_handle(TSRMLS_C);
     alpm_init_transaction(TSRMLS_C);
     alpm_init_pkg(TSRMLS_C);
-    alpm_init_db(TSRMLS_C);
 }
 
 zend_module_entry alpm_module_entry = {

@@ -49,16 +49,14 @@ static void pkg_free_storage(zend_object *obj TSRMLS_DC) {
         alpm_pkg_free(intern->pkg);
     }
 
-    efree(intern);
+    //zend_object_std_dtor(&intern->std TSRMLS_CC);
 }
 
-zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC) {
+static zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC) {
     pkg_object *intern = ecalloc(1, sizeof(pkg_object) + sizeof(zval) * (class->default_properties_count - 1));
 
     zend_object_std_init(&intern->std, class TSRMLS_CC);
     object_properties_init(&intern->std, class);
-    pkg_object_handlers.offset = XtOffsetOf(pkg_object, std);
-    pkg_object_handlers.free_obj = pkg_free_storage;
 
     intern->std.handlers = &pkg_object_handlers;
 
@@ -72,6 +70,9 @@ void alpm_init_pkg(TSRMLS_D) {
     alpm_ce_pkg = zend_register_internal_class(&ce TSRMLS_CC);
 
     ce.create_object = create_pkg_struct;
+    memcpy(&pkg_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+    pkg_object_handlers.offset = XtOffsetOf(pkg_object, std);
+    pkg_object_handlers.free_obj = pkg_free_storage;
 }
 
 PHP_METHOD(Pkg, __construct) {
