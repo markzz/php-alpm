@@ -387,3 +387,7 @@ zend_module_entry alpm_module_entry = {
 #endif
     STANDARD_MODULE_PROPERTIES
 };
+
+#ifdef COMPILE_DL_ALPM
+ZEND_GET_MODULE(alpm)
+#endif
