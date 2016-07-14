@@ -5,7 +5,7 @@
 static zend_object_handlers pkg_object_handlers;
 
 static zend_function_entry pkg_methods[] = {
-    PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR)
+    /* PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
 
     PHP_ME(Pkg, compute_requiredby, NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_arch,           NULL, ZEND_ACC_PUBLIC)
@@ -46,10 +46,12 @@ static void pkg_free_storage(zend_object *obj TSRMLS_DC) {
     }
 
     if (intern->pkg) {
-        alpm_pkg_free(intern->pkg);
+//        alpm_pkg_free(intern->pkg);
+//        intern->pkg = NULL;
     }
 
     zend_object_std_dtor(&intern->std);
+    efree(intern);
 }
 
 static zend_object *create_pkg_struct(zend_class_entry *class TSRMLS_DC) {
@@ -70,7 +72,7 @@ void alpm_init_pkg(TSRMLS_D) {
     alpm_ce_pkg = zend_register_internal_class(&ce TSRMLS_CC);
 
     ce.create_object = create_pkg_struct;
-    memcpy(&pkg_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+    //memcpy(&pkg_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
     pkg_object_handlers.offset = XtOffsetOf(pkg_object, std);
     pkg_object_handlers.free_obj = pkg_free_storage;
 }
@@ -279,6 +281,11 @@ PHP_METHOD(Pkg, get_name) {
     pkg_object *intern = Z_PKGO_P(getThis());
 
     if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->pkg) {
+        zend_throw_error(php_alpm_pkg_exception_class_entry, "pkg error", 0);
         RETURN_NULL()
     }
 

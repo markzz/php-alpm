@@ -45,6 +45,7 @@ void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
     }
 
     for (item = list; item; item = alpm_list_next(item)) {
+        obj = (zval*)emalloc(sizeof(zval));
         object_init_ex(obj, alpm_ce_pkg);
         pkgo = Z_PKGO_P(obj);
         pkgo->pkg = (alpm_pkg_t*)item->data;

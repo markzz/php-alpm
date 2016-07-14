@@ -109,10 +109,10 @@ static void handle_free_storage(zend_object *obj TSRMLS_DC) {
     }
 
     if (intern->handle) {
-        err = alpm_release(intern->handle);
-        if (err) {
-            zend_error(E_ERROR, "Could not release AlpmHandle object, please open issue at https://github.com/markzz/php-alpm.");
-        }
+//        err = alpm_release(intern->handle);
+//        if (err) {
+//            zend_error(E_ERROR, "Could not release AlpmHandle object, please open issue at https://github.com/markzz/php-alpm.");
+//        }
 
     }
 
@@ -485,22 +485,27 @@ PHP_METHOD(Handle, register_syncdb) {
     char *dbname;
     long pgp_level;
     size_t dbname_size;
+    alpm_db_t *db;
+    alpm_handle_t *h;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &dbname, &dbname_size, &pgp_level) == FAILURE) {
         RETURN_NULL()
     }
 
     handle_object *intern = Z_HANDLEO_P(getThis());
+    h = intern->handle;
 
     db_object *dbo;
     object_init_ex(return_value, alpm_ce_db);
     dbo = Z_DBO_P(return_value);
-    dbo->db = alpm_register_syncdb(intern->handle, dbname, pgp_level);
+    db = alpm_register_syncdb(h, dbname, pgp_level);
 
-    if (!dbo->db || dbo->db == NULL) {
+    if (db == NULL) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "unable to register syncdb", 0 TSRMLS_CC);
         RETURN_NULL()
     }
+
+    dbo->db = db;
 }
 
 PHP_METHOD(Handle, remove_cachedir) {

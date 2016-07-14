@@ -5,7 +5,7 @@
 static zend_object_handlers db_object_handlers;
 
 static zend_function_entry db_methods[] = {
-    PHP_ME(Db, __construct,    NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR)
+    /* PHP_ME(Db, __construct,    NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
 
     PHP_ME(Db, add_server,     NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Db, get_grpcache,   NULL, ZEND_ACC_PUBLIC)
@@ -28,10 +28,11 @@ static void db_free_storage(zend_object *obj TSRMLS_DC) {
     }
 
     if (intern->db) {
-        alpm_db_unregister(intern->db);
+//        intern->db = NULL;
     }
 
     zend_object_std_dtor(&intern->std TSRMLS_CC);
+    efree(intern);
 }
 
 static zend_object *create_db_struct(zend_class_entry *ce TSRMLS_DC) {
@@ -128,25 +129,36 @@ PHP_METHOD(Db, get_pkg) {
     char *pkgname;
     size_t pkgname_size;
     alpm_pkg_t *pkg;
+    alpm_db_t *db;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &pkgname, &pkgname_size) == FAILURE) {
         RETURN_NULL()
     }
 
     db_object *dbo = Z_DBO_P(getThis());
+    db = dbo->db;
 
-    if (!dbo->db) {
+    if (db == NULL) {
         zend_throw_error(php_alpm_db_exception_class_entry, "alpm database error", 0);
         RETURN_NULL()
     }
 
-    pkg = alpm_db_get_pkg(dbo->db, pkgname);
+    pkg = alpm_db_get_pkg(db, pkgname);
+
+    if (pkg == NULL) {
+        zend_throw_error(php_alpm_pkg_exception_class_entry, "alpm pkg error", 0);
+        RETURN_NULL()
+    }
 
     object_init_ex(return_value, alpm_ce_pkg);
     pkg_object *pko = Z_PKGO_P(return_value);
     pko->pkg = pkg;
+    php_log_err(alpm_pkg_get_name(pko->pkg));
 
-    //create_pkg_object(return_value, pkg TSRMLS_CC);
+    /* this is some horrible, horrible hacking here,
+     * if a kind soul wants to fix this please do so. */
+//    dbo->db = db;
+    return;
 }
 
 PHP_METHOD(Db, get_pkgcache) {
