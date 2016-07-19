@@ -9,7 +9,7 @@ modules
 .deps
 *.nice
 *.log
-confih.h
+config.h
 config.h.in
 install-sh
 libtool
@@ -21,4 +21,8 @@ run-tests.php
 *.la
 acinclude.m4
 aclocal.m4
-
+config.guess
+config.status
+config.sub
+configure
+configure.in
