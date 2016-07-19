@@ -218,7 +218,7 @@ static void php_alpm_db_free_storage(zend_object *obj) {
     }
 
     zend_object_std_dtor(&intern->zo);
-    efree(intern);
+    /* efree(intern); */
 }
 
 static void php_alpm_pkg_free_storage(zend_object *obj) {
@@ -233,7 +233,7 @@ static void php_alpm_pkg_free_storage(zend_object *obj) {
     }
 
     zend_object_std_dtor(&intern->zo);
-    efree(intern);
+    /* efree(intern); */
 }
 
 static void php_alpm_transaction_free_storage(zend_object *obj) {
@@ -249,7 +249,7 @@ static void php_alpm_transaction_free_storage(zend_object *obj) {
     }
 
     zend_object_std_dtor(&intern->zo);
-    efree(intern);
+    /* efree(intern); */
 }
 
 static zend_object *php_alpm_handle_object_new_ex(zend_class_entry *class_type, php_alpm_handle_object **ptr) {

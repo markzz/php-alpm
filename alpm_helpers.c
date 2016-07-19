@@ -12,7 +12,7 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
         add_next_index_string(zv, (char *)item->data);
     }
 
-    alpm_list_free(item);
+//    alpm_list_free(item);
 }
 
 void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
@@ -29,7 +29,7 @@ void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
         add_next_index_string(zv, grp->name);
     }
 
-    alpm_list_free(item);
+//    alpm_list_free(item);
 }
 
 void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
