@@ -4,15 +4,11 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
 
     array_init(zv);
-    if (zv == NULL) {
-        return;
-    }
 
     for (item = list; item; item = alpm_list_next(item)) {
-        add_next_index_string(zv, (char *)item->data);
+        php_printf("DEBUG :: %p->%p: %s\n", item, item->data, item->data);
+        add_next_index_stringl(zv, (char*)item->data, strlen((char*)item->data) + 1);
     }
-
-//    alpm_list_free(item);
 }
 
 void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
@@ -28,8 +24,6 @@ void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
         grp = (alpm_group_t*)item->data;
         add_next_index_string(zv, grp->name);
     }
-
-//    alpm_list_free(item);
 }
 
 void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {

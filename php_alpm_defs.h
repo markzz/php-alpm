@@ -79,6 +79,7 @@ PHP_METHOD(Handle, get_cachedirs);
 PHP_METHOD(Handle, get_checkspace);
 PHP_METHOD(Handle, get_dbpath);
 PHP_METHOD(Handle, get_ignoregrps);
+PHP_METHOD(Handle, get_ignorepkgs);
 PHP_METHOD(Handle, get_localdb);
 PHP_METHOD(Handle, get_noextracts);
 PHP_METHOD(Handle, get_noupgrades);

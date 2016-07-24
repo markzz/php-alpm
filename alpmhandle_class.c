@@ -177,12 +177,15 @@ PHP_METHOD(Handle, get_arch) {
 }
 
 PHP_METHOD(Handle, get_cachedirs) {
-    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
-    alpm_list_t *list;
+    php_alpm_handle_object *intern;
+    alpm_list_t *list, *item;
+    zval tmp;
 
     if (zend_parse_parameters_none() == FAILURE) {
         RETURN_NULL()
     }
+
+    intern = Z_HANDLEO_P(getThis());
 
     if (!intern->handle) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
@@ -196,8 +199,7 @@ PHP_METHOD(Handle, get_cachedirs) {
     }
 
     alpm_list_to_zval(list, return_value);
-//    alpm_list_free(list);
-    return;
+    //FREELIST(list);
 }
 
 PHP_METHOD(Handle, get_checkspace) {
@@ -260,6 +262,30 @@ PHP_METHOD(Handle, get_ignoregrps) {
 
     alpm_list_to_zval(list, return_value);
 //    alpm_list_free(list);
+    return;
+}
+
+PHP_METHOD(Handle, get_ignorepkgs) {
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    list = alpm_option_get_ignorepkgs(intern->handle);
+    if (list == NULL) {
+        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get ignore pkgs", 0);
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+    //FREELIST(list);
     return;
 }
 

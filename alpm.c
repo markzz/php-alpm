@@ -124,6 +124,7 @@ static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, get_cachedirs,    handle_zero_args,            ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_checkspace,   handle_zero_args,            ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_ignoregrps,   handle_zero_args,            ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_ignorepkgs,   handle_zero_args,            ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_localdb,      handle_zero_args,            ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_noextracts,   handle_zero_args,            ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_noupgrades,   handle_zero_args,            ZEND_ACC_PUBLIC)
