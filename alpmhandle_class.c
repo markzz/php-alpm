@@ -178,8 +178,7 @@ PHP_METHOD(Handle, get_arch) {
 
 PHP_METHOD(Handle, get_cachedirs) {
     php_alpm_handle_object *intern;
-    alpm_list_t *list, *item;
-    zval tmp;
+    alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
         RETURN_NULL()
@@ -199,7 +198,6 @@ PHP_METHOD(Handle, get_cachedirs) {
     }
 
     alpm_list_to_zval(list, return_value);
-    //FREELIST(list);
 }
 
 PHP_METHOD(Handle, get_checkspace) {
@@ -261,7 +259,6 @@ PHP_METHOD(Handle, get_ignoregrps) {
     }
 
     alpm_list_to_zval(list, return_value);
-//    alpm_list_free(list);
     return;
 }
 
@@ -285,7 +282,6 @@ PHP_METHOD(Handle, get_ignorepkgs) {
     }
 
     alpm_list_to_zval(list, return_value);
-    //FREELIST(list);
     return;
 }
 
@@ -335,7 +331,6 @@ PHP_METHOD(Handle, get_noextracts) {
     }
 
     alpm_list_to_zval(list, return_value);
-//    alpm_list_free(list);
     return;
 }
 
@@ -359,7 +354,6 @@ PHP_METHOD(Handle, get_noupgrades) {
     }
 
     alpm_list_to_zval(list, return_value);
-//    alpm_list_free(list);
     return;
 }
 
