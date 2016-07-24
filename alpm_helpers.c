@@ -2,12 +2,12 @@
 
 void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
+    zend_string *tmp;
 
     array_init(zv);
-
     for (item = list; item; item = alpm_list_next(item)) {
-        php_printf("DEBUG :: %p->%p: %s\n", item, item->data, item->data);
-        add_next_index_stringl(zv, (char*)item->data, strlen((char*)item->data) + 1);
+        tmp = zend_string_init(item->data, strlen((char*)item->data) + 1, 1);
+        add_next_index_str(zv, tmp);
     }
 }
 
