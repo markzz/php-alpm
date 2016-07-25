@@ -459,7 +459,7 @@ PHP_METHOD(Handle, remove_cachedir) {
     }
 
     err = alpm_option_remove_cachedir(intern->handle, arg);
-    if (err) {
+    if (!err) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove cachedir");
         RETURN_NULL()
     }
@@ -483,7 +483,7 @@ PHP_METHOD(Handle, remove_ignoregrp) {
     }
 
     err = alpm_option_remove_ignoregroup(intern->handle, arg);
-    if (err) {
+    if (!err) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove ignoregrp");
         RETURN_NULL()
     }
@@ -507,7 +507,7 @@ PHP_METHOD(Handle, remove_ignorepkg) {
     }
 
     err = alpm_option_remove_ignorepkg(intern->handle, arg);
-    if (err) {
+    if (!err) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove ignorepkg");
         RETURN_NULL()
     }
@@ -530,8 +530,8 @@ PHP_METHOD(Handle, remove_noextract) {
         RETURN_NULL()
     }
 
-    err = alpm_option_remove_cachedir(intern->handle, arg);
-    if (err) {
+    err = alpm_option_remove_noextract(intern->handle, arg);
+    if (!err) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove noextract");
         RETURN_NULL()
     }
@@ -555,7 +555,7 @@ PHP_METHOD(Handle, remove_noupgrade) {
     }
 
     err = alpm_option_remove_noupgrade(intern->handle, arg);
-    if (err) {
+    if (!err) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove noupgrade");
         RETURN_NULL()
     }
