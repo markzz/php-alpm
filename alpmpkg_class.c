@@ -406,3 +406,25 @@ PHP_METHOD(Pkg, get_version) {
     ret = alpm_pkg_get_version(intern->pkg);
     RETURN_STRING(ret)
 }
+
+PHP_METHOD(Pkg, set_reason) {
+    /* TODO: This doesn't work, find out why */
+    php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
+    alpm_pkgreason_t reason;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &reason) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (reason != ALPM_PKG_REASON_DEPEND && reason != ALPM_PKG_REASON_EXPLICIT) {
+        zend_throw_error(php_alpm_pkg_exception_class_entry, "not a valid install reason", 0);
+        RETURN_FALSE
+    }
+
+    err = alpm_pkg_set_reason(intern->pkg, reason);
+    if (err) {
+        RETURN_FALSE
+    }
+    RETURN_TRUE
+}

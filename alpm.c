@@ -139,7 +139,6 @@ static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, remove_noupgrade, handle_one_param_package,    ZEND_ACC_PUBLIC)
     PHP_ME(Handle, set_arch,         handle_set_arch_args,        ZEND_ACC_PUBLIC)
     PHP_ME(Handle, set_checkspace,   handle_set_checkspace_args,  ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, set_pkgreason,    handle_set_pkgreason_args,   ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
@@ -188,6 +187,7 @@ static zend_function_entry pkg_methods[] = {
     PHP_ME(Pkg, get_size,           NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_url,            NULL, ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_version,        NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(Pkg, set_reason,         NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 

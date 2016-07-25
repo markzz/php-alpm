@@ -607,8 +607,3 @@ PHP_METHOD(Handle, set_checkspace) {
         RETURN_NULL()
     }
 }
-
-PHP_METHOD(Handle, set_pkgreason) {
-    /* unimplemented */
-    RETURN_NULL()
-}

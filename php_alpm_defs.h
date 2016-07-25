@@ -94,7 +94,6 @@ PHP_METHOD(Handle, remove_noextract);
 PHP_METHOD(Handle, remove_noupgrade);
 PHP_METHOD(Handle, set_arch);
 PHP_METHOD(Handle, set_checkspace);
-PHP_METHOD(Handle, set_pkgreason);
 
 /* db methods */
 PHP_METHOD(Db, add_server);
@@ -137,6 +136,7 @@ PHP_METHOD(Pkg, get_sha256sum);
 PHP_METHOD(Pkg, get_size);
 PHP_METHOD(Pkg, get_url);
 PHP_METHOD(Pkg, get_version);
+PHP_METHOD(Pkg, set_reason);
 
 /* transaction methods */
 
