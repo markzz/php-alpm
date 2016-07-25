@@ -99,6 +99,19 @@ void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
     }
 }
 
+
+int zval_to_alpm_list(zval *zv, alpm_list_t **list) {
+    alpm_list_t *ret = NULL;
+    zval *data;
+
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), data) {
+        ret = alpm_list_add(ret, Z_STRVAL_P(data));
+    } ZEND_HASH_FOREACH_END();
+
+    *list = ret;
+    return 0;
+}
+
 void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
     zval *inner = (zval*)emalloc(sizeof(zval));
 

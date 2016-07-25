@@ -146,8 +146,17 @@ PHP_METHOD(Db, get_servers) {
 }
 
 PHP_METHOD(Db, search) {
-    /* implement */
-    RETURN_NULL()
+    php_alpm_db_object *intern = Z_DBO_P(getThis());
+    zval *arr;
+    alpm_list_t *list = NULL;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &arr) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    zval_to_alpm_list(arr, &list);
+    alpm_list_to_zval(list, return_value);
+    return;
 }
 
 PHP_METHOD(Db, read_grp) {
@@ -189,6 +198,29 @@ PHP_METHOD(Db, remove_server) {
 }
 
 PHP_METHOD(Db, update) {
-    /* implement */
+    php_alpm_db_object *intern = Z_DBO_P(getThis());
+    zend_bool force = 0;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &force) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->db) {
+        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        RETURN_NULL()
+    }
+
+    /* TODO: This always returns -1 in testing, investigate! */
+    err = alpm_db_update(force, intern->db);
+    if (err == 1) {
+        RETURN_FALSE
+    } else if (err == 0) {
+        RETURN_TRUE
+    } else if (err == -1) {
+        zend_throw_error(php_alpm_db_exception_class_entry, "could not update database", 0);
+        RETURN_FALSE
+    }
+
     RETURN_NULL()
 }
