@@ -1,0 +1,17 @@
+Contributors
+------------
+
+Use `git shortlog -s` for a list of contributors.
+
+Special Thanks
+--------------
+
+Writing this was a challenge, but here is a list of people that helped make this
+happen. This is not a complete list, but if I left you out, I'm sorry and I'll
+try to include you.
+
+* Danack (stackoverflow php chat)
+* bwoebi (stackoverflow php chat)
+* NikiC  (stackoverflow php chat)
+* Sherif (stackoverflow php chat)
+* googleguy (##php on freenode)

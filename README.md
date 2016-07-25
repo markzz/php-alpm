@@ -1,13 +1,13 @@
 # php-alpm
 A PHP extension to use Arch Linux's ALPM
 
-This is still a work in progress. This will kill your first born, burn your house down, blow up your server, and more, so for the time being, I would not advise using this.
+This is still a work in progress. Although most features work, some do not and there may still be some memory leaking hidden in here.
 
 ## Requirements
 You need the following to build and run this.
 
-1. PHP >=7.0
-2. libalpm >=10.0
+1. `PHP >=7.0`
+2. `libalpm >=10.0`
 
 ## Building
 Do what you'd normally do for a php extension:
