@@ -423,7 +423,7 @@ PHP_METHOD(Pkg, set_reason) {
     }
 
     err = alpm_pkg_set_reason(intern->pkg, reason);
-    if (err) {
+    if (err == -1) {
         RETURN_FALSE
     }
     RETURN_TRUE
