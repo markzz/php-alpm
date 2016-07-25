@@ -44,6 +44,7 @@ void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
         pkgo = Z_PKGO_P(obj);
         pkgo->pkg = (alpm_pkg_t*)item->data;
         add_next_index_zval(zv, obj);
+        efree(obj);
     }
 }
 
