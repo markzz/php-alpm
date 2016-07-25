@@ -204,7 +204,7 @@ static void php_alpm_handle_free_storage(zend_object *obj) {
     }
 
     zend_object_std_dtor(&intern->zo);
-    efree(intern);
+    /* efree(intern); */
 }
 
 static void php_alpm_db_free_storage(zend_object *obj) {
@@ -285,6 +285,9 @@ static zend_object *php_alpm_db_object_new_ex(zend_class_entry *class_type, php_
     intern->db = NULL;
 
     zend_object_std_init(&intern->zo, class_type);
+    object_properties_init(&intern->zo, class_type);
+
+    intern->zo.handlers = &alpm_db_object_handlers;
     return &intern->zo;
 }
 
@@ -303,6 +306,9 @@ static zend_object *php_alpm_pkg_object_new_ex(zend_class_entry *class_type, php
     intern->pkg = NULL;
 
     zend_object_std_init(&intern->zo, class_type);
+    object_properties_init(&intern->zo, class_type);
+
+    intern->zo.handlers = &alpm_pkg_object_handlers;
     return &intern->zo;
 }
 
@@ -321,6 +327,9 @@ static zend_object *php_alpm_transaction_object_new_ex(zend_class_entry *class_t
     intern->handle = NULL;
 
     zend_object_std_init(&intern->zo, class_type);
+    object_properties_init(&intern->zo, class_type);
+
+    intern->zo.handlers = &alpm_transaction_object_handlers;
     return &intern->zo;
 }
 
