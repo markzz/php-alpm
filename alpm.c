@@ -318,7 +318,7 @@ static zend_object *php_alpm_pkg_object_new(zend_class_entry *class_type) {
 
 static zend_object *php_alpm_transaction_object_new_ex(zend_class_entry *class_type, php_alpm_transaction_object **ptr) {
     php_alpm_transaction_object *intern;
-    intern = calloc(1, sizeof(php_alpm_transaction_object) + sizeof(zval) * (class_type->default_properties_count - 1));
+    intern = ecalloc(1, sizeof(php_alpm_transaction_object) + sizeof(zval) * (class_type->default_properties_count - 1));
 
     if (ptr) {
         *ptr = intern;
