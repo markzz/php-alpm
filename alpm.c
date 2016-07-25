@@ -358,16 +358,19 @@ PHP_MINIT_FUNCTION(alpm) {
     ce.create_object = php_alpm_db_object_new;
     alpm_db_object_handlers.offset = XtOffsetOf(php_alpm_db_object, zo);
     alpm_db_object_handlers.free_obj = php_alpm_db_free_storage;
+    php_alpm_db_sc_entry = zend_register_internal_class(&ce);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_PKG_SC_NAME, pkg_methods);
     ce.create_object = php_alpm_pkg_object_new;
     alpm_pkg_object_handlers.offset = XtOffsetOf(php_alpm_pkg_object, zo);
     alpm_pkg_object_handlers.free_obj = php_alpm_pkg_free_storage;
+    php_alpm_pkg_sc_entry = zend_register_internal_class(&ce);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_TRANSACTION_SC_NAME, NULL);
     ce.create_object = php_alpm_transaction_object_new;
     alpm_transaction_object_handlers.offset = XtOffsetOf(php_alpm_transaction_object, zo);
     alpm_transaction_object_handlers.free_obj = php_alpm_transaction_free_storage;
+    php_alpm_transaction_sc_entry = zend_register_internal_class(&ce);
 
     return SUCCESS;
 }

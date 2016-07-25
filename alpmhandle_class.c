@@ -294,7 +294,7 @@ PHP_METHOD(Handle, get_localdb) {
         RETURN_NULL()
     }
 
-    if (intern->handle) {
+    if (!intern->handle) {
         zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
