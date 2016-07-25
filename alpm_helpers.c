@@ -14,6 +14,7 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
 void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     alpm_group_t *grp;
+    zend_string *tmp;
 
     array_init(zv);
     if (zv == NULL) {
@@ -22,7 +23,8 @@ void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
 
     for (item = list; item; item = alpm_list_next(item)) {
         grp = (alpm_group_t*)item->data;
-        add_next_index_string(zv, grp->name);
+        tmp = zend_string_init(grp->name, strlen(grp->name) + 1, 1);
+        add_next_index_str(zv, tmp);
     }
 }
 
@@ -61,6 +63,7 @@ void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
         dbo = Z_DBO_P(obj);
         dbo->db = (alpm_db_t*)item->data;
         add_next_index_zval(zv, obj);
+        efree(obj);
     }
 }
 
