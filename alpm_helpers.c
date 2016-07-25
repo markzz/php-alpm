@@ -74,4 +74,5 @@ void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
     array_init(zv);
     alpm_list_to_pkg_array(grp->packages, inner);
     add_assoc_zval(zv, grp->name, inner);
+    efree(inner);
 }
