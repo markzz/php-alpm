@@ -437,7 +437,7 @@ PHP_METHOD(Handle, register_syncdb) {
         RETURN_NULL()
     }
 
-    object_init_ex(return_value, php_alpm_handle_sc_entry);
+    object_init_ex(return_value, php_alpm_db_sc_entry);
     new_obj = Z_DBO_P(return_value);
     new_obj->db = db;
     return;
