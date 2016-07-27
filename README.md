@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/markzz/php-alpm.png)](https://travis-ci.org/markzz/php-alpm)
+
 # php-alpm
 A PHP extension to use Arch Linux's ALPM
 
