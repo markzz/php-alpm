@@ -13,7 +13,7 @@ Please don't add mode lines.
 
 Blocks: When opening blocks like 'while', 'if', or 'for', the opening brace must be on the same line of the code block. The closing brace gets its own line. Also, the opening parenthesis must be one space from the keyword used.
 
-```
+```C
 for (item = list; item; item = alpm_list_next(item)) {
     grp = (alpm_group_t*)item->data;
     tmp = zend_string_init(grp->name, strlen(grp->name) + 1, 1);
@@ -28,7 +28,7 @@ if (err) {
 
 Functions: Like blocks, you need to put the opening brace on the same line as the function declaration. Same for the closing brace. Try to keep functions in alphabetical order.
 
-```
+```C
 void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     zend_string *tmp;
@@ -44,21 +44,21 @@ PHP_METHOD(Handle, remove_noupgrade) {
 
 Comments: They should be ANSI-C89 compliant. No `// Comment` style, but instead use only `/* Comment */`. 
 
-```
+```C
 /* Good Comment */
 // Bad comment
 ```
 
 Return statements: Do not write them like function calls.
 
-```
-return 0  /* good */
-return(0) /* bad */
+```C
+return 0;  /* good */
+return(0); /* bad */
 ```
 
 Variables: Declare them __all__ at the start of the block.
 
-```
+```C
 /* Good */
 PHP_METHOD(Pkg, get_arch) {
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
@@ -87,7 +87,7 @@ PHP_METHOD(Pkg, get_arch) {
 
 Pointers: When declaring pointers (this includes for functions), don't put any spaces between the asterisk and the name.
 
-```
+```C
 /* Good */
 alpm_list_t *list;
 alpm_list_t **list;
