@@ -56,10 +56,10 @@ PHP_METHOD(Handle, add_cachedir) {
 
     err = alpm_option_add_cachedir(intern->handle, arg);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not add cachedir", 0);
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, add_ignoregrp) {
@@ -79,10 +79,10 @@ PHP_METHOD(Handle, add_ignoregrp) {
 
     err = alpm_option_add_ignoregroup(intern->handle, arg);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not add ignore group", 0);
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, add_ignorepkg) {
@@ -102,10 +102,10 @@ PHP_METHOD(Handle, add_ignorepkg) {
 
     err = alpm_option_add_ignorepkg(intern->handle, arg);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not add ignore package", 0);
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, add_noextract) {
@@ -125,10 +125,10 @@ PHP_METHOD(Handle, add_noextract) {
 
     err = alpm_option_add_noextract(intern->handle, arg);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not add no extract", 0);
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, add_noupgrade) {
@@ -148,10 +148,10 @@ PHP_METHOD(Handle, add_noupgrade) {
 
     err = alpm_option_add_noupgrade(intern->handle, arg);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not add no upgrade", 0);
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, get_arch) {
@@ -169,7 +169,6 @@ PHP_METHOD(Handle, get_arch) {
 
     arch = alpm_option_get_arch(intern->handle);
     if (arch == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get arch", 0);
         RETURN_NULL()
     }
 
@@ -193,7 +192,6 @@ PHP_METHOD(Handle, get_cachedirs) {
 
     list = alpm_option_get_cachedirs(intern->handle);
     if (list == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get cachedirs", 0);
         RETURN_NULL()
     }
 
@@ -232,7 +230,6 @@ PHP_METHOD(Handle, get_dbpath) {
 
     dbpath = alpm_option_get_dbpath(intern->handle);
     if (dbpath == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get cachedirs", 0);
         RETURN_NULL()
     }
 
@@ -254,7 +251,6 @@ PHP_METHOD(Handle, get_ignoregrps) {
 
     list = alpm_option_get_ignoregroups(intern->handle);
     if (list == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get ignore groups", 0);
         RETURN_NULL()
     }
 
@@ -277,7 +273,6 @@ PHP_METHOD(Handle, get_ignorepkgs) {
 
     list = alpm_option_get_ignorepkgs(intern->handle);
     if (list == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get ignore pkgs", 0);
         RETURN_NULL()
     }
 
@@ -301,7 +296,6 @@ PHP_METHOD(Handle, get_localdb) {
 
     db = alpm_get_localdb(intern->handle);
     if (!db) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get localdb", 0);
         RETURN_NULL()
     }
 
@@ -326,7 +320,6 @@ PHP_METHOD(Handle, get_noextracts) {
 
     list = alpm_option_get_noextracts(intern->handle);
     if (list == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get no extracts", 0);
         RETURN_NULL()
     }
 
@@ -349,7 +342,6 @@ PHP_METHOD(Handle, get_noupgrades) {
 
     list = alpm_option_get_noupgrades(intern->handle);
     if (list == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get no upgrades", 0);
         RETURN_NULL()
     }
 
@@ -372,7 +364,6 @@ PHP_METHOD(Handle, get_syncdbs) {
 
     db_list = alpm_get_syncdbs(intern->handle);
     if (db_list == NULL) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not get syncdbs", 0);
         RETURN_NULL()
     }
 
@@ -433,7 +424,6 @@ PHP_METHOD(Handle, register_syncdb) {
 
     db = alpm_register_syncdb(intern->handle, dbname, pgp_level);
     if (!db) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not register syncdb");
         RETURN_NULL()
     }
 
@@ -460,11 +450,10 @@ PHP_METHOD(Handle, remove_cachedir) {
 
     err = alpm_option_remove_cachedir(intern->handle, arg);
     if (!err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove cachedir");
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, remove_ignoregrp) {
@@ -484,11 +473,10 @@ PHP_METHOD(Handle, remove_ignoregrp) {
 
     err = alpm_option_remove_ignoregroup(intern->handle, arg);
     if (!err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove ignoregrp");
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, remove_ignorepkg) {
@@ -508,11 +496,10 @@ PHP_METHOD(Handle, remove_ignorepkg) {
 
     err = alpm_option_remove_ignorepkg(intern->handle, arg);
     if (!err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove ignorepkg");
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, remove_noextract) {
@@ -532,11 +519,10 @@ PHP_METHOD(Handle, remove_noextract) {
 
     err = alpm_option_remove_noextract(intern->handle, arg);
     if (!err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove noextract");
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, remove_noupgrade) {
@@ -556,11 +542,10 @@ PHP_METHOD(Handle, remove_noupgrade) {
 
     err = alpm_option_remove_noupgrade(intern->handle, arg);
     if (!err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not remove noupgrade");
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, set_arch) {
@@ -580,11 +565,10 @@ PHP_METHOD(Handle, set_arch) {
 
     err = alpm_option_set_arch(intern->handle, arg);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not set arch", 0);
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Handle, set_checkspace) {
@@ -603,7 +587,8 @@ PHP_METHOD(Handle, set_checkspace) {
 
     err = alpm_option_set_checkspace(intern->handle, (int)checkspace);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not set checkspace", 0);
-        RETURN_NULL()
+        RETURN_FALSE
     }
+
+    RETURN_TRUE
 }
