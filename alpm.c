@@ -86,11 +86,6 @@ ZEND_BEGIN_ARG_INFO_EX(handle_set_checkspace_args, 0, 0, 1)
     ZEND_ARG_INFO(0, checkspace)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(handle_set_pkgreason_args, 0, 0, 2)
-    ZEND_ARG_OBJ_INFO(0, package, AlpmPkg, 0)
-    ZEND_ARG_INFO(0, reason)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_INFO_EX(handle_init_trans_args, 0, 0, 0)
     ZEND_ARG_INFO(0, nodeps)
     ZEND_ARG_INFO(0, force)
