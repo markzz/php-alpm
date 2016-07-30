@@ -208,7 +208,6 @@ PHP_METHOD(Pkg, get_has_scriptlet) {
 }
 
 PHP_METHOD(Pkg, get_installdate) {
-    /* TODO: This always return time 0, fix this */
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_time_t ret = 0;
 
