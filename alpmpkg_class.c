@@ -408,7 +408,6 @@ PHP_METHOD(Pkg, get_version) {
 }
 
 PHP_METHOD(Pkg, set_reason) {
-    /* TODO: This doesn't work, find out why */
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_pkgreason_t reason;
     int err;
