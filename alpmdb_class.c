@@ -19,11 +19,10 @@ PHP_METHOD(Db, add_server) {
 
     err = alpm_db_add_server(intern->db, arg);
     if (err) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not add server", 0);
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Db, get_grpcache) {
@@ -41,7 +40,6 @@ PHP_METHOD(Db, get_grpcache) {
 
     list = alpm_db_get_groupcache(intern->db);
     if (list == NULL) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not get group cache", 0);
         RETURN_NULL()
     }
 
@@ -64,7 +62,6 @@ PHP_METHOD(Db, get_name) {
 
     name = alpm_db_get_name(intern->db);
     if (name == NULL) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not get db name", 0);
         RETURN_NULL()
     }
 
@@ -89,7 +86,6 @@ PHP_METHOD(Db, get_pkg) {
 
     pkg = alpm_db_get_pkg(intern->db, arg);
     if (pkg == NULL) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not create pkg object", 0);
         RETURN_NULL()
     }
 
@@ -114,7 +110,6 @@ PHP_METHOD(Db, get_pkgcache) {
 
     list = alpm_db_get_pkgcache(intern->db);
     if (list == NULL) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not get pkg cache", 0);
         RETURN_NULL()
     }
 
@@ -137,7 +132,6 @@ PHP_METHOD(Db, get_servers) {
 
     list = alpm_db_get_servers(intern->db);
     if (list == NULL) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not get server list", 0);
         RETURN_NULL()
     }
 
@@ -171,7 +165,6 @@ PHP_METHOD(Db, read_grp) {
 
     grp = alpm_db_get_group(intern->db, grpname);
     if (grp == NULL) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not get group information", 0);
         RETURN_NULL()
     }
 
@@ -190,11 +183,10 @@ PHP_METHOD(Db, remove_server) {
 
     err = alpm_db_remove_server(intern->db, arg);
     if (err) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not remove server", 0);
-        RETURN_NULL()
+        RETURN_FALSE
     }
 
-    RETURN_NULL()
+    RETURN_TRUE
 }
 
 PHP_METHOD(Db, update) {
@@ -211,16 +203,13 @@ PHP_METHOD(Db, update) {
         RETURN_NULL()
     }
 
-    /* TODO: This always returns -1 in testing, investigate! */
     err = alpm_db_update(force, intern->db);
     if (err == 1) {
         RETURN_FALSE
     } else if (err == 0) {
         RETURN_TRUE
     } else if (err == -1) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not update database", 0);
+        zend_throw_error(php_alpm_db_exception_class_entry, "could not update database (most likely no permissions)", 0);
         RETURN_FALSE
     }
-
-    RETURN_NULL()
 }
