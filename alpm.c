@@ -61,6 +61,10 @@ ZEND_BEGIN_ARG_INFO_EX(handle_one_param_package, 0, 0, 1)
     ZEND_ARG_INFO(0, package)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(handle_one_param_file, 0, 0, 1)
+                ZEND_ARG_INFO(0, filename)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(handle_zero_args, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -117,8 +121,8 @@ static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, add_cachedir,     handle_one_param_cachedir,   ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_ignoregrp,    handle_one_param_group,      ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_ignorepkg,    handle_one_param_package,    ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_noextract,    handle_one_param_package,    ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_noupgrade,    handle_one_param_package,    ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_noextract,    handle_one_param_file,       ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_noupgrade,    handle_one_param_file,       ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_arch,         handle_zero_args,            ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_dbpath,       handle_zero_args,            ZEND_ACC_PUBLIC)
     PHP_ME(Handle, get_cachedirs,    handle_zero_args,            ZEND_ACC_PUBLIC)
@@ -135,8 +139,8 @@ static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, remove_cachedir,  handle_one_param_cachedir,   ZEND_ACC_PUBLIC)
     PHP_ME(Handle, remove_ignoregrp, handle_one_param_group,      ZEND_ACC_PUBLIC)
     PHP_ME(Handle, remove_ignorepkg, handle_one_param_package,    ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, remove_noextract, handle_one_param_package,    ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, remove_noupgrade, handle_one_param_package,    ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_noextract, handle_one_param_file,       ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_noupgrade, handle_one_param_file,       ZEND_ACC_PUBLIC)
     PHP_ME(Handle, set_arch,         handle_set_arch_args,        ZEND_ACC_PUBLIC)
     PHP_ME(Handle, set_checkspace,   handle_set_checkspace_args,  ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
