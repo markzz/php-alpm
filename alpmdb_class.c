@@ -142,14 +142,19 @@ PHP_METHOD(Db, get_servers) {
 PHP_METHOD(Db, search) {
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     zval *arr;
-    alpm_list_t *list = NULL;
+    alpm_list_t *list = NULL, *result = NULL;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &arr) == FAILURE) {
         RETURN_NULL()
     }
 
     zval_to_alpm_list(arr, &list);
-    alpm_list_to_zval(list, return_value);
+    result = alpm_db_search(intern->db, list);
+    if (!result) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_pkg_array(result, return_value);
     return;
 }
 
