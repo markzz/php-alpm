@@ -245,7 +245,6 @@ static void php_alpm_transaction_free_storage(zend_object *obj) {
     }
 
     if (intern->handle) {
-        alpm_release(intern->handle);
         intern->handle = NULL;
     }
 
