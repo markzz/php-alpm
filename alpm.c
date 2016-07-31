@@ -48,7 +48,7 @@ ZEND_BEGIN_ARG_INFO_EX(zero_args, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(one_param_group, 0, 0, 1)
-                ZEND_ARG_INFO(0, group)
+    ZEND_ARG_INFO(0, group)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(handle_construct_args, 0, 0, 2)
