@@ -65,7 +65,7 @@ ZEND_BEGIN_ARG_INFO_EX(handle_one_param_package, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(handle_one_param_file, 0, 0, 1)
-                ZEND_ARG_INFO(0, filename)
+    ZEND_ARG_INFO(0, filename)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(handle_load_pkg_args, 0, 0, 1)
@@ -119,6 +119,14 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(pkg_reason, 0, 0, 1)
     ZEND_ARG_INFO(0, reason)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(one_alpmpkg, 0, 0, 1)
+    ZEND_ARG_OBJ_INFO(1, pkg, AlpmPkg, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(sysupdate, 0, 0, 0)
+    ZEND_ARG_INFO(0, do_downgrade)
 ZEND_END_ARG_INFO()
 
 static zend_function_entry php_alpm_functions[] = {
@@ -203,6 +211,17 @@ static zend_function_entry pkg_methods[] = {
     PHP_ME(Pkg, get_url,            zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_version,        zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, set_reason,         pkg_reason, ZEND_ACC_PUBLIC)
+    {NULL, NULL, NULL}
+};
+
+static zend_function_entry trans_methods[] = {
+    PHP_ME(Trans, add_pkg,        one_alpmpkg, ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, commit,         zero_args,   ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, interrupt,      zero_args,   ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, prepare,        zero_args,   ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, release,        zero_args,   ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, remove_pkg,     one_alpmpkg, ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, system_upgrade, sysupdate,   ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
@@ -385,7 +404,7 @@ PHP_MINIT_FUNCTION(alpm) {
     alpm_pkg_object_handlers.free_obj = php_alpm_pkg_free_storage;
     php_alpm_pkg_sc_entry = zend_register_internal_class(&ce);
 
-    INIT_CLASS_ENTRY(ce, PHP_ALPM_TRANSACTION_SC_NAME, NULL);
+    INIT_CLASS_ENTRY(ce, PHP_ALPM_TRANSACTION_SC_NAME, trans_methods);
     ce.create_object = php_alpm_transaction_object_new;
     alpm_transaction_object_handlers.offset = XtOffsetOf(php_alpm_transaction_object, zo);
     alpm_transaction_object_handlers.free_obj = php_alpm_transaction_free_storage;

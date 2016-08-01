@@ -139,5 +139,12 @@ PHP_METHOD(Pkg, get_version);
 PHP_METHOD(Pkg, set_reason);
 
 /* transaction methods */
+PHP_METHOD(Trans, add_pkg);
+PHP_METHOD(Trans, commit);
+PHP_METHOD(Trans, interrupt);
+PHP_METHOD(Trans, prepare);
+PHP_METHOD(Trans, release);
+PHP_METHOD(Trans, remove_pkg);
+PHP_METHOD(Trans, system_upgrade);
 
 #endif /* PHP_ALPM_DEFS_H */
