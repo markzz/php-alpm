@@ -38,5 +38,5 @@ if test "$PHP_ALPM" != "no"; then
     ])
     PHP_SUBST(ALPM_SHARED_LIBADD)
 
-    PHP_NEW_EXTENSION(alpm, alpmhandle_class.c alpmdb_class.c alpmpkg_class.c alpmtransaction_class.c alpm_helpers.c alpm.c, $ext_shared)
+    PHP_NEW_EXTENSION(alpm, src/alpmhandle_class.c src/alpmdb_class.c src/alpmpkg_class.c src/alpmtransaction_class.c src/alpm_helpers.c src/alpm.c, $ext_shared)
 fi
