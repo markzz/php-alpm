@@ -26,3 +26,4 @@ config.status
 config.sub
 configure
 configure.in
+test_root
