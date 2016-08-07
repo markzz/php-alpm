@@ -1,8 +1,6 @@
 #include "php_alpm.h"
 #include "php_alpm_defs.h"
 
-#include "zend_exceptions.h"
-
 zend_class_entry *php_alpm_handle_sc_entry;
 zend_class_entry *php_alpm_handle_exception_class_entry;
 zend_class_entry *php_alpm_db_sc_entry;
