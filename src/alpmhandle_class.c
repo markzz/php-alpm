@@ -8,6 +8,7 @@ PHP_METHOD(Handle, __construct) {
     size_t rp, dp;
     enum _alpm_errno_t errcode = 0;
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_handle_t *h;
 
     if (ZEND_NUM_ARGS() == 0) {
         rootpath = emalloc(sizeof(char) * strlen(DEFAULT_ROOTDIR));
@@ -23,14 +24,14 @@ PHP_METHOD(Handle, __construct) {
     }
 
     create:
-    object_init_ex(return_value, php_alpm_handle_sc_entry);
 
-    alpm_handle_t *h = alpm_initialize(rootpath, dbpath, &errcode);
+    h = alpm_initialize(rootpath, dbpath, &errcode);
     if (!h) {
         zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to create handle object", 0);
         RETURN_NULL()
     }
 
+    object_init_ex(return_value, php_alpm_handle_sc_entry);
     intern->handle = h;
 
     if (ZEND_NUM_ARGS() == 0) {
