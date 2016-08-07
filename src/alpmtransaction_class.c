@@ -35,7 +35,7 @@ PHP_METHOD(Trans, commit) {
 
     if (ret == 0) RETURN_NULL()
     if (ret != -1) {
-        zend_throw_error(php_alpm_transaction_exception_class_entry, "unexpected return value", ret);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unexpected return value", ret);
         RETURN_NULL()
     }
 
@@ -69,7 +69,7 @@ PHP_METHOD(Trans, interrupt) {
 
     ret = alpm_trans_release(intern->handle);
     if (ret == -1) {
-        zend_throw_error(php_alpm_transaction_exception_class_entry, "could not release transaction", 0);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "could not release transaction", 0);
     }
 
     RETURN_NULL()
@@ -102,7 +102,7 @@ PHP_METHOD(Trans, release) {
 
     ret = alpm_trans_release(intern->handle);
     if (ret == -1) {
-        zend_throw_error(php_alpm_transaction_exception_class_entry, "unable to release transaction", 0);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to release transaction", 0);
     }
 
     RETURN_NULL()
@@ -139,7 +139,7 @@ PHP_METHOD(Trans, system_upgrade) {
     do_downgrade = downgrade == 1 ? 1 : 0;
     ret = alpm_sync_sysupgrade(intern->handle, do_downgrade);
     if (ret == -1) {
-        zend_throw_error(php_alpm_transaction_exception_class_entry, "unable to perform system upgrade", 0);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to perform system upgrade", 0);
     }
     RETURN_NULL()
 }

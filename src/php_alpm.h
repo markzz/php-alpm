@@ -13,6 +13,7 @@
 #endif
 
 #include "php.h"
+#include "zend_exceptions.h"
 
 extern zend_module_entry alpm_module_entry;
 #define phpext_alpm_ptr &alpm_module_entry

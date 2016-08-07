@@ -13,7 +13,7 @@ PHP_METHOD(Db, add_server) {
     }
 
     if (!intern->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
         RETURN_NULL()
     }
 
@@ -34,7 +34,7 @@ PHP_METHOD(Db, get_grpcache) {
     }
 
     if (!intern->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
         RETURN_NULL()
     }
 
@@ -56,7 +56,7 @@ PHP_METHOD(Db, get_name) {
     }
 
     if (!intern->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
         RETURN_NULL()
     }
 
@@ -80,7 +80,7 @@ PHP_METHOD(Db, get_pkg) {
     }
 
     if (!intern->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
         RETURN_NULL()
     }
 
@@ -104,7 +104,7 @@ PHP_METHOD(Db, get_pkgcache) {
     }
 
     if (!intern->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
         RETURN_NULL()
     }
 
@@ -126,7 +126,7 @@ PHP_METHOD(Db, get_servers) {
     }
 
     if (!intern->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
         RETURN_NULL()
     }
 
@@ -204,7 +204,7 @@ PHP_METHOD(Db, update) {
     }
 
     if (!intern->db) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
         RETURN_NULL()
     }
 
@@ -214,7 +214,7 @@ PHP_METHOD(Db, update) {
     } else if (err == 0) {
         RETURN_TRUE
     } else if (err == -1) {
-        zend_throw_error(php_alpm_db_exception_class_entry, "could not update database (most likely no permissions)", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, "could not update database (most likely no permissions)", 0);
         RETURN_FALSE
     }
 }

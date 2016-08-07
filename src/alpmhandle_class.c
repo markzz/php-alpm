@@ -27,7 +27,7 @@ PHP_METHOD(Handle, __construct) {
 
     alpm_handle_t *h = alpm_initialize(rootpath, dbpath, &errcode);
     if (!h) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "unable to create handle object", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to create handle object", 0);
         RETURN_NULL()
     }
 
@@ -50,7 +50,7 @@ PHP_METHOD(Handle, add_cachedir) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error",  0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error",  0);
         RETURN_NULL()
     }
 
@@ -73,7 +73,7 @@ PHP_METHOD(Handle, add_ignoregrp) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -96,7 +96,7 @@ PHP_METHOD(Handle, add_ignorepkg) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -119,7 +119,7 @@ PHP_METHOD(Handle, add_noextract) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -142,7 +142,7 @@ PHP_METHOD(Handle, add_noupgrade) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -163,7 +163,7 @@ PHP_METHOD(Handle, get_arch) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -186,7 +186,7 @@ PHP_METHOD(Handle, get_cachedirs) {
     intern = Z_HANDLEO_P(getThis());
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -207,7 +207,7 @@ PHP_METHOD(Handle, get_checkspace) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -224,7 +224,7 @@ PHP_METHOD(Handle, get_dbpath) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -245,7 +245,7 @@ PHP_METHOD(Handle, get_ignoregrps) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -267,7 +267,7 @@ PHP_METHOD(Handle, get_ignorepkgs) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -290,7 +290,7 @@ PHP_METHOD(Handle, get_localdb) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -314,7 +314,7 @@ PHP_METHOD(Handle, get_noextracts) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -336,7 +336,7 @@ PHP_METHOD(Handle, get_noupgrades) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -358,7 +358,7 @@ PHP_METHOD(Handle, get_syncdbs) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -389,13 +389,13 @@ PHP_METHOD(Handle, load_pkg) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
     err = alpm_pkg_load(intern->handle, fn, 1, ALPM_SIG_PACKAGE_OPTIONAL, &pkg);
     if (err) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "could not load pkg", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "could not load pkg", 0);
         RETURN_NULL()
     }
 
@@ -418,7 +418,7 @@ PHP_METHOD(Handle, register_syncdb) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -444,7 +444,7 @@ PHP_METHOD(Handle, remove_cachedir) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -467,7 +467,7 @@ PHP_METHOD(Handle, remove_ignoregrp) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -490,7 +490,7 @@ PHP_METHOD(Handle, remove_ignorepkg) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -513,7 +513,7 @@ PHP_METHOD(Handle, remove_noextract) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -536,7 +536,7 @@ PHP_METHOD(Handle, remove_noupgrade) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -559,7 +559,7 @@ PHP_METHOD(Handle, set_arch) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 
@@ -581,7 +581,7 @@ PHP_METHOD(Handle, set_checkspace) {
     }
 
     if (!intern->handle) {
-        zend_throw_error(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL()
     }
 

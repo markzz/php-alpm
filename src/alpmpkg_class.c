@@ -416,7 +416,7 @@ PHP_METHOD(Pkg, set_reason) {
     }
 
     if (reason != ALPM_PKG_REASON_DEPEND && reason != ALPM_PKG_REASON_EXPLICIT) {
-        zend_throw_error(php_alpm_pkg_exception_class_entry, "not a valid install reason", 0);
+        zend_throw_exception(php_alpm_pkg_exception_class_entry, "not a valid install reason", 0);
         RETURN_FALSE
     }
 
