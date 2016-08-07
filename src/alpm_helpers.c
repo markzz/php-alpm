@@ -6,7 +6,7 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
-        tmp = zend_string_init(item->data, strlen((char*)item->data) + 1, 1);
+        tmp = zend_string_init(item->data, strlen((char*)item->data), 1);
         add_next_index_str(zv, tmp);
     }
 }
