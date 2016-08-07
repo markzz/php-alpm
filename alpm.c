@@ -375,16 +375,16 @@ PHP_MINIT_FUNCTION(alpm) {
     memcpy(&alpm_transaction_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_HANDLE_EXCEPTION_SC_NAME, NULL);
-    php_alpm_handle_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default());
+    php_alpm_handle_exception_class_entry = zend_register_internal_class_ex(&ce, zend_ce_exception);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_DB_EXCEPTION_SC_NAME, NULL);
-    php_alpm_db_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default());
+    php_alpm_db_exception_class_entry = zend_register_internal_class_ex(&ce, zend_ce_exception);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_PKG_EXCEPTION_SC_NAME, NULL);
-    php_alpm_pkg_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default());
+    php_alpm_pkg_exception_class_entry = zend_register_internal_class_ex(&ce, zend_ce_exception);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_TRANSACTION_EXCEPTION_SC_NAME, NULL);
-    php_alpm_transaction_exception_class_entry = zend_register_internal_class_ex(&ce, zend_exception_get_default());
+    php_alpm_transaction_exception_class_entry = zend_register_internal_class_ex(&ce, zend_ce_exception);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_HANDLE_SC_NAME, handle_methods);
     ce.create_object = php_alpm_handle_object_new;
