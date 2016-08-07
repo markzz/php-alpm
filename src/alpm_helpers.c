@@ -19,7 +19,7 @@ void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv) {
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
         d = (alpm_depend_t*)item->data;
-        tmp = zend_string_init(d->name, strlen(d->name) + 1, 1);
+        tmp = zend_string_init(d->name, strlen(d->name), 1);
         add_next_index_str(zv, tmp);
     }
 }
@@ -36,7 +36,7 @@ void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
 
     for (item = list; item; item = alpm_list_next(item)) {
         grp = (alpm_group_t*)item->data;
-        tmp = zend_string_init(grp->name, strlen(grp->name) + 1, 1);
+        tmp = zend_string_init(grp->name, strlen(grp->name), 1);
         add_next_index_str(zv, tmp);
     }
 }
