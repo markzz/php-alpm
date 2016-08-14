@@ -17,3 +17,5 @@ install:
 script:
     - phpize
     - ./configure --with-alpm && make
+    - php run-tests.php -d extension=alpm.so -d extension_dir=modules -n ./tests/*.phpt
+    - for i in `ls tests/*.out 2> /dev/null`; do echo "-- START ${i}"; car $i; echo "-- END"; done
