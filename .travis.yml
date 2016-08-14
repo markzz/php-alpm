@@ -15,6 +15,7 @@ install:
     - cd ..
 
 script:
+    - export TEST_PHP_EXECUTABLE=`which php`
     - phpize
     - ./configure --with-alpm && make
     - php run-tests.php -d extension=alpm.so -d extension_dir=modules -n ./tests/*.phpt
