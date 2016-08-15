@@ -108,7 +108,7 @@ ZEND_BEGIN_ARG_INFO_EX(db_server_args, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(db_search, 0, 0, 1)
-    ZEND_ARG_ARRAY_INFO(1, search, 0)
+    ZEND_ARG_ARRAY_INFO(0, search, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(db_update, 0, 0, 0)
