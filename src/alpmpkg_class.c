@@ -51,6 +51,9 @@ PHP_METHOD(Pkg, get_base64_sig) {
     }
 
     ret = alpm_pkg_get_base64_sig(intern->pkg);
+    if (ret == NULL) {
+        RETURN_NULL()
+    }
     RETURN_STRING(ret)
 }
 
