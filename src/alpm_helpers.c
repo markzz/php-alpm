@@ -90,7 +90,6 @@ void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
         const alpm_file_t *file = flist->files + i;
         inner = (zval*)emalloc(sizeof(zval));
         array_init(inner);
-        php_printf("%s\n", file->name);
         add_next_index_string(inner, file->name);
         add_next_index_long(inner, file->size);
         add_next_index_long(inner, file->mode);
