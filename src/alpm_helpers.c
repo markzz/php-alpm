@@ -98,6 +98,32 @@ void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
     }
 }
 
+void alpm_backup_list_to_zval(alpm_list_t *list, zval *zv) {
+    zval *inner;
+    zend_string *tmp;
+    alpm_list_t *item;
+    alpm_backup_t *backup;
+
+    array_init(zv);
+    for (item = list; item; item = alpm_list_next(item)) {
+        inner = (zval*)emalloc(sizeof(zval));
+        array_init(inner);
+        backup = (alpm_backup_t*)item->data;
+        tmp = zend_string_init(backup->name, strlen(backup->name), 1);
+        add_next_index_str(inner, tmp);
+
+        if (backup->hash == NULL) {
+            add_next_index_null(inner);
+        } else {
+            tmp = zend_string_init(backup->hash, strlen(backup->hash), 1);
+            add_next_index_str(inner, tmp);
+        }
+
+        add_next_index_zval(zv, inner);
+        efree(inner);
+    }
+}
+
 
 int zval_to_alpm_list(zval *zv, alpm_list_t **list) {
     alpm_list_t *ret = NULL;

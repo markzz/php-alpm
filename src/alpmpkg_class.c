@@ -38,7 +38,7 @@ PHP_METHOD(Pkg, get_backup) {
         RETURN_NULL()
     }
 
-    alpm_list_to_zval(list, return_value);
+    alpm_backup_list_to_zval(list, return_value);
     return;
 }
 
