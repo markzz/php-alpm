@@ -6,7 +6,7 @@ Although the code here doesn't necessarily follow all the guidelines, this is to
 Coding Style
 ------------
 
-Column width: 80 columns or less within reason.
+Column width: 120 columns or less within reason.
 
 Indentation: 4 spaces.
 Please don't add mode lines.
