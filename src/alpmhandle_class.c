@@ -398,7 +398,7 @@ PHP_METHOD(Handle, init_transaction) {
     }
 
     php_alpm_transaction_object *to;
-    object_init_ex(return_value, php_alpm_handle_sc_entry);
+    object_init_ex(return_value, php_alpm_transaction_sc_entry);
     to = Z_TRANSO_P(return_value);
     to->handle = intern->handle;
 }
