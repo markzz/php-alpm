@@ -18,6 +18,16 @@ Get the code:
 ```
 $ git clone https://github.com/markzz/php-alpm.git
 ```
+If you are not on Arch Linux, you will need to build and install pacman (which contains libalpm) first:
+
+On Ubuntu (maybe Debian):
+```
+# apt-get install asciidoc libarchive-dev curl libgpgme11
+$ curl -O https://sources.archlinux.org/other/pacman/pacman-5.0.1.tar.gz
+$ tar -xzvf pacman-5.0.1.tar.gz
+$ cd pacman-5.0.1 && ./configure --prefix=/usr && make
+# make install
+```
 Build it:
 ```
 $ phpize
