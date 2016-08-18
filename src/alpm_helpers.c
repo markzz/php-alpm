@@ -124,6 +124,41 @@ void alpm_backup_list_to_zval(alpm_list_t *list, zval *zv) {
     }
 }
 
+void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv) {
+    zval *inner;
+    zend_string *tmp;
+    alpm_list_t *item;
+    alpm_depmissing_t *dm;
+    alpm_depend_t *d;
+
+    array_init(zv);
+    for (item = list; item; item = alpm_list_next(item)) {
+        inner = (zval*)emalloc(sizeof(zval));
+        array_init(inner);
+        dm = (alpm_depmissing_t*)item->data;
+        if (dm->target == NULL) {
+            add_next_index_null(inner);
+        } else {
+            tmp = zend_string_init(dm->target, strlen(dm->target), 1);
+            add_next_index_str(inner, tmp);
+        }
+
+        d = (alpm_depend_t*)dm->depend;
+        tmp = zend_string_init(d->name, strlen(d->name), 1);
+        add_next_index_str(inner, tmp);
+
+        if (dm->causingpkg == NULL) {
+            add_next_index_null(inner);
+        } else {
+            tmp = zend_string_init(dm->causingpkg, strlen(dm->causingpkg), 1);
+            add_next_index_str(inner, tmp);
+        }
+
+        add_next_index_zval(zv, inner);
+        efree(inner);
+    }
+}
+
 
 int zval_to_alpm_list(zval *zv, alpm_list_t **list) {
     alpm_list_t *ret = NULL;
@@ -145,3 +180,4 @@ void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
     add_assoc_zval(zv, grp->name, inner);
     efree(inner);
 }
+
