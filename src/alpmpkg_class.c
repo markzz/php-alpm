@@ -260,6 +260,10 @@ PHP_METHOD(Pkg, get_md5sum) {
     }
 
     ret = alpm_pkg_get_md5sum(intern->pkg);
+    if (ret == NULL) {
+        RETURN_NULL()
+    }
+
     RETURN_STRING(ret)
 }
 
