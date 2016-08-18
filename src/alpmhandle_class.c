@@ -372,9 +372,35 @@ PHP_METHOD(Handle, get_syncdbs) {
     return;
 }
 
+#define FLAGS(a) a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[8], a[9], \
+a[10], a[11], a[13], a[14], a[15], a[16], a[17]
+
 PHP_METHOD(Handle, init_transaction) {
-    /* implement */
-    RETURN_NULL()
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    zend_bool flags[18] = {0};
+    alpm_transflag_t flag_int = 0;
+    int i, ret;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|bbbbbbbbbbbbbbbb", FLAGS(flags)) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    for (i = 0; i < 18; i++) {
+        if (flags[i]) {
+            flag_int |= 1U << i;
+        }
+    }
+    ret = alpm_trans_init(intern->handle, flag_int);
+
+    if (ret == -1) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to initialize transaction", 0);
+        RETURN_NULL()
+    }
+
+    php_alpm_transaction_object *to;
+    object_init_ex(return_value, php_alpm_handle_sc_entry);
+    to = Z_TRANSO_P(return_value);
+    to->handle = intern->handle;
 }
 
 PHP_METHOD(Handle, load_pkg) {
