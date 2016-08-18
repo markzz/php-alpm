@@ -385,7 +385,7 @@ PHP_METHOD(Pkg, get_size) {
         RETURN_NULL()
     }
 
-    ret = alpm_pkg_get_isize(intern->pkg);
+    ret = alpm_pkg_get_size(intern->pkg);
     RETURN_LONG(ret)
 }
 
