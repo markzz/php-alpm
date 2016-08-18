@@ -1,5 +1,5 @@
 --TEST--
-AlpmPkg builddate test
+AlpmPkg files test
 --FILE--
 <?php
 $pwd = getcwd();
