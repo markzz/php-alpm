@@ -89,6 +89,7 @@ PHP_METHOD(Trans, prepare) {
     ret = alpm_trans_prepare(intern->handle, &data);
     if (ret == -1) {
         alpm_list_to_pkg_array(data, return_value);
+        return;
     }
 
     RETURN_NULL()
