@@ -40,6 +40,29 @@ PHP_METHOD(Handle, __construct) {
     }
 }
 
+PHP_METHOD(Handle, __toString) {
+    /* (AlpmHandle: root=$root dbpath=$dbpath) */
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    const char *dbpath = NULL, *rootpath = NULL;
+    char *tmp = NULL;
+    size_t dbsize, rootsize;
+    zend_string *ret;
+
+    dbpath = alpm_option_get_dbpath(intern->handle);
+    rootpath = alpm_option_get_root(intern->handle);
+
+    dbsize = strlen(dbpath);
+    rootsize = strlen(rootpath);
+
+    tmp = (char*)emalloc(sizeof(char*) * (dbsize + rootsize + strlen("(AlpmHandle: root=") + strlen(" dbpath=") + strlen(")")));
+    sprintf(tmp, "(AlpmHandle: root=%s dbpath=%s)", rootpath, dbpath);
+
+    ret = zend_string_init(tmp, strlen(tmp), 1);
+    efree(tmp);
+
+    RETURN_STR(ret)
+}
+
 PHP_METHOD(Handle, add_cachedir) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     char *arg;

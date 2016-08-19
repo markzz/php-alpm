@@ -135,6 +135,7 @@ static zend_function_entry php_alpm_functions[] = {
 
 static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, __construct,      handle_construct_args,       ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
+    PHP_ME(Handle, __toString,       zero_args,                   ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_cachedir,     handle_one_param_cachedir,   ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_ignoregrp,    one_param_group,             ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_ignorepkg,    handle_one_param_package,    ZEND_ACC_PUBLIC)

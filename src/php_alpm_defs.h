@@ -69,6 +69,7 @@ extern zend_class_entry *php_alpm_transaction_exception_class_entry;
 
 /* handle methods */
 PHP_METHOD(Handle, __construct);
+PHP_METHOD(Handle, __toString);
 PHP_METHOD(Handle, add_cachedir);
 PHP_METHOD(Handle, add_ignoregrp);
 PHP_METHOD(Handle, add_ignorepkg);
