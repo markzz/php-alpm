@@ -2,6 +2,13 @@
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
 
+PHP_METHOD(Db, __toString) {
+    /* $dbname */
+    /* This is essentially the same as calling get_name() */
+    php_alpm_db_object *intern = Z_DBO_P(getThis());
+    RETURN_STRING(alpm_db_get_name(intern->db))
+}
+
 PHP_METHOD(Db, add_server) {
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     char *arg;

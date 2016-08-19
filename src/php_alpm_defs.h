@@ -97,6 +97,7 @@ PHP_METHOD(Handle, set_arch);
 PHP_METHOD(Handle, set_checkspace);
 
 /* db methods */
+PHP_METHOD(Db, __toString);
 PHP_METHOD(Db, add_server);
 PHP_METHOD(Db, get_grpcache);
 PHP_METHOD(Db, get_name);

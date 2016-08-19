@@ -166,6 +166,7 @@ static zend_function_entry handle_methods[] = {
 
 static zend_function_entry db_methods[] = {
     /* PHP_ME(Db, __construct,    NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
+    PHP_ME(Db, __toString,     zero_args,           ZEND_ACC_PUBLIC)
     PHP_ME(Db, add_server,     db_server_args,      ZEND_ACC_PUBLIC)
     PHP_ME(Db, get_grpcache,   zero_args,           ZEND_ACC_PUBLIC)
     PHP_ME(Db, get_name,       zero_args,           ZEND_ACC_PUBLIC)
