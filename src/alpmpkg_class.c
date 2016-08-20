@@ -2,6 +2,29 @@
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
 
+PHP_METHOD(Pkg, __toString) {
+    /* $pkgname $pkgver */
+    php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
+    const char *pkgname, *pkgver;
+    char *tmp = NULL;
+    size_t pnsize, pvsize;
+    zend_string *ret;
+
+    pkgname = alpm_pkg_get_name(intern->pkg);
+    pkgver = alpm_pkg_get_version(intern->pkg);
+
+    pnsize = strlen(pkgname);
+    pvsize = strlen(pkgver);
+
+    tmp = (char*)emalloc(sizeof(char*) * (pnsize + pvsize + strlen(" ")));
+    sprintf(tmp, "%s %s", pkgname, pkgver);
+
+    ret = zend_string_init(tmp, strlen(tmp), 1);
+    efree(tmp);
+
+    RETURN_STR(ret)
+}
+
 PHP_METHOD(Pkg, compute_requiredby) {
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
 

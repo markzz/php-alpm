@@ -110,6 +110,7 @@ PHP_METHOD(Db, remove_server);
 PHP_METHOD(Db, update);
 
 /* pkg methods */
+PHP_METHOD(Pkg, __toString);
 PHP_METHOD(Pkg, compute_requiredby);
 PHP_METHOD(Pkg, get_arch);
 PHP_METHOD(Pkg, get_backup);

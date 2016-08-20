@@ -182,6 +182,7 @@ static zend_function_entry db_methods[] = {
 
 static zend_function_entry pkg_methods[] = {
     /* PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
+    PHP_ME(Pkg, __toString,         zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, compute_requiredby, zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_arch,           zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_backup,         zero_args,  ZEND_ACC_PUBLIC)
