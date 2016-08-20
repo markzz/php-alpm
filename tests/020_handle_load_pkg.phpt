@@ -5,7 +5,7 @@ AlpmHandle load package test
 $pwd = getcwd();
 $h = new AlpmHandle($pwd . "/test_root", $pwd . "/test_root/var/lib/pacman");
 $pkg = $h->load_pkg($pwd . "/testpkg-0.1-1-any.pkg.tar.xz");
-echo $pkg->get_name();
+echo $pkg;
 ?>
 --EXPECT--
-testpkg
+testpkg 0.1-1

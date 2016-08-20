@@ -10,7 +10,7 @@ $h->register_syncdb("extra", ALPM_SIG_USE_DEFAULT);
 
 $syncdbs = $h->get_syncdbs();
 foreach ($syncdbs as $db) {
-    echo $db->get_name();
+    echo $db;
 }
 ?>
 --EXPECT--

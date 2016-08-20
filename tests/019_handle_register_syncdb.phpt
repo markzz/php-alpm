@@ -6,7 +6,7 @@ $pwd = getcwd();
 $h = new AlpmHandle($pwd . "/test_root", $pwd . "/test_root/var/lib/pacman");
 
 $db = $h->register_syncdb("core", ALPM_SIG_USE_DEFAULT);
-echo $db->get_name();
+echo $db;
 ?>
 --EXPECT--
 core
