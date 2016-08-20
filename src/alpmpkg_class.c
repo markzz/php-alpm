@@ -1,3 +1,21 @@
+/*
+ *  alpmpkg_class.c
+ *
+ *  Copyright (c) 2016 Mark Weiman <contact@markzz.net>
+ *
+ *  This extension is free software; you can redistribute it and/or
+ *  modify it under the terms of version 2.1 of the GNU Lesser General
+ *  Public License as published by the Free Software Foundation.
+ *
+ *  This extension is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this extension; if not see <http://www.gnu.org/licenses/>.
+ */
+
 #include "php_alpm.h"
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
