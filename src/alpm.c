@@ -454,8 +454,47 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
     return retval;
 }
 
-void php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) {
     int ret;
+    php_alpm_db_object *intern;
+    zval *retval = NULL;
+    zval tmp_member;
+    zend_object_handlers *std_hnd;
+
+    ZVAL_DEREF(member);
+    if (Z_TYPE_P(member) != IS_STRING) {
+        tmp_member = *member;
+        zval_copy_ctor(&tmp_member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+    }
+
+    std_hnd = zend_get_std_object_handlers();
+
+    ret = std_hnd->has_property(object, member, type, cache_slot);
+
+    if (ret) {
+        retval = std_hnd->read_property(object, member, type, cache_slot, rv);
+    } else {
+        intern = Z_DBO_P(object);
+
+        if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+            RET_STRING_VAL(alpm_db_get_name, db);
+        }
+    }
+
+    if (!retval) {
+        retval = &EG(uninitialized_zval);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+
+    return retval;
+}
+
+void php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     php_alpm_handle_object *intern;
     zval tmp_member;
     zend_object_handlers *std_hnd;
@@ -513,6 +552,31 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         } else {
             php_error(E_NOTICE, "checkspace must be a bool");
         }
+    } else {
+        std_hnd->write_property(object, member, value, cache_slot);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+}
+
+void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+    zval tmp_member;
+    zend_object_handlers *std_hnd;
+
+    ZVAL_DEREF(member);
+    if (Z_TYPE_P(member) != IS_STRING) {
+        tmp_member = *member;
+        zval_copy_ctor(&tmp_member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+    }
+
+    std_hnd = zend_get_std_object_handlers();
+
+    if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+        php_error(E_NOTICE, "cannot set name");
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
     }
@@ -614,6 +678,23 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     return props;
 }
 
+static HashTable *php_alpm_db_get_properties(zval *object) {
+    php_alpm_db_object *intern;
+    HashTable *props;
+    zend_string *key, *val;
+    zval zv;
+    const char *stmp;
+
+    props = zend_std_get_properties(object);
+    intern = Z_DBO_P(object);
+
+    ADD_STRING_TO_HASH(alpm_db_get_name, db, "name");
+
+    zend_hash_sort(props, hashtable_key_sort, 0);
+
+    return props;
+}
+
 PHP_MINIT_FUNCTION(alpm) {
     zend_class_entry ce;
 
@@ -647,6 +728,9 @@ PHP_MINIT_FUNCTION(alpm) {
     ce.create_object = php_alpm_db_object_new;
     alpm_db_object_handlers.offset = XtOffsetOf(php_alpm_db_object, zo);
     alpm_db_object_handlers.free_obj = php_alpm_db_free_storage;
+    alpm_db_object_handlers.get_properties = php_alpm_db_get_properties;
+    alpm_db_object_handlers.read_property = php_alpm_db_read_property;
+    alpm_db_object_handlers.write_property = php_alpm_db_write_property;
     php_alpm_db_sc_entry = zend_register_internal_class(&ce);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_PKG_SC_NAME, pkg_methods);

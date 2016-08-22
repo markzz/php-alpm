@@ -73,6 +73,8 @@ PHP_METHOD(Db, get_grpcache) {
 }
 
 PHP_METHOD(Db, get_name) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_name() deprecated, use AlpmDb->name instead");
+
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     const char *name;
 
