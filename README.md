@@ -39,4 +39,4 @@ $ make
 You should now have `alpm.so` installed in your modules folder and you need to add `extension=alpm.so` to your `php.ini`.
 
 ## Contributing
-This project is licensed under the GPLv2 and any and all contributions are welcome. You can either fork this on GitHub and file a Pull Request or you can send git formatted patches to `mark.weiman@markzz.com`. Whichever you prefer.
+This project is licensed under the LGPLv2.1 and any and all contributions are welcome. You can either fork this on GitHub and file a Pull Request or you can send git formatted patches to `mark.weiman@markzz.com`. Whichever you prefer.
