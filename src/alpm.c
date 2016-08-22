@@ -475,24 +475,44 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         if (Z_TYPE_P(value) == IS_STRING) {
             alpm_option_set_arch(intern->handle, Z_STRVAL_P(value));
         } else {
-            php_error(E_WARNING, "arch must be a string");
+            php_error(E_NOTICE, "arch must be a string");
         }
     } else if (strcmp(Z_STRVAL_P(member), "checkspace") == 0) {
-        alpm_option_set_checkspace(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
+        if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
+            alpm_option_set_checkspace(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
+        } else {
+            php_error(E_NOTICE, "checkspace must be a bool");
+        }
     } else if (strcmp(Z_STRVAL_P(member), "dbpath") == 0) {
         php_error(E_NOTICE, "Cannot set dbpath");
     } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
-        alpm_option_set_deltaratio(intern->handle, Z_DVAL_P(value));
+        if (Z_TYPE_P(value) == IS_DOUBLE) {
+            alpm_option_set_deltaratio(intern->handle, Z_DVAL_P(value));
+        } else {
+            php_error(E_NOTICE, "deltaratio must be a float");
+        }
     } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
-        alpm_option_set_gpgdir(intern->handle, Z_STRVAL_P(value));
+        if (Z_TYPE_P(value) == IS_STRING) {
+            alpm_option_set_gpgdir(intern->handle, Z_STRVAL_P(value));
+        } else {
+            php_error(E_NOTICE, "gpgdir must be a string");
+        }
     } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
         php_error(E_NOTICE, "Cannot set lockfile");
     } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
-        alpm_option_set_logfile(intern->handle, Z_STRVAL_P(value));
+        if (Z_TYPE_P(value) == IS_STRING) {
+            alpm_option_set_logfile(intern->handle, Z_STRVAL_P(value));
+        } else {
+            php_error(E_NOTICE, "logfile must be a string");
+        }
     } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
         php_error(E_NOTICE, "Cannot set root");
     } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
-        alpm_option_set_usesyslog(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
+        if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
+            alpm_option_set_usesyslog(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
+        } else {
+            php_error(E_NOTICE, "checkspace must be a bool");
+        }
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
     }
