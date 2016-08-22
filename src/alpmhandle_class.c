@@ -20,6 +20,8 @@
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
 
+/* TODO: Add deprecation notices */
+
 PHP_METHOD(Handle, __construct) {
     char *rootpath;
     char *dbpath;

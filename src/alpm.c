@@ -385,6 +385,215 @@ static zend_object *php_alpm_transaction_object_new(zend_class_entry *class_type
     return php_alpm_transaction_object_new_ex(class_type, NULL);
 }
 
+#define RET_STRING_VAL(func, type) do { \
+    retval = rv; \
+    const char *tmp = func(intern->type); \
+    if (tmp != NULL) { \
+        ZVAL_STRINGL(retval, tmp, strlen(tmp)); \
+    } else { \
+        ZVAL_NULL(retval); \
+    } \
+} while(0)
+
+zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) {
+    int ret;
+    php_alpm_handle_object *intern;
+    zval *retval = NULL;
+    zval tmp_member;
+    zend_object_handlers *std_hnd;
+
+    ZVAL_DEREF(member);
+    if (Z_TYPE_P(member) != IS_STRING) {
+        tmp_member = *member;
+        zval_copy_ctor(&tmp_member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+    }
+
+    std_hnd = zend_get_std_object_handlers();
+
+    ret = std_hnd->has_property(object, member, type, cache_slot);
+
+    if (ret) {
+        retval = std_hnd->read_property(object, member, type, cache_slot, rv);
+    } else {
+        intern = Z_HANDLEO_P(object);
+
+        if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
+            RET_STRING_VAL(alpm_option_get_arch, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "checkspace") == 0) {
+            retval = rv;
+            ZVAL_BOOL(retval, alpm_option_get_checkspace(intern->handle));
+        } else if (strcmp(Z_STRVAL_P(member), "dbpath") == 0) {
+            RET_STRING_VAL(alpm_option_get_dbpath, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
+            retval = rv;
+            ZVAL_DOUBLE(retval, alpm_option_get_deltaratio(intern->handle));
+        } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
+            RET_STRING_VAL(alpm_option_get_gpgdir, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
+            RET_STRING_VAL(alpm_option_get_lockfile, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
+            RET_STRING_VAL(alpm_option_get_logfile, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
+            RET_STRING_VAL(alpm_option_get_root, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
+            retval = rv;
+            ZVAL_BOOL(retval, alpm_option_get_usesyslog(intern->handle));
+        }
+    }
+
+    if (!retval) {
+        retval = &EG(uninitialized_zval);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+
+    return retval;
+}
+
+void php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+    int ret;
+    php_alpm_handle_object *intern;
+    zval tmp_member;
+    zend_object_handlers *std_hnd;
+
+    ZVAL_DEREF(member);
+    if (Z_TYPE_P(member) != IS_STRING) {
+        tmp_member = *member;
+        zval_copy_ctor(&tmp_member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+    }
+
+    std_hnd = zend_get_std_object_handlers();
+    intern = Z_HANDLEO_P(object);
+
+    if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
+        if (Z_TYPE_P(value) == IS_STRING) {
+            alpm_option_set_arch(intern->handle, Z_STRVAL_P(value));
+        } else {
+            php_error(E_WARNING, "arch must be a string");
+        }
+    } else if (strcmp(Z_STRVAL_P(member), "checkspace") == 0) {
+        alpm_option_set_checkspace(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
+    } else if (strcmp(Z_STRVAL_P(member), "dbpath") == 0) {
+        php_error(E_NOTICE, "Cannot set dbpath");
+    } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
+        alpm_option_set_deltaratio(intern->handle, Z_DVAL_P(value));
+    } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
+        alpm_option_set_gpgdir(intern->handle, Z_STRVAL_P(value));
+    } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
+        php_error(E_NOTICE, "Cannot set lockfile");
+    } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
+        alpm_option_set_logfile(intern->handle, Z_STRVAL_P(value));
+    } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
+        php_error(E_NOTICE, "Cannot set root");
+    } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
+        alpm_option_set_usesyslog(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
+    } else {
+        std_hnd->write_property(object, member, value, cache_slot);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+}
+
+#define ADD_STRING_TO_HASH(func, type, keyname) do { \
+    stmp = func(intern->type); \
+    if (stmp != NULL) { \
+        val = zend_string_init(stmp, strlen(stmp), 1); \
+        ZVAL_STR(&zv, val); \
+    } else { \
+        ZVAL_NULL(&zv); \
+    } \
+    key = zend_string_init(keyname, strlen(keyname), 1); \
+    zend_hash_add(props, key, &zv); \
+} while (0)
+
+static int hashtable_key_sort(const void *a, const void *b) {
+    Bucket *f = (Bucket *) a;
+    Bucket *s = (Bucket *) b;
+    zend_uchar t;
+    zend_long l1, l2;
+    double d;
+
+    if (f->key == NULL) {
+        if (s->key == NULL) {
+            return (zend_long)f->h > (zend_long)s->h ? 1 : -1;
+        } else {
+            l1 = (zend_long)f->h;
+            t = is_numeric_string(s->key->val, s->key->len, &l2, &d, 1);
+            if (t == IS_LONG) {
+                /* do nothing */
+            } else if (t == IS_DOUBLE) {
+                return ZEND_NORMALIZE_BOOL((double)l1 - d);
+            } else {
+                l2 = 0;
+            }
+        }
+    } else {
+        if (s->key) {
+            return zendi_smart_strcmp(f->key, s->key);
+        } else {
+            l2 = (zend_long)s->h;
+            t = is_numeric_string(f->key->val, f->key->len, &l1, &d, 1);
+            if (t == IS_LONG) {
+                /* no nothing */
+            } else if (t == IS_DOUBLE) {
+                return ZEND_NORMALIZE_BOOL(d - (double)l2);
+            } else {
+                l1 = 0;
+            }
+        }
+    }
+    return l1 > l2 ? 1 : (l1 < l2 ? -1 : 0);
+}
+
+static HashTable *php_alpm_handle_get_properties(zval *object) {
+    php_alpm_handle_object *intern;
+    HashTable *props;
+    zend_string *key, *val;
+    zval zv;
+    const char *stmp;
+    int itmp;
+    double dtmp;
+
+    props = zend_std_get_properties(object);
+    intern = Z_HANDLEO_P(object);
+
+    ADD_STRING_TO_HASH(alpm_option_get_arch, handle, "arch");
+
+    itmp = alpm_option_get_checkspace(intern->handle);
+    ZVAL_BOOL(&zv, itmp);
+    key = zend_string_init("checkspace", strlen("checkspace"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_option_get_dbpath, handle, "dbpath");
+
+    dtmp = alpm_option_get_deltaratio(intern->handle);
+    ZVAL_DOUBLE(&zv, dtmp);
+    key = zend_string_init("deltaratio", strlen("deltaratio"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_option_get_gpgdir, handle, "gpgdir");
+    ADD_STRING_TO_HASH(alpm_option_get_lockfile, handle, "lockfile");
+    ADD_STRING_TO_HASH(alpm_option_get_logfile, handle, "logfile");
+    ADD_STRING_TO_HASH(alpm_option_get_root, handle, "root");
+
+    itmp = alpm_option_get_usesyslog(intern->handle);
+    ZVAL_BOOL(&zv, itmp);
+    key = zend_string_init("usesyslog", strlen("usesyslog"), 1);
+    zend_hash_add(props, key, &zv);
+
+    zend_hash_sort(props, hashtable_key_sort, 0);
+
+    return props;
+}
+
 PHP_MINIT_FUNCTION(alpm) {
     zend_class_entry ce;
 
@@ -409,6 +618,9 @@ PHP_MINIT_FUNCTION(alpm) {
     ce.create_object = php_alpm_handle_object_new;
     alpm_handle_object_handlers.offset = XtOffsetOf(php_alpm_handle_object, zo);
     alpm_handle_object_handlers.free_obj = php_alpm_handle_free_storage;
+    alpm_handle_object_handlers.get_properties = php_alpm_handle_get_properties;
+    alpm_handle_object_handlers.read_property = php_alpm_handle_read_property;
+    alpm_handle_object_handlers.write_property = php_alpm_handle_write_property;
     php_alpm_handle_sc_entry = zend_register_internal_class(&ce);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_DB_SC_NAME, db_methods);
