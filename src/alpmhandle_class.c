@@ -20,8 +20,6 @@
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
 
-/* TODO: Add deprecation notices */
-
 PHP_METHOD(Handle, __construct) {
     char *rootpath;
     char *dbpath;
@@ -199,6 +197,8 @@ PHP_METHOD(Handle, add_noupgrade) {
 }
 
 PHP_METHOD(Handle, get_arch) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_arch() deprecated, use AlpmHandle->arch instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     const char *arch;
 
@@ -243,6 +243,8 @@ PHP_METHOD(Handle, get_cachedirs) {
 }
 
 PHP_METHOD(Handle, get_checkspace) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_checkspace() deprecated, use AlpmHandle->checkspace instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     int check_space;
 
@@ -260,6 +262,8 @@ PHP_METHOD(Handle, get_checkspace) {
 }
 
 PHP_METHOD(Handle, get_dbpath) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_dbpath() deprecated, use AlpmHandle->dbpath instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     const char *dbpath;
 
@@ -619,6 +623,8 @@ PHP_METHOD(Handle, remove_noupgrade) {
 }
 
 PHP_METHOD(Handle, set_arch) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->set_arch() deprecated, set AlpmHandle->arch instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     char *arg;
     size_t *arg_size;
@@ -642,6 +648,8 @@ PHP_METHOD(Handle, set_arch) {
 }
 
 PHP_METHOD(Handle, set_checkspace) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->set_checkspace() deprecated, set AlpmHandle->checkspace instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis()) ;
     long checkspace;
     int err;
