@@ -18,6 +18,7 @@
 
 #include "php_alpm.h"
 #include "php_alpm_defs.h"
+#include "php_alpm_helpers.h"
 
 zend_class_entry *php_alpm_handle_sc_entry;
 zend_class_entry *php_alpm_handle_exception_class_entry;
@@ -494,6 +495,174 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
     return retval;
 }
 
+zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) {
+    int ret;
+    php_alpm_pkg_object *intern;
+    zval *retval = NULL;
+    zval tmp_member;
+    zend_object_handlers *std_hnd;
+
+    ZVAL_DEREF(member);
+    if (Z_TYPE_P(member) != IS_STRING) {
+        tmp_member = *member;
+        zval_copy_ctor(&tmp_member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+    }
+
+    std_hnd = zend_get_std_object_handlers();
+
+    ret = std_hnd->has_property(object, member, type, cache_slot);
+
+    if (ret) {
+        retval = std_hnd->read_property(object, member, type, cache_slot, rv);
+    } else {
+        intern = Z_PKGO_P(object);
+
+        if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_arch, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "backup") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_backup(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_backup_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "base64_sig") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_base64_sig, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "builddate") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_get_builddate(intern->pkg);
+            ZVAL_LONG(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "conflicts") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_conflicts(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_depend_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "db") == 0) {
+            retval = rv;
+            alpm_db_t *dbtmp = alpm_pkg_get_db(intern->pkg);
+            if (dbtmp != NULL) {
+                object_init_ex(retval, php_alpm_db_sc_entry);
+                php_alpm_db_object *db_object = Z_DBO_P(retval);
+                db_object->db = dbtmp;
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_depends(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_depend_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "desc") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_desc, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "download_size") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_download_size(intern->pkg);
+            ZVAL_LONG(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "filename") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_filename, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "files") == 0) {
+            retval = rv;
+            alpm_filelist_t *fltmp = alpm_pkg_get_files(intern->pkg);
+            if (fltmp != NULL) {
+                alpm_filelist_to_zval(fltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "groups") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_groups(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "has_scriptlet") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_has_scriptlet(intern->pkg);
+            ZVAL_BOOL(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "installdate") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_get_installdate(intern->pkg);
+            ZVAL_LONG(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "isize") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_get_isize(intern->pkg);
+            ZVAL_LONG(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "licenses") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_licenses(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "md5sum") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_md5sum, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_name, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "optdepends") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_optdepends(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_depend_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "packager") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_packager, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "provides") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_provides(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_depend_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "reason") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_get_reason(intern->pkg);
+            ZVAL_LONG(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "replaces") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_replaces(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_depend_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "sha256sum") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_sha256sum, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "size") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_get_size(intern->pkg);
+            ZVAL_LONG(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "url") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_url, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "version") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_version, pkg);
+        }
+    }
+
+    if (!retval) {
+        retval = &EG(uninitialized_zval);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+
+    return retval;
+}
+
 void php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     php_alpm_handle_object *intern;
     zval tmp_member;
@@ -577,6 +746,89 @@ void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **
 
     if (strcmp(Z_STRVAL_P(member), "name") == 0) {
         php_error(E_NOTICE, "cannot set name");
+    } else {
+        std_hnd->write_property(object, member, value, cache_slot);
+    }
+
+    if (member == &tmp_member) {
+        zval_dtor(member);
+    }
+}
+
+void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+    php_alpm_pkg_object *intern;
+    zval tmp_member;
+    zend_object_handlers *std_hnd;
+
+    ZVAL_DEREF(member);
+    if (Z_TYPE_P(member) != IS_STRING) {
+        tmp_member = *member;
+        zval_copy_ctor(&tmp_member);
+        convert_to_string(&tmp_member);
+        member = &tmp_member;
+    }
+
+    std_hnd = zend_get_std_object_handlers();
+    intern = Z_PKGO_P(object);
+
+    if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
+        php_error(E_NOTICE, "cannot set arch");
+    } else if (strcmp(Z_STRVAL_P(member), "backup") == 0) {
+        php_error(E_NOTICE, "cannot set backup");
+    } else if (strcmp(Z_STRVAL_P(member), "base64_sig") == 0) {
+        php_error(E_NOTICE, "cannot set base64_sig");
+    } else if (strcmp(Z_STRVAL_P(member), "builddate") == 0) {
+        php_error(E_NOTICE, "cannot set builddate");
+    } else if (strcmp(Z_STRVAL_P(member), "conflicts") == 0) {
+        php_error(E_NOTICE, "cannot set conflicts");
+    } else if (strcmp(Z_STRVAL_P(member), "db") == 0) {
+        php_error(E_NOTICE, "cannot set db");
+    } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
+        php_error(E_NOTICE, "cannot set depends");
+    } else if (strcmp(Z_STRVAL_P(member), "desc") == 0) {
+        php_error(E_NOTICE, "cannot set desc");
+    } else if (strcmp(Z_STRVAL_P(member), "download_size") == 0) {
+        php_error(E_NOTICE, "cannot set download_size");
+    } else if (strcmp(Z_STRVAL_P(member), "filename") == 0) {
+        php_error(E_NOTICE, "cannot set filename");
+    } else if (strcmp(Z_STRVAL_P(member), "files") == 0) {
+        php_error(E_NOTICE, "cannot set files");
+    } else if (strcmp(Z_STRVAL_P(member), "groups") == 0) {
+        php_error(E_NOTICE, "cannot set groups");
+    } else if (strcmp(Z_STRVAL_P(member), "has_scriptlet") == 0) {
+        php_error(E_NOTICE, "cannot set has_scriptlet");
+    } else if (strcmp(Z_STRVAL_P(member), "installdate") == 0) {
+        php_error(E_NOTICE, "cannot set installdate");
+    } else if (strcmp(Z_STRVAL_P(member), "isize") == 0) {
+        php_error(E_NOTICE, "cannot set isize");
+    } else if (strcmp(Z_STRVAL_P(member), "licenses") == 0) {
+        php_error(E_NOTICE, "cannot set licenses");
+    } else if (strcmp(Z_STRVAL_P(member), "md5sum") == 0) {
+        php_error(E_NOTICE, "cannot set md5sum");
+    } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+        php_error(E_NOTICE, "cannot set name");
+    } else if (strcmp(Z_STRVAL_P(member), "optdepends") == 0) {
+        php_error(E_NOTICE, "cannot set optdepends");
+    } else if (strcmp(Z_STRVAL_P(member), "packager") == 0) {
+        php_error(E_NOTICE, "cannot set packager");
+    } else if (strcmp(Z_STRVAL_P(member), "provides") == 0) {
+        php_error(E_NOTICE, "cannot set provides");
+    } else if (strcmp(Z_STRVAL_P(member), "reason") == 0) {
+        if (Z_TYPE_P(value) == IS_LONG) {
+            alpm_pkg_set_reason(intern->pkg, (alpm_pkgreason_t)Z_LVAL_P(value));
+        } else {
+            php_error(E_NOTICE, "reason must be type long");
+        }
+    } else if (strcmp(Z_STRVAL_P(member), "replaces") == 0) {
+        php_error(E_NOTICE, "cannot set replaces");
+    } else if (strcmp(Z_STRVAL_P(member), "sha256sum") == 0) {
+        php_error(E_NOTICE, "cannot set sha256sum");
+    } else if (strcmp(Z_STRVAL_P(member), "size") == 0) {
+        php_error(E_NOTICE, "cannot set size");
+    } else if (strcmp(Z_STRVAL_P(member), "url") == 0) {
+        php_error(E_NOTICE, "cannot set url");
+    } else if (strcmp(Z_STRVAL_P(member), "version") == 0) {
+        php_error(E_NOTICE, "cannot set version");
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
     }
@@ -695,6 +947,167 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     return props;
 }
 
+static HashTable *php_alpm_pkg_get_properties(zval *object) {
+    php_alpm_pkg_object *intern;
+    HashTable *props;
+    zend_string *key, *val;
+    zval zv;
+    const char *stmp;
+    int itmp;
+    long lotmp;
+    double dtmp;
+    alpm_filelist_t *ftmp;
+    alpm_list_t *ltmp;
+    alpm_db_t *dbtmp;
+
+    props = zend_std_get_properties(object);
+    intern = Z_PKGO_P(object);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_arch, pkg, "arch");
+
+    ltmp = alpm_pkg_get_backup(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_backup_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("backup", strlen("backup"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_base64_sig, pkg, "base64_sig");
+
+    ltmp = alpm_pkg_get_conflicts(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("conflicts", strlen("conflicts"), 1);
+    zend_hash_add(props, key, &zv);
+
+    dbtmp = alpm_pkg_get_db(intern->pkg);
+    if (dbtmp != NULL) {
+        object_init_ex(&zv, php_alpm_db_sc_entry);
+        php_alpm_db_object *db = Z_DBO_P(&zv);
+        db->db = dbtmp;
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("db", strlen("db"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ltmp = alpm_pkg_get_depends(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("depends", strlen("depends"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_desc, pkg, "desc");
+
+    lotmp = (long)alpm_pkg_download_size(intern->pkg);
+    ZVAL_LONG(&zv, lotmp);
+    key = zend_string_init("download_size", strlen("download_size"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_filename, pkg, "filename");
+
+    ftmp = alpm_pkg_get_files(intern->pkg);
+    if (ftmp != NULL) {
+        alpm_filelist_to_zval(ftmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("files", strlen("files"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ltmp = alpm_pkg_get_groups(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("groups", strlen("groups"), 1);
+    zend_hash_add(props, key, &zv);
+
+    itmp = alpm_pkg_has_scriptlet(intern->pkg);
+    ZVAL_BOOL(&zv, itmp);
+    key = zend_string_init("has_scriptlet", strlen("has_scriptlet"), 1);
+    zend_hash_add(props, key, &zv);
+
+    lotmp = alpm_pkg_get_installdate(intern->pkg);
+    ZVAL_LONG(&zv, lotmp);
+    key = zend_string_init("installdate", strlen("installdate"), 1);
+    zend_hash_add(props, key, &zv);
+
+    lotmp = alpm_pkg_get_isize(intern->pkg);
+    ZVAL_LONG(&zv, lotmp);
+    key = zend_string_init("isize", strlen("isize"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ltmp = alpm_pkg_get_licenses(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("licenses", strlen("licenses"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_md5sum, pkg, "md5sum");
+    ADD_STRING_TO_HASH(alpm_pkg_get_name, pkg, "name");
+
+    ltmp = alpm_pkg_get_optdepends(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("optdepends", strlen("optdepends"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_packager, pkg, "packager");
+
+    ltmp = alpm_pkg_get_provides(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("provides", strlen("provides"), 1);
+    zend_hash_add(props, key, &zv);
+
+    itmp = alpm_pkg_get_reason(intern->pkg);
+    ZVAL_LONG(&zv, itmp);
+    key = zend_string_init("reason", strlen("reason"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ltmp = alpm_pkg_get_replaces(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("replaces", strlen("replaces"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_sha256sum, pkg, "sha256sum");
+
+    lotmp = alpm_pkg_get_size(intern->pkg);
+    ZVAL_LONG(&zv, lotmp);
+    key = zend_string_init("size", strlen("size"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ADD_STRING_TO_HASH(alpm_pkg_get_url, pkg, "url");
+    ADD_STRING_TO_HASH(alpm_pkg_get_version, pkg, "version");
+
+    zend_hash_sort(props, hashtable_key_sort, 0);
+
+    return props;
+}
+
 PHP_MINIT_FUNCTION(alpm) {
     zend_class_entry ce;
 
@@ -737,6 +1150,9 @@ PHP_MINIT_FUNCTION(alpm) {
     ce.create_object = php_alpm_pkg_object_new;
     alpm_pkg_object_handlers.offset = XtOffsetOf(php_alpm_pkg_object, zo);
     alpm_pkg_object_handlers.free_obj = php_alpm_pkg_free_storage;
+    alpm_pkg_object_handlers.get_properties = php_alpm_pkg_get_properties;
+    alpm_pkg_object_handlers.read_property = php_alpm_pkg_read_property;
+    alpm_pkg_object_handlers.write_property = php_alpm_pkg_write_property;
     php_alpm_pkg_sc_entry = zend_register_internal_class(&ce);
 
     INIT_CLASS_ENTRY(ce, PHP_ALPM_TRANSACTION_SC_NAME, trans_methods);
