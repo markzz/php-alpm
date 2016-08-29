@@ -55,6 +55,8 @@ PHP_METHOD(Pkg, compute_requiredby) {
 }
 
 PHP_METHOD(Pkg, get_arch) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_arch() deprecated, use AlpmHandle->arch instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -67,6 +69,8 @@ PHP_METHOD(Pkg, get_arch) {
 }
 
 PHP_METHOD(Pkg, get_backup) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_backup() deprecated, use AlpmHandle->backup instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -84,6 +88,8 @@ PHP_METHOD(Pkg, get_backup) {
 }
 
 PHP_METHOD(Pkg, get_base64_sig) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_base64_sig() deprecated, use AlpmHandle->base64_sig instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -99,6 +105,8 @@ PHP_METHOD(Pkg, get_base64_sig) {
 }
 
 PHP_METHOD(Pkg, get_builddate) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_builddate() deprecated, use AlpmHandle->builddate instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     long ret;
 
@@ -111,6 +119,8 @@ PHP_METHOD(Pkg, get_builddate) {
 }
 
 PHP_METHOD(Pkg, get_conflicts) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_conflicts() deprecated, use AlpmHandle->conflicts instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -128,6 +138,8 @@ PHP_METHOD(Pkg, get_conflicts) {
 }
 
 PHP_METHOD(Pkg, get_db) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_db() deprecated, use AlpmHandle->db instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     php_alpm_db_object *new_obj;
     alpm_db_t *db;
@@ -148,6 +160,8 @@ PHP_METHOD(Pkg, get_db) {
 }
 
 PHP_METHOD(Pkg, get_depends) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_depends() deprecated, use AlpmHandle->depends instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -161,6 +175,8 @@ PHP_METHOD(Pkg, get_depends) {
 }
 
 PHP_METHOD(Pkg, get_desc) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_desc() deprecated, use AlpmHandle->desc instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -173,6 +189,8 @@ PHP_METHOD(Pkg, get_desc) {
 }
 
 PHP_METHOD(Pkg, get_download_size) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_download_size() deprecated, use AlpmHandle->download_size instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     long ret;
 
@@ -185,6 +203,8 @@ PHP_METHOD(Pkg, get_download_size) {
 }
 
 PHP_METHOD(Pkg, get_filename) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_filename() deprecated, use AlpmHandle->filename instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -197,6 +217,8 @@ PHP_METHOD(Pkg, get_filename) {
 }
 
 PHP_METHOD(Pkg, get_files) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_files() deprecated, use AlpmHandle->files instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_filelist_t *list;
 
@@ -217,6 +239,8 @@ PHP_METHOD(Pkg, get_files) {
 }
 
 PHP_METHOD(Pkg, get_groups) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_groups() deprecated, use AlpmHandle->groups instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -234,6 +258,8 @@ PHP_METHOD(Pkg, get_groups) {
 }
 
 PHP_METHOD(Pkg, get_has_scriptlet) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_has_scriptlet() deprecated, use AlpmHandle->has_scriptlet instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     int has_scriptlet;
 
@@ -252,6 +278,8 @@ PHP_METHOD(Pkg, get_has_scriptlet) {
 }
 
 PHP_METHOD(Pkg, get_installdate) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_installdate() deprecated, use AlpmHandle->installdate instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_time_t ret = 0;
 
@@ -264,6 +292,8 @@ PHP_METHOD(Pkg, get_installdate) {
 }
 
 PHP_METHOD(Pkg, get_isize) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_isize() deprecated, use AlpmHandle->isize instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     long ret;
 
@@ -276,6 +306,8 @@ PHP_METHOD(Pkg, get_isize) {
 }
 
 PHP_METHOD(Pkg, get_licenses) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_licenses() deprecated, use AlpmHandle->licenses instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -293,6 +325,8 @@ PHP_METHOD(Pkg, get_licenses) {
 }
 
 PHP_METHOD(Pkg, get_md5sum) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_md5sum() deprecated, use AlpmHandle->md5sum instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -309,6 +343,8 @@ PHP_METHOD(Pkg, get_md5sum) {
 }
 
 PHP_METHOD(Pkg, get_name) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_name() deprecated, use AlpmHandle->name instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -321,6 +357,8 @@ PHP_METHOD(Pkg, get_name) {
 }
 
 PHP_METHOD(Pkg, get_optdepends) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_optdepends() deprecated, use AlpmHandle->optdepends instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -338,6 +376,8 @@ PHP_METHOD(Pkg, get_optdepends) {
 }
 
 PHP_METHOD(Pkg, get_packager) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_packager() deprecated, use AlpmHandle->packager instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -350,6 +390,8 @@ PHP_METHOD(Pkg, get_packager) {
 }
 
 PHP_METHOD(Pkg, get_provides) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_provides() deprecated, use AlpmHandle->provides instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -367,6 +409,8 @@ PHP_METHOD(Pkg, get_provides) {
 }
 
 PHP_METHOD(Pkg, get_reason) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_reason() deprecated, use AlpmHandle->reason instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_pkgreason_t ret;
 
@@ -390,6 +434,8 @@ PHP_METHOD(Pkg, get_reason) {
 }
 
 PHP_METHOD(Pkg, get_replaces) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_replaces() deprecated, use AlpmHandle->replaces instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_list_t *list;
 
@@ -407,6 +453,8 @@ PHP_METHOD(Pkg, get_replaces) {
 }
 
 PHP_METHOD(Pkg, get_sha256sum) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_sha256sum() deprecated, use AlpmHandle->sha256sum instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -419,6 +467,8 @@ PHP_METHOD(Pkg, get_sha256sum) {
 }
 
 PHP_METHOD(Pkg, get_size) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_size() deprecated, use AlpmHandle->size instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     long ret;
 
@@ -431,6 +481,8 @@ PHP_METHOD(Pkg, get_size) {
 }
 
 PHP_METHOD(Pkg, get_url) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_url() deprecated, use AlpmHandle->url instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -443,6 +495,8 @@ PHP_METHOD(Pkg, get_url) {
 }
 
 PHP_METHOD(Pkg, get_version) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_version() deprecated, use AlpmHandle->version instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     const char *ret;
 
@@ -455,6 +509,8 @@ PHP_METHOD(Pkg, get_version) {
 }
 
 PHP_METHOD(Pkg, set_reason) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->set_reason() deprecated, set AlpmHandle->reason instead");
+
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
     alpm_pkgreason_t reason;
     int err;
