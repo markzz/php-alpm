@@ -29,6 +29,17 @@ void alpm_list_to_zval(alpm_list_t *list, zval *zv) {
     }
 }
 
+void alpm_pkg_list_to_zval(alpm_list_t *list, zval *zv) {
+    alpm_list_t *item;
+    zend_string *tmp;
+
+    array_init(zv);
+    for (item = list; item; item = alpm_list_next(item)) {
+        tmp = zend_string_init(alpm_pkg_get_name((alpm_pkg_t*)item->data), strlen(alpm_pkg_get_name((alpm_pkg_t*)item->data)), 1);
+        add_next_index_str(zv, tmp);
+    }
+}
+
 void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     alpm_depend_t *d;

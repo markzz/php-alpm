@@ -51,6 +51,8 @@ PHP_METHOD(Db, add_server) {
 }
 
 PHP_METHOD(Db, get_grpcache) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_grpcache() deprecated, use AlpmDb->grpcache instead");
+
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     alpm_list_t *list = NULL;
 
@@ -123,6 +125,8 @@ PHP_METHOD(Db, get_pkg) {
 }
 
 PHP_METHOD(Db, get_pkgcache) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_pkgcache() deprecated, use AlpmDb->pkgcache instead");
+
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     alpm_list_t *list;
 
@@ -145,6 +149,8 @@ PHP_METHOD(Db, get_pkgcache) {
 }
 
 PHP_METHOD(Db, get_servers) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_servers() deprecated, use AlpmDb->servers instead");
+
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     alpm_list_t *list;
 

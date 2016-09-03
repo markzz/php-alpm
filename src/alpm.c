@@ -479,8 +479,29 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
     } else {
         intern = Z_DBO_P(object);
 
-        if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+        if (strcmp(Z_STRVAL_P(member), "grpcache") == 0) {
+            alpm_list_t *list = alpm_db_get_groupcache(intern->db);
+            if (list != NULL) {
+                alpm_group_list_to_zval(list, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
             RET_STRING_VAL(alpm_db_get_name, db);
+        } else if (strcmp(Z_STRVAL_P(member), "pkgcache") == 0) {
+            alpm_list_t *list = alpm_db_get_pkgcache(intern->db);
+            if (list != NULL) {
+                alpm_pkg_list_to_zval(list, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "servers") == 0) {
+            alpm_list_t *list = alpm_db_get_servers(intern->db);
+            if (list != NULL) {
+                alpm_list_to_zval(list, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
         }
     }
 
@@ -743,9 +764,14 @@ void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **
     }
 
     std_hnd = zend_get_std_object_handlers();
-
-    if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+    if (strcmp(Z_STRVAL_P(member), "grpcache") == 0) {
+        php_error(E_NOTICE, "cannot set grpcache");
+    } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
         php_error(E_NOTICE, "cannot set name");
+    } else if (strcmp(Z_STRVAL_P(member), "pkgcache") == 0) {
+        php_error(E_NOTICE, "cannot set pkgcache");
+    } else if (strcmp(Z_STRVAL_P(member), "servers") == 0) {
+        php_error(E_NOTICE, "cannot set servers");
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
     }
@@ -936,11 +962,39 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     zend_string *key, *val;
     zval zv;
     const char *stmp;
+    alpm_list_t *ltmp;
 
     props = zend_std_get_properties(object);
     intern = Z_DBO_P(object);
 
+    ltmp = alpm_db_get_groupcache(intern->db);
+    if (ltmp != NULL) {
+        alpm_group_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("grpcache", strlen("grpcache"), 1);
+    zend_hash_add(props, key, &zv);
+
     ADD_STRING_TO_HASH(alpm_db_get_name, db, "name");
+
+    ltmp = alpm_db_get_pkgcache(intern->db);
+    if (ltmp != NULL) {
+        alpm_pkg_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("pkgcache", strlen("pkgcache"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ltmp = alpm_db_get_servers(intern->db);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("servers", strlen("servers"), 1);
+    zend_hash_add(props, key, &zv);
 
     zend_hash_sort(props, hashtable_key_sort, 0);
 

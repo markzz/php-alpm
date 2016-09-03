@@ -31,5 +31,6 @@ void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv);
 void alpm_group_to_zval(alpm_group_t *grp, zval *zv);
 void alpm_backup_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv);
+void alpm_pkg_list_to_zval(alpm_list_t *list, zval *zv);
 
 #endif /* PHP_ALPM_HELPERS_H */
