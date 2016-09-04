@@ -220,6 +220,8 @@ PHP_METHOD(Handle, get_arch) {
 }
 
 PHP_METHOD(Handle, get_cachedirs) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_cachedirs() deprecated, use AlpmHandle->cachedirs instead");
+
     php_alpm_handle_object *intern;
     alpm_list_t *list;
 
@@ -285,6 +287,8 @@ PHP_METHOD(Handle, get_dbpath) {
 }
 
 PHP_METHOD(Handle, get_ignoregrps) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_ignoregrps() deprecated, use AlpmHandle->ignoregrps instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     alpm_list_t *list;
 
@@ -307,6 +311,8 @@ PHP_METHOD(Handle, get_ignoregrps) {
 }
 
 PHP_METHOD(Handle, get_ignorepkgs) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_ignorepkgs() deprecated, use AlpmHandle->ignorepkgs instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     alpm_list_t *list;
 
@@ -354,6 +360,8 @@ PHP_METHOD(Handle, get_localdb) {
 }
 
 PHP_METHOD(Handle, get_noextracts) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_noextracts() deprecated, use AlpmHandle->noextracts instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     alpm_list_t *list;
 
@@ -376,6 +384,8 @@ PHP_METHOD(Handle, get_noextracts) {
 }
 
 PHP_METHOD(Handle, get_noupgrades) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_noupgrades() deprecated, use AlpmHandle->noupgrades instead");
+
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     alpm_list_t *list;
 

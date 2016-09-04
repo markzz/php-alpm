@@ -422,6 +422,14 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
 
         if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
             RET_STRING_VAL(alpm_option_get_arch, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "cachedirs") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_option_get_cachedirs(intern->handle);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "checkspace") == 0) {
             retval = rv;
             ZVAL_BOOL(retval, alpm_option_get_checkspace(intern->handle));
@@ -432,10 +440,42 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             ZVAL_DOUBLE(retval, alpm_option_get_deltaratio(intern->handle));
         } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
             RET_STRING_VAL(alpm_option_get_gpgdir, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "ignoregrps") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_option_get_ignoregroups(intern->handle);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "ignorepkgs") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_option_get_ignorepkgs(intern->handle);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
             RET_STRING_VAL(alpm_option_get_lockfile, handle);
         } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
             RET_STRING_VAL(alpm_option_get_logfile, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "noextracts") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_option_get_noextracts(intern->handle);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "noupgrades") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_option_get_noupgrades(intern->handle);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
             RET_STRING_VAL(alpm_option_get_root, handle);
         } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
@@ -706,6 +746,8 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         } else {
             php_error(E_NOTICE, "arch must be a string");
         }
+    } else if (strcmp(Z_STRVAL_P(member), "cachedirs") == 0) {
+        php_error(E_NOTICE, "cannot set cachedirs directly");
     } else if (strcmp(Z_STRVAL_P(member), "checkspace") == 0) {
         if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
             alpm_option_set_checkspace(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
@@ -726,6 +768,10 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         } else {
             php_error(E_NOTICE, "gpgdir must be a string");
         }
+    } else if (strcmp(Z_STRVAL_P(member), "ignoregrps") == 0) {
+        php_error(E_NOTICE, "cannot set ignoregrps directly");
+    } else if (strcmp(Z_STRVAL_P(member), "ignorepkgs") == 0) {
+        php_error(E_NOTICE, "cannot set ignorepkgs directly");
     } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
         php_error(E_NOTICE, "Cannot set lockfile");
     } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
@@ -734,6 +780,10 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         } else {
             php_error(E_NOTICE, "logfile must be a string");
         }
+    } else if (strcmp(Z_STRVAL_P(member), "noextracts") == 0) {
+        php_error(E_NOTICE, "cannot set noextracts directly");
+    } else if (strcmp(Z_STRVAL_P(member), "noupgrades") == 0) {
+        php_error(E_NOTICE, "cannot set noupgrades directly");
     } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
         php_error(E_NOTICE, "Cannot set root");
     } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
@@ -923,11 +973,21 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     const char *stmp;
     int itmp;
     double dtmp;
+    alpm_list_t *ltmp;
 
     props = zend_std_get_properties(object);
     intern = Z_HANDLEO_P(object);
 
     ADD_STRING_TO_HASH(alpm_option_get_arch, handle, "arch");
+
+    ltmp = alpm_option_get_cachedirs(intern->handle);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("cachedirs", strlen("cachedrs"), 1);
+    zend_hash_add(props, key, &zv);
 
     itmp = alpm_option_get_checkspace(intern->handle);
     ZVAL_BOOL(&zv, itmp);
@@ -942,8 +1002,46 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     zend_hash_add(props, key, &zv);
 
     ADD_STRING_TO_HASH(alpm_option_get_gpgdir, handle, "gpgdir");
+
+    ltmp = alpm_option_get_ignoregroups(intern->handle);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("ignoregrps", strlen("ignoregrps"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ltmp = alpm_option_get_ignorepkgs(intern->handle);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("ignorepkgs", strlen("ignorepkgs"), 1);
+    zend_hash_add(props, key, &zv);
+
     ADD_STRING_TO_HASH(alpm_option_get_lockfile, handle, "lockfile");
     ADD_STRING_TO_HASH(alpm_option_get_logfile, handle, "logfile");
+
+    ltmp = alpm_option_get_noextracts(intern->handle);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("noextracts", strlen("noextracts"), 1);
+    zend_hash_add(props, key, &zv);
+
+    ltmp = alpm_option_get_noupgrades(intern->handle);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("noupgrades", strlen("noupgrades"), 1);
+    zend_hash_add(props, key, &zv);
+
     ADD_STRING_TO_HASH(alpm_option_get_root, handle, "root");
 
     itmp = alpm_option_get_usesyslog(intern->handle);
