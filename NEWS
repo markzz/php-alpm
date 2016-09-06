@@ -1,3 +1,9 @@
+php-alpm 0.3:
+  * Patch more leaks
+  * Fix even more value conversions
+  * Add properties to classes
+  * Add deprecation notices to most get_* and set_* methods (removal in 1.0)
+
 php-alpm 0.2:
   * Several memory leak patching
   * Fixed value conversions
