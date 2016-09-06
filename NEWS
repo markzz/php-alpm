@@ -1,2 +1,7 @@
-php-alpm 1.0:
+php-alpm 0.2:
+  * Several memory leak patching
+  * Fixed value conversions
+  * Add exceptions
+
+php-alpm 0.1:
   * Initial release.
