@@ -51,6 +51,19 @@ zend_class_entry *php_alpm_transaction_get_class_entry() {
     return php_alpm_transaction_sc_entry;
 }
 
+PHP_FUNCTION(alpm_vercmp) {
+    char *ver1, *ver2;
+    size_t ver1s, ver2s;
+    int ret;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "ss", &ver1, &ver1s, &ver2, &ver2s) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    ret = alpm_pkg_vercmp(ver1, ver2);
+    RETURN_LONG((long)ret)
+}
+
 PHP_FUNCTION(alpm_version) {
     RETURN_STRING(alpm_version())
 }
@@ -62,6 +75,11 @@ PHP_FUNCTION(php_alpm_version) {
 /* arginfo goes here */
 
 ZEND_BEGIN_ARG_INFO_EX(zero_args, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(two_string, 0, 0, 2)
+    ZEND_ARG_INFO(0, a)
+    ZEND_ARG_INFO(0, b)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(one_param_group, 0, 0, 1)
@@ -147,6 +165,7 @@ ZEND_BEGIN_ARG_INFO_EX(sysupdate, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 static zend_function_entry php_alpm_functions[] = {
+    PHP_FE(alpm_vercmp,      two_string)
     PHP_FE(alpm_version,     zero_args)
     PHP_FE(php_alpm_version, zero_args)
     {NULL, NULL, NULL}
