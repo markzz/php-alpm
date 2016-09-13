@@ -541,6 +541,7 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
         if (strcmp(Z_STRVAL_P(member), "grpcache") == 0) {
             alpm_list_t *list = alpm_db_get_groupcache(intern->db);
             if (list != NULL) {
+                retval = rv;
                 alpm_group_list_to_zval(list, retval);
             } else {
                 ZVAL_NULL(retval);
@@ -548,6 +549,7 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
         } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
             RET_STRING_VAL(alpm_db_get_name, db);
         } else if (strcmp(Z_STRVAL_P(member), "pkgcache") == 0) {
+            retval = rv;
             alpm_list_t *list = alpm_db_get_pkgcache(intern->db);
             if (list != NULL) {
                 alpm_pkg_list_to_zval(list, retval);
@@ -555,6 +557,7 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
                 ZVAL_NULL(retval);
             }
         } else if (strcmp(Z_STRVAL_P(member), "servers") == 0) {
+            retval = rv;
             alpm_list_t *list = alpm_db_get_servers(intern->db);
             if (list != NULL) {
                 alpm_list_to_zval(list, retval);
