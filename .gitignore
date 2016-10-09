@@ -27,3 +27,7 @@ config.sub
 configure
 configure.in
 test_root
+*.diff
+*.exp
+*.out
+*.php
