@@ -163,7 +163,7 @@ void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv) {
             add_next_index_str(&inner, tmp);
         }
 
-        d = (alpm_depend_t*)dm->depend;
+        d = dm->depend;
         tmp = zend_string_init(d->name, strlen(d->name), 1);
         add_next_index_str(&inner, tmp);
 
