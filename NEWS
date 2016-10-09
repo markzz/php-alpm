@@ -1,3 +1,7 @@
+php-alpm 0.3.1:
+  * Patch segfault when reading properties in AlpmDb objects
+  * Add alpm_vercmp()
+
 php-alpm 0.3:
   * Patch more leaks
   * Fix even more value conversions
