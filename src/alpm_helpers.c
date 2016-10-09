@@ -73,7 +73,7 @@ void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
 void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     php_alpm_pkg_object *pkgo;
-    zval *obj;
+    zval obj;
 
     array_init(zv);
     if (zv == NULL) {
@@ -81,19 +81,17 @@ void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
     }
 
     for (item = list; item; item = alpm_list_next(item)) {
-        obj = (zval*)emalloc(sizeof(zval));
-        object_init_ex(obj, php_alpm_pkg_sc_entry);
-        pkgo = Z_PKGO_P(obj);
+        object_init_ex(&obj, php_alpm_pkg_sc_entry);
+        pkgo = Z_PKGO_P(&obj);
         pkgo->pkg = (alpm_pkg_t*)item->data;
-        add_next_index_zval(zv, obj);
-        efree(obj);
+        add_next_index_zval(zv, &obj);
     }
 }
 
 void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     php_alpm_db_object *dbo;
-    zval *obj;
+    zval obj;
 
     array_init(zv);
     if (zv == NULL) {
@@ -101,60 +99,54 @@ void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
     }
 
     for (item = list; item; item = alpm_list_next(item)) {
-        obj = (zval*)emalloc(sizeof(zval));
-        object_init_ex(obj, php_alpm_db_sc_entry);
-        dbo = Z_DBO_P(obj);
+        object_init_ex(&obj, php_alpm_db_sc_entry);
+        dbo = Z_DBO_P(&obj);
         dbo->db = (alpm_db_t*)item->data;
-        add_next_index_zval(zv, obj);
-        efree(obj);
+        add_next_index_zval(zv, &obj);
     }
 }
 
 void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
-    zval *inner;
+    zval inner;
     ssize_t i;
 
     array_init(zv);
     for (i = 0; i < (ssize_t)flist->count; i++) {
         const alpm_file_t *file = flist->files + i;
-        inner = (zval*)emalloc(sizeof(zval));
-        array_init(inner);
-        add_next_index_string(inner, file->name);
-        add_next_index_long(inner, file->size);
-        add_next_index_long(inner, file->mode);
-        add_next_index_zval(zv, inner);
-        efree(inner);
+        array_init(&inner);
+        add_next_index_string(&inner, file->name);
+        add_next_index_long(&inner, file->size);
+        add_next_index_long(&inner, file->mode);
+        add_next_index_zval(zv, &inner);
     }
 }
 
 void alpm_backup_list_to_zval(alpm_list_t *list, zval *zv) {
-    zval *inner;
+    zval inner;
     zend_string *tmp;
     alpm_list_t *item;
     alpm_backup_t *backup;
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
-        inner = (zval*)emalloc(sizeof(zval));
-        array_init(inner);
+        array_init(&inner);
         backup = (alpm_backup_t*)item->data;
         tmp = zend_string_init(backup->name, strlen(backup->name), 1);
-        add_next_index_str(inner, tmp);
+        add_next_index_str(&inner, tmp);
 
         if (backup->hash == NULL) {
-            add_next_index_null(inner);
+            add_next_index_null(&inner);
         } else {
             tmp = zend_string_init(backup->hash, strlen(backup->hash), 1);
-            add_next_index_str(inner, tmp);
+            add_next_index_str(&inner, tmp);
         }
 
-        add_next_index_zval(zv, inner);
-        efree(inner);
+        add_next_index_zval(zv, &inner);
     }
 }
 
 void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv) {
-    zval *inner;
+    zval inner;
     zend_string *tmp;
     alpm_list_t *item;
     alpm_depmissing_t *dm;
@@ -162,29 +154,27 @@ void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv) {
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
-        inner = (zval*)emalloc(sizeof(zval));
-        array_init(inner);
+        array_init(&inner);
         dm = (alpm_depmissing_t*)item->data;
         if (dm->target == NULL) {
-            add_next_index_null(inner);
+            add_next_index_null(&inner);
         } else {
             tmp = zend_string_init(dm->target, strlen(dm->target), 1);
-            add_next_index_str(inner, tmp);
+            add_next_index_str(&inner, tmp);
         }
 
         d = (alpm_depend_t*)dm->depend;
         tmp = zend_string_init(d->name, strlen(d->name), 1);
-        add_next_index_str(inner, tmp);
+        add_next_index_str(&inner, tmp);
 
         if (dm->causingpkg == NULL) {
-            add_next_index_null(inner);
+            add_next_index_null(&inner);
         } else {
             tmp = zend_string_init(dm->causingpkg, strlen(dm->causingpkg), 1);
-            add_next_index_str(inner, tmp);
+            add_next_index_str(&inner, tmp);
         }
 
-        add_next_index_zval(zv, inner);
-        efree(inner);
+        add_next_index_zval(zv, &inner);
     }
 }
 
@@ -202,11 +192,10 @@ int zval_to_alpm_list(zval *zv, alpm_list_t **list) {
 }
 
 void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
-    zval *inner = (zval*)emalloc(sizeof(zval));
+    zval inner;
 
     array_init(zv);
-    alpm_list_to_pkg_array(grp->packages, inner);
-    add_assoc_zval(zv, grp->name, inner);
-    efree(inner);
+    alpm_list_to_pkg_array(grp->packages, &inner);
+    add_assoc_zval(zv, grp->name, &inner);
 }
 
