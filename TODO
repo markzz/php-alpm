@@ -1,1 +1,2 @@
 TODO: Add error codes from libalpm to exceptions thrown.
+TODO: Rewrite the tests, they are from another time.
