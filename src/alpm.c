@@ -1129,7 +1129,6 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     const char *stmp;
     int itmp;
     long lotmp;
-    double dtmp;
     alpm_filelist_t *ftmp;
     alpm_list_t *ltmp;
     alpm_db_t *dbtmp;
