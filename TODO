@@ -1,2 +1,3 @@
 TODO: Add error codes from libalpm to exceptions thrown.
 TODO: Rewrite the tests, they are from another time.
+TODO: Add more properties that are found in libalpm (alpm_handle_t especially)
