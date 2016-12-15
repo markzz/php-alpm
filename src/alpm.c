@@ -612,6 +612,8 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
+        } else if (strcmp(Z_STRVAL_P(member), "base") == 0) {
+            RET_STRING_VAL(alpm_pkg_get_base, pkg);
         } else if (strcmp(Z_STRVAL_P(member), "base64_sig") == 0) {
             RET_STRING_VAL(alpm_pkg_get_base64_sig, pkg);
         } else if (strcmp(Z_STRVAL_P(member), "builddate") == 0) {
@@ -873,6 +875,8 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
         php_error(E_NOTICE, "cannot set arch");
     } else if (strcmp(Z_STRVAL_P(member), "backup") == 0) {
         php_error(E_NOTICE, "cannot set backup");
+    } else if (strcmp(Z_STRVAL_P(member), "base") == 0) {
+        php_error(E_NOTICE, "cannot set base");
     } else if (strcmp(Z_STRVAL_P(member), "base64_sig") == 0) {
         php_error(E_NOTICE, "cannot set base64_sig");
     } else if (strcmp(Z_STRVAL_P(member), "builddate") == 0) {
@@ -1147,6 +1151,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     key = zend_string_init("backup", strlen("backup"), 1);
     zend_hash_add(props, key, &zv);
 
+    ADD_STRING_TO_HASH(alpm_pkg_get_base, pkg, "base");
     ADD_STRING_TO_HASH(alpm_pkg_get_base64_sig, pkg, "base64_sig");
 
     ltmp = alpm_pkg_get_conflicts(intern->pkg);
