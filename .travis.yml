@@ -1,6 +1,7 @@
 language: php
 
 sudo: true
+dist: trusty
 
 php:
     - 7.1.0
