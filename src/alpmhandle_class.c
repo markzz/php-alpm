@@ -81,6 +81,29 @@ PHP_METHOD(Handle, __toString) {
     RETURN_STR(ret)
 }
 
+PHP_METHOD(Handle, add_assumeinstalled) {
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    char *arg;
+    size_t arg_size;
+    int err;
+
+    if (zend_parse_parameter(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm hendle error", 0);
+        RETURN_NULL()
+    }
+
+    err = alpm_option_add_assumeinstalled(intern->handle, arg);
+    if (err) {
+        RETURN_FALSE
+    }
+
+    RETURN_TRUE
+}
+
 PHP_METHOD(Handle, add_cachedir) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     char *arg;
@@ -97,6 +120,29 @@ PHP_METHOD(Handle, add_cachedir) {
     }
 
     err = alpm_option_add_cachedir(intern->handle, arg);
+    if (err) {
+        RETURN_FALSE
+    }
+
+    RETURN_TRUE
+}
+
+PHP_METHOD(Handle, add_hookdir) {
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    char *arg;
+    size_t arg_size;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    err = alpm_option_add_assumeinstalled(intern->handle, arg);
     if (err) {
         RETURN_FALSE
     }
@@ -517,6 +563,29 @@ PHP_METHOD(Handle, register_syncdb) {
     return;
 }
 
+PHP_METHOD(Handle, remove_assumeinstalled) {
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    char *arg;
+    size_t arg_size;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    err = alpm_option_remove_assumeinstalled(intern->handle, arg);
+    if (!err) {
+        RETURN_FALSE
+    }
+
+    RETURN_TRUE
+}
+
 PHP_METHOD(Handle, remove_cachedir) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     char *arg;
@@ -533,6 +602,29 @@ PHP_METHOD(Handle, remove_cachedir) {
     }
 
     err = alpm_option_remove_cachedir(intern->handle, arg);
+    if (!err) {
+        RETURN_FALSE
+    }
+
+    RETURN_TRUE
+}
+
+PHP_METHOD(Handle, remove_hookdir) {
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    char *arg;
+    size_t arg_size;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    err = alpm_option_remove_hookdir(intern->handle, arg);
     if (!err) {
         RETURN_FALSE
     }
