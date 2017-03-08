@@ -44,12 +44,29 @@ void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     alpm_depend_t *d;
     zend_string *tmp;
+    zval inner;
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
         d = (alpm_depend_t*)item->data;
+        array_init(&inner);
         tmp = zend_string_init(d->name, strlen(d->name), 1);
-        add_next_index_str(zv, tmp);
+        add_assoc_str_ex(&inner, "name", strlen("name"), tmp);
+        if (d->version != NULL) {
+            tmp = zend_string_init(d->version, strlen(d->version), 1);
+            add_assoc_str_ex(&inner, "version", strlen("version"), tmp);
+        } else {
+            add_assoc_null_ex(&inner, "version", strlen("version"));
+        }
+
+        if (d->desc != NULL) {
+            tmp = zend_string_init(d->desc, strlen(d->desc), 1);
+            add_assoc_str_ex(&inner, "desc", strlen("desc"), tmp);
+        } else {
+            add_assoc_null_ex(&inner, "desc", strlen("desc"));
+        }
+        add_assoc_long_ex(&inner, "mod", strlen("mod"), d->mod);
+        add_next_index_zval(zv, &inner);
     }
 }
 
