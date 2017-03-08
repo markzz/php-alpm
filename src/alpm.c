@@ -96,11 +96,18 @@ ZEND_BEGIN_ARG_INFO_EX(handle_one_param_cachedir, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(handle_one_param_assumeinstalled, 0, 0, 1)
-                ZEND_ARG_INFO(0, assumeinstalled)
+    ZEND_ARG_INFO(0, assumeinstalled)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(handle_four_param_assumeinstalled, 0, 0, 1)
+    ZEND_ARG_INFO(0, pkgname)
+    ZEND_ARG_INFO(0, pkgver)
+    ZEND_ARG_INFO(0, pkgdesc)
+    ZEND_ARG_INFO(0, mod)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(handle_one_param_hookdir, 0, 0, 1)
-                ZEND_ARG_INFO(0, hookdir)
+    ZEND_ARG_INFO(0, hookdir)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(handle_one_param_package, 0, 0, 1)
@@ -180,35 +187,37 @@ static zend_function_entry php_alpm_functions[] = {
 };
 
 static zend_function_entry handle_methods[] = {
-    PHP_ME(Handle, __construct,         handle_construct_args,            ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
-    PHP_ME(Handle, __toString,          zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_assumeinstalled, handle_one_param_assumeinstalled, ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_cachedir,        handle_one_param_cachedir,        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_hookdir,         handle_one_param_hookdir,         ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_ignoregrp,       one_param_group,                  ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_ignorepkg,       handle_one_param_package,         ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_noextract,       handle_one_param_file,            ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_noupgrade,       handle_one_param_file,            ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_arch,            zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_dbpath,          zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_cachedirs,       zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_checkspace,      zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_ignoregrps,      zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_ignorepkgs,      zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_localdb,         zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_noextracts,      zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_noupgrades,      zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, get_syncdbs,         zero_args,                        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, init_transaction,    handle_init_trans_args,           ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, load_pkg,            handle_load_pkg_args,             ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, register_syncdb,     handle_register_syncdb_args,      ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, remove_cachedir,     handle_one_param_cachedir,        ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, remove_ignoregrp,    one_param_group,                  ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, remove_ignorepkg,    handle_one_param_package,         ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, remove_noextract,    handle_one_param_file,            ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, remove_noupgrade,    handle_one_param_file,            ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, set_arch,            handle_set_arch_args,             ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, set_checkspace,      handle_set_checkspace_args,       ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, __construct,            handle_construct_args,             ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
+    PHP_ME(Handle, __toString,             zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_assumeinstalled,    handle_four_param_assumeinstalled, ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_cachedir,           handle_one_param_cachedir,         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_hookdir,            handle_one_param_hookdir,          ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_ignoregrp,          one_param_group,                   ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_ignorepkg,          handle_one_param_package,          ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_noextract,          handle_one_param_file,             ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_noupgrade,          handle_one_param_file,             ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_arch,               zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_dbpath,             zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_cachedirs,          zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_checkspace,         zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_ignoregrps,         zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_ignorepkgs,         zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_localdb,            zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_noextracts,         zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_noupgrades,         zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, get_syncdbs,            zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, init_transaction,       handle_init_trans_args,            ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, load_pkg,               handle_load_pkg_args,              ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, register_syncdb,        handle_register_syncdb_args,       ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_assumeinstalled, handle_one_param_assumeinstalled,  ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_cachedir,        handle_one_param_cachedir,         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_hookdir,         handle_one_param_hookdir,          ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_ignoregrp,       one_param_group,                   ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_ignorepkg,       handle_one_param_package,          ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_noextract,       handle_one_param_file,             ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, remove_noupgrade,       handle_one_param_file,             ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, set_arch,               handle_set_arch_args,              ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, set_checkspace,         handle_set_checkspace_args,        ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
@@ -456,7 +465,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_assumeinstalled(intern->handle);
             if (ltmp != NULL) {
-                alpm_list_to_zval(ltmp, retval);
+                alpm_depend_list_to_zval(ltmp, retval);
             } else {
                 ZVAL_NULL(retval);
             }
@@ -1075,7 +1084,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
 
     ltmp = alpm_option_get_assumeinstalled(intern->handle);
     if (ltmp != NULL) {
-        alpm_list_to_zval(ltmp, &zv);
+        alpm_depend_list_to_zval(ltmp, &zv);
     } else {
         ZVAL_NULL(&zv);
     }

@@ -65,6 +65,8 @@ void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv) {
         } else {
             add_assoc_null_ex(&inner, "desc", strlen("desc"));
         }
+
+        add_assoc_long_ex(&inner, "hash", strlen("hash"), d->name_hash);
         add_assoc_long_ex(&inner, "mod", strlen("mod"), d->mod);
         add_next_index_zval(zv, &inner);
     }
@@ -216,3 +218,17 @@ void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
     add_assoc_zval(zv, grp->name, &inner);
 }
 
+unsigned long php_alpm_sdbm_hash(const char *str) {
+    unsigned long hash = 0;
+    int c;
+
+    if (!str) {
+        return hash;
+    }
+
+    while ((c = *str++)) {
+        hash = c + hash * 65599;
+    }
+
+    return hash;
+}

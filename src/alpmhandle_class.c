@@ -83,11 +83,13 @@ PHP_METHOD(Handle, __toString) {
 
 PHP_METHOD(Handle, add_assumeinstalled) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
-    char *arg;
-    size_t arg_size;
+    char *arg1, *arg2, *arg3;
+    size_t arg1_size, arg2_size, arg3_size;
+    long arg4;
     int err;
 
-    if (zend_parse_parameter(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "sssl", &arg1, &arg1_size,
+                              &arg2, &arg2_size, &arg3, &arg3_size, &arg4) == FAILURE) {
         RETURN_NULL()
     }
 
@@ -96,7 +98,17 @@ PHP_METHOD(Handle, add_assumeinstalled) {
         RETURN_NULL()
     }
 
-    err = alpm_option_add_assumeinstalled(intern->handle, arg);
+    alpm_depend_t *dep = malloc(sizeof(alpm_depend_t));
+    dep->name = malloc(sizeof(char) * arg1_size);
+    strcpy(dep->name, arg1);
+    dep->version = malloc(sizeof(char) * arg2_size);
+    strcpy(dep->version, arg2);
+    dep->desc = malloc(sizeof(char) * arg3_size);
+    strcpy(dep->desc, arg3);
+    dep->mod = (alpm_depmod_t)arg4;
+    dep->name_hash = php_alpm_sdbm_hash(dep->name);
+
+    err = alpm_option_add_assumeinstalled(intern->handle, dep);
     if (err) {
         RETURN_FALSE
     }
@@ -142,7 +154,7 @@ PHP_METHOD(Handle, add_hookdir) {
         RETURN_NULL()
     }
 
-    err = alpm_option_add_assumeinstalled(intern->handle, arg);
+    err = alpm_option_add_hookdir(intern->handle, arg);
     if (err) {
         RETURN_FALSE
     }
@@ -565,6 +577,8 @@ PHP_METHOD(Handle, register_syncdb) {
 
 PHP_METHOD(Handle, remove_assumeinstalled) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_depend_t *dep, *to_rm = NULL;
+    alpm_list_t *lp;
     char *arg;
     size_t arg_size;
     int err;
@@ -578,8 +592,21 @@ PHP_METHOD(Handle, remove_assumeinstalled) {
         RETURN_NULL()
     }
 
-    err = alpm_option_remove_assumeinstalled(intern->handle, arg);
-    if (!err) {
+    lp = alpm_option_get_assumeinstalled(intern->handle);
+    for (alpm_list_t *tmp = lp; tmp; tmp = tmp->next) {
+        dep = tmp->data;
+        if (strcmp(dep->name, arg)) {
+            to_rm = dep;
+            break;
+        }
+    }
+
+    if (to_rm != NULL) {
+        err = alpm_option_remove_assumeinstalled(intern->handle, to_rm);
+        if (!err) {
+            RETURN_FALSE
+        }
+    } else {
         RETURN_FALSE
     }
 
