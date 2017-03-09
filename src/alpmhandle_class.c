@@ -569,7 +569,7 @@ PHP_METHOD(Handle, register_syncdb) {
 PHP_METHOD(Handle, remove_assumeinstalled) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     alpm_depend_t *dep = NULL, *to_rm = NULL;
-    alpm_list_t *lp = NULL;
+    alpm_list_t *lp = NULL, *tmp;
     char *arg;
     size_t arg_size;
     int err;
@@ -585,7 +585,7 @@ PHP_METHOD(Handle, remove_assumeinstalled) {
 
     lp = alpm_option_get_assumeinstalled(intern->handle);
     if (lp != NULL) {
-        for (alpm_list_t *tmp = lp; tmp; tmp = tmp->next) {
+        for (tmp = lp; tmp; tmp = tmp->next) {
             dep = tmp->data;
             if (strcmp(dep->name, arg)) {
                 to_rm = dep;
