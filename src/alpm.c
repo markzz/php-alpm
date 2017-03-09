@@ -99,13 +99,6 @@ ZEND_BEGIN_ARG_INFO_EX(handle_one_param_assumeinstalled, 0, 0, 1)
     ZEND_ARG_INFO(0, assumeinstalled)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(handle_four_param_assumeinstalled, 0, 0, 1)
-    ZEND_ARG_INFO(0, pkgname)
-    ZEND_ARG_INFO(0, pkgver)
-    ZEND_ARG_INFO(0, pkgdesc)
-    ZEND_ARG_INFO(0, mod)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_INFO_EX(handle_one_param_hookdir, 0, 0, 1)
     ZEND_ARG_INFO(0, hookdir)
 ZEND_END_ARG_INFO()
@@ -189,7 +182,7 @@ static zend_function_entry php_alpm_functions[] = {
 static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, __construct,            handle_construct_args,             ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
     PHP_ME(Handle, __toString,             zero_args,                         ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, add_assumeinstalled,    handle_four_param_assumeinstalled, ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, add_assumeinstalled,    handle_one_param_assumeinstalled,  ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_cachedir,           handle_one_param_cachedir,         ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_hookdir,            handle_one_param_hookdir,          ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_ignoregrp,          one_param_group,                   ZEND_ACC_PUBLIC)
