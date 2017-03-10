@@ -604,6 +604,17 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
             } else {
                 ZVAL_NULL(retval);
             }
+        } else if (strcmp(Z_STRVAL_P(member), "siglevel") == 0) {
+            retval = rv;
+            ZVAL_LONG(retval, alpm_db_get_siglevel(intern->db));
+        } else if (strcmp(Z_STRVAL_P(member), "usage") == 0) {
+            retval = rv;
+            alpm_db_usage_t tmp;
+            alpm_db_get_usage(intern->db, &tmp);
+            ZVAL_LONG(retval, tmp);
+        } else if (strcmp(Z_STRVAL_P(member), "valid") == 0) {
+            retval = rv;
+            ZVAL_BOOL(retval, alpm_db_get_valid(intern->db) == 0 ? IS_TRUE : IS_FALSE);
         }
     }
 
@@ -897,6 +908,9 @@ void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **
     zval tmp_member;
     zend_object_handlers *std_hnd;
 
+    php_alpm_db_object *intern;
+    intern = Z_DBO_P(object);
+
     ZVAL_DEREF(member);
     if (Z_TYPE_P(member) != IS_STRING) {
         tmp_member = *member;
@@ -914,6 +928,16 @@ void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **
         php_error(E_NOTICE, "cannot set pkgcache");
     } else if (strcmp(Z_STRVAL_P(member), "servers") == 0) {
         php_error(E_NOTICE, "cannot set servers");
+    } else if (strcmp(Z_STRVAL_P(member), "siglevel") == 0) {
+        php_error(E_NOTICE, "cannot set siglevel");
+    } else if (strcmp(Z_STRVAL_P(member), "usage") == 0) {
+        if (Z_TYPE_P(value) == IS_LONG) {
+            alpm_db_set_usage(intern->db, (alpm_db_usage_t) Z_LVAL_P(value));
+        } else {
+            php_error(E_NOTICE, "usage must be type long");
+        }
+    } else if (strcmp(Z_STRVAL_P(member), "valid") == 0) {
+        php_error(E_NOTICE, "cannot set valid");
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
     }
@@ -1188,7 +1212,9 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     HashTable *props;
     zend_string *key, *val;
     zval zv;
+    alpm_db_usage_t utmp;
     const char *stmp;
+    long lotmp;
     alpm_list_t *ltmp;
 
     props = zend_std_get_properties(object);
@@ -1221,6 +1247,21 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
         ZVAL_NULL(&zv);
     }
     key = zend_string_init("servers", strlen("servers"), 1);
+    zend_hash_add(props, key, &zv);
+
+    lotmp = alpm_db_get_siglevel(intern->db);
+    ZVAL_LONG(&zv, lotmp);
+    key = zend_string_init("siglevel", strlen("siglevel"), 1);
+    zend_hash_add(props, key, &zv);
+
+    alpm_db_get_usage(intern->db, &utmp);
+    ZVAL_LONG(&zv, (long)utmp);
+    key = zend_string_init("usage", strlen("usage"), 1);
+    zend_hash_add(props, key, &zv);
+
+    lotmp = alpm_db_get_valid(intern->db);
+    ZVAL_BOOL(&zv, lotmp == 0 ? IS_TRUE : IS_FALSE);
+    key = zend_string_init("valid", strlen("valid"), 1);
     zend_hash_add(props, key, &zv);
 
     zend_hash_sort(props, hashtable_key_sort, 0);
