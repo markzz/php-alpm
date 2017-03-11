@@ -689,6 +689,14 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
+        } else if (strcmp(Z_STRVAL_P(member), "deltas") == 0) {
+            retval = rv;
+            alpm_list_t *list = alpm_pkg_get_deltas(intern->pkg);
+            if (list != NULL) {
+                alpm_list_to_zval(list, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_depends(intern->pkg);
@@ -753,6 +761,9 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
+        } else if (strcmp(Z_STRVAL_P(member), "origin") == 0) {
+            retval = rv;
+            ZVAL_LONG(retval, alpm_pkg_get_origin(intern->pkg));
         } else if (strcmp(Z_STRVAL_P(member), "packager") == 0) {
             RET_STRING_VAL(alpm_pkg_get_packager, pkg);
         } else if (strcmp(Z_STRVAL_P(member), "provides") == 0) {
@@ -785,6 +796,10 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             RET_STRING_VAL(alpm_pkg_get_url, pkg);
         } else if (strcmp(Z_STRVAL_P(member), "version") == 0) {
             RET_STRING_VAL(alpm_pkg_get_version, pkg);
+        } else if (strcmp(Z_STRVAL_P(member), "validation") == 0) {
+            retval = rv;
+            long lotmp = alpm_pkg_get_validation(intern->pkg);
+            ZVAL_LONG(retval, lotmp);
         }
     }
 
@@ -977,6 +992,8 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
         php_error(E_NOTICE, "cannot set conflicts");
     } else if (strcmp(Z_STRVAL_P(member), "db") == 0) {
         php_error(E_NOTICE, "cannot set db");
+    } else if (strcmp(Z_STRVAL_P(member), "deltas") == 0) {
+        php_error(E_NOTICE, "cannot set deltas");
     } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
         php_error(E_NOTICE, "cannot set depends");
     } else if (strcmp(Z_STRVAL_P(member), "desc") == 0) {
@@ -1003,6 +1020,8 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
         php_error(E_NOTICE, "cannot set name");
     } else if (strcmp(Z_STRVAL_P(member), "optdepends") == 0) {
         php_error(E_NOTICE, "cannot set optdepends");
+    } else if (strcmp(Z_STRVAL_P(member), "origin") == 0) {
+        php_error(E_NOTICE, "cannot set origin");
     } else if (strcmp(Z_STRVAL_P(member), "packager") == 0) {
         php_error(E_NOTICE, "cannot set packager");
     } else if (strcmp(Z_STRVAL_P(member), "provides") == 0) {
@@ -1023,6 +1042,8 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
         php_error(E_NOTICE, "cannot set url");
     } else if (strcmp(Z_STRVAL_P(member), "version") == 0) {
         php_error(E_NOTICE, "cannot set version");
+    } else if (strcmp(Z_STRVAL_P(member), "validation") == 0) {
+        php_error(E_NOTICE, "cannot set validation");
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
     }
@@ -1318,6 +1339,15 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     key = zend_string_init("db", strlen("db"), 1);
     zend_hash_add(props, key, &zv);
 
+    ltmp = alpm_pkg_get_deltas(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("deltas", strlen("deltas"), 1);
+    zend_hash_add(props, key, &zv);
+
     ltmp = alpm_pkg_get_depends(intern->pkg);
     if (ltmp != NULL) {
         alpm_depend_list_to_zval(ltmp, &zv);
@@ -1390,6 +1420,11 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     key = zend_string_init("optdepends", strlen("optdepends"), 1);
     zend_hash_add(props, key, &zv);
 
+    lotmp = alpm_pkg_get_origin(intern->pkg);
+    ZVAL_LONG(&zv, lotmp);
+    key = zend_string_init("origin", strlen("origin"), 1);
+    zend_hash_add(props, key, &zv);
+
     ADD_STRING_TO_HASH(alpm_pkg_get_packager, pkg, "packager");
 
     ltmp = alpm_pkg_get_provides(intern->pkg);
@@ -1424,6 +1459,11 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
 
     ADD_STRING_TO_HASH(alpm_pkg_get_url, pkg, "url");
     ADD_STRING_TO_HASH(alpm_pkg_get_version, pkg, "version");
+
+    lotmp = alpm_pkg_get_validation(intern->pkg);
+    ZVAL_LONG(&zv, lotmp);
+    key = zend_string_init("validation", strlen("validation"), 1);
+    zend_hash_add(props, key, &zv);
 
     zend_hash_sort(props, hashtable_key_sort, 0);
 
