@@ -131,9 +131,9 @@ void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
     for (i = 0; i < (ssize_t)flist->count; i++) {
         const alpm_file_t *file = flist->files + i;
         array_init(&inner);
-        add_next_index_string(&inner, file->name);
-        add_next_index_long(&inner, file->size);
-        add_next_index_long(&inner, file->mode);
+        add_assoc_string_ex(&inner, "filename", strlen("filename"), file->name);
+        add_assoc_long_ex(&inner, "size", strlen("size"), file->size);
+        add_assoc_long_ex(&inner, "mode", strlen("mode"), file->mode);
         add_next_index_zval(zv, &inner);
     }
 }
