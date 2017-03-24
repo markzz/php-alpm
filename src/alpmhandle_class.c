@@ -499,7 +499,8 @@ PHP_METHOD(Handle, init_transaction) {
     ret = alpm_trans_init(intern->handle, flag_int);
 
     if (ret == -1) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to initialize transaction", 0);
+//        zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to initialize transaction", alpm_errno(intern->handle));
+        zend_throw_exception(php_alpm_handle_exception_class_entry, alpm_strerror(alpm_errno(intern->handle)), alpm_errno(intern->handle));
         RETURN_NULL()
     }
 

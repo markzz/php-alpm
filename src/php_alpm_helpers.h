@@ -22,16 +22,17 @@
 #include "php_alpm_defs.h"
 
 void alpm_list_to_zval(alpm_list_t *list, zval *zv);
+void alpm_conflict_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_group_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv);
 void alpm_list_to_db_array(alpm_list_t *list, zval *zv);
 int zval_to_alpm_list(zval *zv, alpm_list_t **list);
+void alpm_fileconflicts_to_zval(alpm_list_t *fc_list, zval *zv);
 void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv);
 void alpm_group_to_zval(alpm_group_t *grp, zval *zv);
 void alpm_backup_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_pkg_list_to_zval(alpm_list_t *list, zval *zv);
-unsigned long php_alpm_sdbm_hash(const char *str);
 
 #endif /* PHP_ALPM_HELPERS_H */

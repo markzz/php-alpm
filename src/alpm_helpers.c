@@ -40,32 +40,57 @@ void alpm_pkg_list_to_zval(alpm_list_t *list, zval *zv) {
     }
 }
 
+void alpm_depend_to_zval(alpm_depend_t* d, zval *zv) {
+    zend_string *tmp;
+
+    array_init(zv);
+    tmp = zend_string_init(d->name, strlen(d->name), 1);
+    add_assoc_str_ex(zv, "name", strlen("name"), tmp);
+    if (d->version != NULL) {
+        tmp = zend_string_init(d->version, strlen(d->version), 1);
+        add_assoc_str_ex(zv, "version", strlen("version"), tmp);
+    } else {
+        add_assoc_null_ex(zv, "version", strlen("version"));
+    }
+
+    if (d->desc != NULL) {
+        tmp = zend_string_init(d->desc, strlen(d->desc), 1);
+        add_assoc_str_ex(zv, "desc", strlen("desc"), tmp);
+    } else {
+        add_assoc_null_ex(zv, "desc", strlen("desc"));
+    }
+    add_assoc_long_ex(zv, "mod", strlen("mod"), d->mod);
+}
+
+void alpm_conflict_list_to_zval(alpm_list_t *list, zval *zv) {
+    alpm_list_t *item;
+    alpm_conflict_t *conflict;
+    zend_string *tmp;
+    zval inner, dep_zval;
+
+    array_init(zv);
+    for (item = list; item; alpm_list_next(item)) {
+        conflict = (alpm_conflict_t*)item->data;
+        array_init(&inner);
+        tmp = zend_string_init(conflict->package1, strlen(conflict->package1), 1);
+        add_assoc_str_ex(&inner, "package1", strlen("package1"), tmp);
+        tmp = zend_string_init(conflict->package2, strlen(conflict->package2), 1);
+        add_assoc_str_ex(&inner, "package2", strlen("package2"), tmp);
+        alpm_depend_to_zval(conflict->reason, &dep_zval);
+        add_assoc_zval_ex(&inner, "reason", strlen("reason"), &dep_zval);
+        add_next_index_zval(zv, &inner);
+    }
+}
+
 void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     alpm_depend_t *d;
-    zend_string *tmp;
     zval inner;
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
         d = (alpm_depend_t*)item->data;
-        array_init(&inner);
-        tmp = zend_string_init(d->name, strlen(d->name), 1);
-        add_assoc_str_ex(&inner, "name", strlen("name"), tmp);
-        if (d->version != NULL) {
-            tmp = zend_string_init(d->version, strlen(d->version), 1);
-            add_assoc_str_ex(&inner, "version", strlen("version"), tmp);
-        } else {
-            add_assoc_null_ex(&inner, "version", strlen("version"));
-        }
-
-        if (d->desc != NULL) {
-            tmp = zend_string_init(d->desc, strlen(d->desc), 1);
-            add_assoc_str_ex(&inner, "desc", strlen("desc"), tmp);
-        } else {
-            add_assoc_null_ex(&inner, "desc", strlen("desc"));
-        }
-        add_assoc_long_ex(&inner, "mod", strlen("mod"), d->mod);
+        alpm_depend_to_zval(d, &inner);
         add_next_index_zval(zv, &inner);
     }
 }
@@ -120,6 +145,23 @@ void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
         dbo = Z_DBO_P(&obj);
         dbo->db = (alpm_db_t*)item->data;
         add_next_index_zval(zv, &obj);
+    }
+}
+
+void alpm_fileconflicts_to_zval(alpm_list_t *fc_list, zval *zv) {
+    zval inner;
+    alpm_list_t *tmp;
+    alpm_fileconflict_t *fc;
+
+    array_init(zv);
+    for (tmp = fc_list; tmp; tmp = tmp->next) {
+        fc = (alpm_fileconflict_t*)tmp->data;
+        array_init(&inner);
+        add_assoc_string_ex(&inner, "target", strlen("target"), fc->target);
+        add_assoc_long_ex(&inner, "type", strlen("type"), fc->type);
+        add_assoc_string_ex(&inner, "file", strlen("file"), fc->file);
+        add_assoc_string_ex(&inner, "ctarget", strlen("ctarget"), fc->ctarget);
+        add_next_index_zval(zv, &inner);
     }
 }
 

@@ -63,8 +63,7 @@ PHP_METHOD(Trans, commit) {
     switch (pmerr) {
         case ALPM_ERR_FILE_CONFLICTS:
             /* TODO: Create alpm_fileconflicts_to_zval() in php_alpm_helpers.h */
-            /* alpm_fileconflicts_to_zval(list, return_value); */
-            RETURN_NULL()
+            alpm_fileconflicts_to_zval(list, return_value);
             break;
         case ALPM_ERR_PKG_INVALID:
         case ALPM_ERR_PKG_INVALID_CHECKSUM:
@@ -98,6 +97,7 @@ PHP_METHOD(Trans, interrupt) {
 PHP_METHOD(Trans, prepare) {
     php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
     alpm_list_t *data;
+    alpm_errno_t err;
     int ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
@@ -106,7 +106,22 @@ PHP_METHOD(Trans, prepare) {
 
     ret = alpm_trans_prepare(intern->handle, &data);
     if (ret == -1) {
-        alpm_depmissing_list_to_zval(data, return_value);
+        err = alpm_errno(intern->handle);
+
+        switch (err) {
+            case ALPM_ERR_PKG_INVALID_ARCH:
+                alpm_list_to_zval(data, return_value);
+                break;
+            case ALPM_ERR_UNSATISFIED_DEPS:
+                alpm_depmissing_list_to_zval(data, return_value);
+                break;
+            case ALPM_ERR_CONFLICTING_DEPS:
+                alpm_conflict_list_to_zval(data, return_value);
+                break;
+            default:
+                break;
+        }
+
         return;
     }
 
@@ -115,6 +130,7 @@ PHP_METHOD(Trans, prepare) {
 
 PHP_METHOD(Trans, release) {
     php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
+    alpm_errno_t err;
     int ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
