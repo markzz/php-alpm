@@ -98,6 +98,7 @@ PHP_METHOD(Trans, prepare) {
     php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
     alpm_list_t *data;
     alpm_errno_t err;
+    zval inner_error_array;
     int ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
@@ -108,20 +109,25 @@ PHP_METHOD(Trans, prepare) {
     if (ret == -1) {
         err = alpm_errno(intern->handle);
 
+        array_init(return_value);
+        add_assoc_long_ex(return_value, "errno", strlen("errno"), err);
+
         switch (err) {
             case ALPM_ERR_PKG_INVALID_ARCH:
-                alpm_list_to_zval(data, return_value);
+
+                alpm_list_to_zval(data, &inner_error_array);
                 break;
             case ALPM_ERR_UNSATISFIED_DEPS:
-                alpm_depmissing_list_to_zval(data, return_value);
+                alpm_depmissing_list_to_zval(data, &inner_error_array);
                 break;
             case ALPM_ERR_CONFLICTING_DEPS:
-                alpm_conflict_list_to_zval(data, return_value);
+                alpm_conflict_list_to_zval(data, &inner_error_array);
                 break;
             default:
                 break;
         }
 
+        add_assoc_zval_ex(return_value, "offenders", strlen("offenders"), &inner_error_array);
         return;
     }
 
