@@ -457,7 +457,6 @@ static int _set_cb_attr(php_alpm_handle_object *ho, zval *value, const struct _a
         efree(global_callback_functions[closure->id]);
         global_callback_functions[closure->id] = value;
         closure->setter(ho->handle, closure->cb_wrapper);
-        php_printf("%p\n", value);
     } else {
         php_error(E_NOTICE, "value must be null or a callable");
         return -1;
