@@ -96,16 +96,13 @@ void *php_alpm_questioncb(alpm_question_t question, void *data1, void *data2, vo
 void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target) {
     int status;
     zval zop, ztn, zp, znt, zct, ret;
-    zend_string *tmp;
     zval *func = global_callback_functions[CB_PROGRESS];
-
-    tmp = zend_string_init(target_name, strlen(target_name), 1);
 
     ZVAL_LONG(&zop, op);
     ZVAL_LONG(&zp, percentage);
     ZVAL_LONG(&znt, n_targets);
     ZVAL_LONG(&zct, cur_target);
-    ZVAL_STR(&ztn, tmp);
+    ZVAL_STRING(&ztn, target_name);
 
     zval args[] = { zop, ztn, zp, znt, zct };
 
