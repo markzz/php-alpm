@@ -417,6 +417,55 @@ static zend_object *php_alpm_transaction_object_new(zend_class_entry *class_type
     return php_alpm_transaction_object_new_ex(class_type, NULL);
 }
 
+/* callback attributes
+ *
+ * I'm not a big fan of how this is implemented (because multiple AlpmHandle
+ * objects will have the same callbacks, but it is beyond me how to implement
+ * this feature. This is also consistent with pyalpm (the project php-alpm is
+ * modeled against). If ANYONE has a better method of implementing this, I
+ * will happily accept a patch and you deserve a cookie.
+ */
+typedef int (*alpm_cb_setter)(alpm_handle_t*, void*);
+struct _alpm_cb_getset {
+    alpm_cb_setter setter;
+    void *cb_wrapper;
+    alpm_callback_id id;
+};
+
+static struct _alpm_cb_getset cb_getsets[N_CALLBACKS] = {
+        { (alpm_cb_setter)alpm_option_set_logcb, php_alpm_logcb, CB_LOG },
+        { (alpm_cb_setter)alpm_option_set_dlcb, php_alpm_dlcb, CB_DOWNLOAD },
+        { (alpm_cb_setter)alpm_option_set_fetchcb, php_alpm_fetchcb, CB_FETCH },
+        { (alpm_cb_setter)alpm_option_set_totaldlcb, php_alpm_totaldlcb, CB_TOTALDL },
+        { (alpm_cb_setter)alpm_option_set_eventcb, php_alpm_eventcb, CB_EVENT },
+        { (alpm_cb_setter)alpm_option_set_questioncb, php_alpm_questioncb, CB_QUESTION },
+        { (alpm_cb_setter)alpm_option_set_progresscb, php_alpm_progresscb, CB_PROGRESS },
+};
+
+zval *global_callback_functions[N_CALLBACKS];
+
+static zval *_get_cb_attr(php_alpm_handle_object *ho, const struct _alpm_cb_getset *closure) {
+    zval *cb = global_callback_functions[closure->id];
+    return cb;
+}
+
+static int _set_cb_attr(php_alpm_handle_object *ho, zval *value, const struct _alpm_cb_getset *closure) {
+    if (Z_TYPE_P(value) == IS_NULL) {
+        efree(global_callback_functions[closure->id]);
+        closure->setter(ho->handle, NULL);
+    } else if (zend_is_callable(value, IS_CALLABLE_CHECK_NO_ACCESS, NULL)) {
+        efree(global_callback_functions[closure->id]);
+        global_callback_functions[closure->id] = value;
+        closure->setter(ho->handle, closure->cb_wrapper);
+        php_printf("%p\n", value);
+    } else {
+        php_error(E_NOTICE, "value must be null or a callable");
+        return -1;
+    }
+
+    return 0;
+}
+
 #define RET_STRING_VAL(func, type) do { \
     retval = rv; \
     const char *tmp = func(intern->type); \
@@ -449,7 +498,6 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
     if (ret) {
         retval = std_hnd->read_property(object, member, type, cache_slot, rv);
     } else {
-        /* TODO: Implement callback functions. */
         intern = Z_HANDLEO_P(object);
 
         if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
@@ -483,6 +531,36 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
         } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
             retval = rv;
             ZVAL_DOUBLE(retval, alpm_option_get_deltaratio(intern->handle));
+        } else if (strcmp(Z_STRVAL_P(member), "dlcb") == 0) {
+            retval = rv;
+            zval *tmp;
+            struct _alpm_cb_getset closure = cb_getsets[CB_DOWNLOAD];
+            tmp = _get_cb_attr(intern, &closure);
+            if (Z_TYPE_P(tmp) == IS_STRING) {
+                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "eventcb") == 0) {
+            retval = rv;
+            zval *tmp;
+            struct _alpm_cb_getset closure = cb_getsets[CB_EVENT];
+            tmp = _get_cb_attr(intern, &closure);
+            if (Z_TYPE_P(tmp) == IS_STRING) {
+                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "fetchcb") == 0) {
+            retval = rv;
+            zval *tmp;
+            struct _alpm_cb_getset closure = cb_getsets[CB_FETCH];
+            tmp = _get_cb_attr(intern, &closure);
+            if (Z_TYPE_P(tmp) == IS_STRING) {
+                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
             RET_STRING_VAL(alpm_option_get_gpgdir, handle);
         } else if (strcmp(Z_STRVAL_P(member), "hookdirs") == 0) {
@@ -514,6 +592,16 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             ZVAL_LONG(retval, alpm_option_get_local_file_siglevel(intern->handle));
         } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
             RET_STRING_VAL(alpm_option_get_lockfile, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "logcb") == 0) {
+            retval = rv;
+            zval *tmp;
+            struct _alpm_cb_getset closure = cb_getsets[CB_LOG];
+            tmp = _get_cb_attr(intern, &closure);
+            if (Z_TYPE_P(tmp) == IS_STRING) {
+                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
             RET_STRING_VAL(alpm_option_get_logfile, handle);
         } else if (strcmp(Z_STRVAL_P(member), "noextracts") == 0) {
@@ -532,11 +620,41 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
+        } else if (strcmp(Z_STRVAL_P(member), "progresscb") == 0) {
+            retval = rv;
+            zval *tmp;
+            struct _alpm_cb_getset closure = cb_getsets[CB_PROGRESS];
+            tmp = _get_cb_attr(intern, &closure);
+            if (Z_TYPE_P(tmp) == IS_STRING) {
+                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "questioncb") == 0) {
+            retval = rv;
+            zval *tmp;
+            struct _alpm_cb_getset closure = cb_getsets[CB_QUESTION];
+            tmp = _get_cb_attr(intern, &closure);
+            if (Z_TYPE_P(tmp) == IS_STRING) {
+                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "remote_file_siglevel") == 0) {
             retval = rv;
             ZVAL_LONG(retval, alpm_option_get_remote_file_siglevel(intern->handle));
         } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
             RET_STRING_VAL(alpm_option_get_root, handle);
+        } else if (strcmp(Z_STRVAL_P(member), "totaldlcb") == 0) {
+            retval = rv;
+            zval *tmp;
+            struct _alpm_cb_getset closure = cb_getsets[CB_TOTALDL];
+            tmp = _get_cb_attr(intern, &closure);
+            if (Z_TYPE_P(tmp) == IS_STRING) {
+                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
             retval = rv;
             ZVAL_BOOL(retval, alpm_option_get_usesyslog(intern->handle));
@@ -866,6 +984,15 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         } else {
             php_error(E_NOTICE, "deltaratio must be a float");
         }
+    } else if (strcmp(Z_STRVAL_P(member), "dlcb") == 0) {
+        struct _alpm_cb_getset closure = cb_getsets[CB_DOWNLOAD];
+        _set_cb_attr(intern, value, &closure);
+    } else if (strcmp(Z_STRVAL_P(member), "fetchcb") == 0) {
+        struct _alpm_cb_getset closure = cb_getsets[CB_FETCH];
+        _set_cb_attr(intern, value, &closure);
+    } else if (strcmp(Z_STRVAL_P(member), "eventcb") == 0) {
+        struct _alpm_cb_getset closure = cb_getsets[CB_EVENT];
+        _set_cb_attr(intern, value, &closure);
     } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
         if (Z_TYPE_P(value) == IS_STRING) {
             alpm_option_set_gpgdir(intern->handle, Z_STRVAL_P(value));
@@ -886,6 +1013,9 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         }
     } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
         php_error(E_NOTICE, "Cannot set lockfile");
+    } else if (strcmp(Z_STRVAL_P(member), "logcb") == 0) {
+        struct _alpm_cb_getset closure = cb_getsets[CB_LOG];
+        _set_cb_attr(intern, value, &closure);
     } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
         if (Z_TYPE_P(value) == IS_STRING) {
             alpm_option_set_logfile(intern->handle, Z_STRVAL_P(value));
@@ -896,6 +1026,12 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         php_error(E_NOTICE, "cannot set noextracts directly");
     } else if (strcmp(Z_STRVAL_P(member), "noupgrades") == 0) {
         php_error(E_NOTICE, "cannot set noupgrades directly");
+    } else if (strcmp(Z_STRVAL_P(member), "progresscb") == 0) {
+        struct _alpm_cb_getset closure = cb_getsets[CB_PROGRESS];
+        _set_cb_attr(intern, value, &closure);
+    } else if (strcmp(Z_STRVAL_P(member), "questioncb") == 0) {
+        struct _alpm_cb_getset closure = cb_getsets[CB_QUESTION];
+        _set_cb_attr(intern, value, &closure);
     } else if (strcmp(Z_STRVAL_P(member), "remote_file_siglevel") == 0) {
         if (Z_TYPE_P(value) == IS_LONG) {
             alpm_option_set_remote_file_siglevel(intern->handle, (alpm_siglevel_t)Z_LVAL_P(value));
@@ -904,6 +1040,9 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         }
     } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
         php_error(E_NOTICE, "Cannot set root");
+    } else if (strcmp(Z_STRVAL_P(member), "totaldlcb") == 0) {
+        struct _alpm_cb_getset closure = cb_getsets[CB_TOTALDL];
+        _set_cb_attr(intern, value, &closure);
     } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
         if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
             alpm_option_set_usesyslog(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
@@ -1108,11 +1247,12 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     php_alpm_handle_object *intern;
     HashTable *props;
     zend_string *key, *val;
-    zval zv;
+    zval zv, *zv2;
     const char *stmp;
     int itmp;
     double dtmp;
     long lotmp;
+    struct _alpm_cb_getset closure;
     alpm_list_t *ltmp;
 
     props = zend_std_get_properties(object);
@@ -1156,6 +1296,33 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     key = zend_string_init("deltaratio", strlen("deltaratio"), 1);
     zend_hash_add(props, key, &zv);
 
+    zv2 = global_callback_functions[CB_DOWNLOAD];
+    if (zv2 == NULL) {
+        ZVAL_NULL(&zv);
+    } else if (Z_TYPE_P(zv2) == IS_STRING) {
+        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
+    }
+    key = zend_string_init("dlcb", strlen("dlcb"), 1);
+    zend_hash_add(props, key, &zv);
+
+    zv2 = global_callback_functions[CB_EVENT];
+    if (zv2 == NULL) {
+        ZVAL_NULL(&zv);
+    } else if (Z_TYPE_P(zv2) == IS_STRING) {
+        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
+    }
+    key = zend_string_init("eventcb", strlen("eventcb"), 1);
+    zend_hash_add(props, key, &zv);
+
+    zv2 = global_callback_functions[CB_FETCH];
+    if (zv2 == NULL) {
+        ZVAL_NULL(&zv);
+    } else if (Z_TYPE_P(zv2) == IS_STRING) {
+        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
+    }
+    key = zend_string_init("fetchcb", strlen("fetchcb"), 1);
+    zend_hash_add(props, key, &zv);
+
     ADD_STRING_TO_HASH(alpm_option_get_gpgdir, handle, "gpgdir");
 
     ltmp = alpm_option_get_hookdirs(intern->handle);
@@ -1191,6 +1358,16 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     zend_hash_add(props, key, &zv);
 
     ADD_STRING_TO_HASH(alpm_option_get_lockfile, handle, "lockfile");
+
+    zv2 = global_callback_functions[CB_LOG];
+    if (zv2 == NULL) {
+        ZVAL_NULL(&zv);
+    } else if (Z_TYPE_P(zv2) == IS_STRING) {
+        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
+    }
+    key = zend_string_init("logcb", strlen("logcb"), 1);
+    zend_hash_add(props, key, &zv);
+
     ADD_STRING_TO_HASH(alpm_option_get_logfile, handle, "logfile");
 
     ltmp = alpm_option_get_noextracts(intern->handle);
@@ -1211,12 +1388,39 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     key = zend_string_init("noupgrades", strlen("noupgrades"), 1);
     zend_hash_add(props, key, &zv);
 
+    zv2 = global_callback_functions[CB_PROGRESS];
+    if (zv2 == NULL) {
+        ZVAL_NULL(&zv);
+    } else if (Z_TYPE_P(zv2) == IS_STRING) {
+        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
+    }
+    key = zend_string_init("progresscb", strlen("progresscb"), 1);
+    zend_hash_add(props, key, &zv);
+
+    zv2 = global_callback_functions[CB_QUESTION];
+    if (zv2 == NULL) {
+        ZVAL_NULL(&zv);
+    } else if (Z_TYPE_P(zv2) == IS_STRING) {
+        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
+    }
+    key = zend_string_init("questioncb", strlen("questioncb"), 1);
+    zend_hash_add(props, key, &zv);
+
     lotmp = alpm_option_get_remote_file_siglevel(intern->handle);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("remote_file_siglevel", strlen("remote_file_siglevel"), 1);
     zend_hash_add(props, key, &zv);
 
     ADD_STRING_TO_HASH(alpm_option_get_root, handle, "root");
+
+    zv2 = global_callback_functions[CB_TOTALDL];
+    if (zv2 == NULL) {
+        ZVAL_NULL(&zv);
+    } else if (Z_TYPE_P(zv2) == IS_STRING) {
+        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
+    }
+    key = zend_string_init("totaldlcb", strlen("totaldlcb"), 1);
+    zend_hash_add(props, key, &zv);
 
     itmp = alpm_option_get_usesyslog(intern->handle);
     ZVAL_BOOL(&zv, itmp);

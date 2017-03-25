@@ -35,6 +35,17 @@
 #define DEFAULT_ROOTDIR "/"
 #define DEFAULT_DBPATH "/var/lib/pacman"
 
+typedef enum _alpm_callback_id {
+    CB_LOG,
+    CB_DOWNLOAD,
+    CB_FETCH,
+    CB_TOTALDL,
+    CB_EVENT,
+    CB_QUESTION,
+    CB_PROGRESS,
+    N_CALLBACKS
+} alpm_callback_id;
+
 typedef struct _php_alpm_handle_object {
     alpm_handle_t *handle;
     zend_object zo;
@@ -171,5 +182,14 @@ PHP_METHOD(Trans, prepare);
 PHP_METHOD(Trans, release);
 PHP_METHOD(Trans, remove_pkg);
 PHP_METHOD(Trans, system_upgrade);
+
+/* callback function wrappers */
+void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args);
+void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total);
+void *php_alpm_fetchcb(off_t total);
+void *php_alpm_totaldlcb(const char *url, const char *localpath, int force);
+void *php_alpm_eventcb(alpm_event_t event, void *data1, void *data2);
+void *php_alpm_questioncb(alpm_question_t question, void *data1, void *data2, void *data3, int *retcode);
+void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target);
 
 #endif /* PHP_ALPM_DEFS_H */
