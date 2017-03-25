@@ -21,8 +21,6 @@
 #include "php_alpm_helpers.h"
 
 PHP_METHOD(Trans, add_pkg) {
-    /* TODO: Have this function delete the AlpmPkg object */
-
     php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
     php_alpm_pkg_object *pkg_object;
     zval *pkg_zval;
@@ -38,6 +36,7 @@ PHP_METHOD(Trans, add_pkg) {
         RETURN_FALSE
     }
 
+    ZVAL_UNDEF(pkg_zval);
     RETURN_TRUE
 }
 
@@ -152,8 +151,6 @@ PHP_METHOD(Trans, release) {
 }
 
 PHP_METHOD(Trans, remove_pkg) {
-    /* TODO: Have this function delete the AlpmPkg object */
-
     php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
     php_alpm_pkg_object *pkg_object;
     zval *pkg_zval;
@@ -169,6 +166,7 @@ PHP_METHOD(Trans, remove_pkg) {
         RETURN_FALSE
     }
 
+    ZVAL_UNDEF(pkg_zval);
     RETURN_TRUE
 }
 
