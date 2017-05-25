@@ -1,10 +1,11 @@
 #include <stdio.h>
 
 #include "php_alpm_defs.h"
+#include "php_alpm_helpers.h"
 
 extern zval *global_callback_functions[N_CALLBACKS];
 
-void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
+void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args TSRMLS_DC) {
     char *log;
     int status, vasret;
     zval zl, zlog, ret;
@@ -19,18 +20,22 @@ void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
     }
 
     tmp = zend_string_init(log, strlen(log), 1);
+#ifdef ZEND_ENGINE_3
     ZVAL_STR(&zlog, tmp);
+#else
+    ZVAL_STRING(&zlog, tmp, 1);
+#endif
 
     zval args[] = { zl, zlog };
 
-    status = call_user_function(CG(function_table), NULL, func, &ret, 2, args);
+    status = call_user_function(CG(function_table), NULL, func, &ret, 2, args TSRMLS_CC);
 
     if (status == FAILURE) {
         php_error(E_ERROR, "could not call logcb");
     }
 }
 
-void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
+void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total TSRMLS_DC) {
     int status;
     zval zfn, zxf, zt, ret;
     zend_string *tmp;
@@ -40,17 +45,21 @@ void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
     ZVAL_LONG(&zt, total);
 
     tmp = zend_string_init(filename, strlen(filename), 1);
+#ifdef ZEND_ENGINE_3
     ZVAL_STR(&zfn, tmp);
+#else
+    ZVAL_STRING(&zfn, tmp, 1);
+#endif
 
     zval args[] = { zfn, zxf, zt };
-    status = call_user_function(CG(function_table), NULL, func, &ret, 3, args);
+    status = call_user_function(CG(function_table), NULL, func, &ret, 3, args TSRMLS_CC);
 
     if (status == FAILURE) {
         php_error(E_ERROR, "could not call dlcb");
     }
 }
 
-void *php_alpm_fetchcb(off_t total) {
+void *php_alpm_fetchcb(off_t total TSRMLS_DC) {
     int status;
     zval zt, ret;
     zval *func = global_callback_functions[CB_FETCH];
@@ -58,14 +67,14 @@ void *php_alpm_fetchcb(off_t total) {
     ZVAL_LONG(&zt, total);
 
     zval args[] = { zt };
-    status = call_user_function(CG(function_table), NULL, func, &ret, 1, args);
+    status = call_user_function(CG(function_table), NULL, func, &ret, 1, args TSRMLS_CC);
 
     if (status == FAILURE) {
         php_error(E_ERROR, "could not call fetchcb");
     }
 }
 
-void *php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
+void *php_alpm_totaldlcb(const char *url, const char *localpath, int force TSRMLS_DC) {
     int status;
     zval zu, zlp, zf, ret;
     zend_string *tmp;
@@ -73,12 +82,20 @@ void *php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
 
     ZVAL_BOOL(&zf, force == 0 ? IS_FALSE : IS_TRUE);
     tmp = zend_string_init(url, strlen(url), 1);
+#ifdef ZEND_ENGINE_3
     ZVAL_STR(&zu, tmp);
+#else
+    ZVAL_STRING(&zu, tmp, 1);
+#endif
     tmp = zend_string_init(localpath, strlen(localpath), 1);
+#ifdef ZEND_ENGINE_3
     ZVAL_STR(&zlp, tmp);
+#else
+    ZVAL_STRING(&zlp, tmp, 1);
+#endif
 
     zval args[] = { zu, zlp, zf };
-    status = call_user_function(CG(function_table), NULL, func, &ret, 3, args);
+    status = call_user_function(CG(function_table), NULL, func, &ret, 3, args TSRMLS_CC);
 
     if (status == FAILURE) {
         php_error(E_ERROR, "could not call totaldlcb");
@@ -93,7 +110,7 @@ void *php_alpm_questioncb(alpm_question_t question, void *data1, void *data2, vo
     /* TODO: Write function. */
 }
 
-void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target) {
+void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target TSRMLS_DC) {
     int status;
     zval zop, ztn, zp, znt, zct, ret;
     zval *func = global_callback_functions[CB_PROGRESS];
@@ -102,11 +119,15 @@ void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int perce
     ZVAL_LONG(&zp, percentage);
     ZVAL_LONG(&znt, n_targets);
     ZVAL_LONG(&zct, cur_target);
+#ifdef ZEND_ENGINE_3
     ZVAL_STRING(&ztn, target_name);
+#else
+    ZVAL_STRING(&ztn, target_name, 1);
+#endif
 
     zval args[] = { zop, ztn, zp, znt, zct };
 
-    status = call_user_function(CG(function_table), NULL, func, &ret, 5, args);
+    status = call_user_function(CG(function_table), NULL, func, &ret, 5, args TSRMLS_CC);
 
     if (status == FAILURE) {
         php_error(E_ERROR, "could not call progresscb");

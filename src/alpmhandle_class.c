@@ -45,7 +45,7 @@ PHP_METHOD(Handle, __construct) {
 
     h = alpm_initialize(rootpath, dbpath, &errcode);
     if (!h) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to create handle object", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to create handle object", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -87,12 +87,12 @@ PHP_METHOD(Handle, add_assumeinstalled) {
     size_t arg1_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg1, &arg1_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg1, &arg1_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm hendle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm hendle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -113,12 +113,12 @@ PHP_METHOD(Handle, add_cachedir) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error",  0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error",  0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -136,12 +136,12 @@ PHP_METHOD(Handle, add_hookdir) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -159,12 +159,12 @@ PHP_METHOD(Handle, add_ignoregrp) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -182,12 +182,12 @@ PHP_METHOD(Handle, add_ignorepkg) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -205,12 +205,12 @@ PHP_METHOD(Handle, add_noextract) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -228,12 +228,12 @@ PHP_METHOD(Handle, add_noupgrade) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -256,7 +256,7 @@ PHP_METHOD(Handle, get_arch) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -265,7 +265,11 @@ PHP_METHOD(Handle, get_arch) {
         RETURN_NULL()
     }
 
+#ifdef ZEND_ENGINE_3
     RETURN_STRING(arch)
+#else
+    RETURN_STRING(arch, 1)
+#endif
 }
 
 PHP_METHOD(Handle, get_cachedirs) {
@@ -281,7 +285,7 @@ PHP_METHOD(Handle, get_cachedirs) {
     intern = Z_HANDLEO_P(getThis());
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -304,7 +308,7 @@ PHP_METHOD(Handle, get_checkspace) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -323,7 +327,7 @@ PHP_METHOD(Handle, get_dbpath) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -332,7 +336,11 @@ PHP_METHOD(Handle, get_dbpath) {
         RETURN_NULL()
     }
 
+#ifdef ZEND_ENGINE_3
     RETURN_STRING(dbpath)
+#else
+    RETURN_STRING(dbpath, 1)
+#endif
 }
 
 PHP_METHOD(Handle, get_ignoregrps) {
@@ -346,7 +354,7 @@ PHP_METHOD(Handle, get_ignoregrps) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -370,7 +378,7 @@ PHP_METHOD(Handle, get_ignorepkgs) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -393,7 +401,7 @@ PHP_METHOD(Handle, get_localdb) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -419,7 +427,7 @@ PHP_METHOD(Handle, get_noextracts) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -443,7 +451,7 @@ PHP_METHOD(Handle, get_noupgrades) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -465,7 +473,7 @@ PHP_METHOD(Handle, get_syncdbs) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -474,7 +482,7 @@ PHP_METHOD(Handle, get_syncdbs) {
         RETURN_NULL()
     }
 
-    alpm_list_to_db_array(db_list, return_value);
+    alpm_list_to_db_array(db_list, return_value TSRMLS_CC);
     return;
 }
 
@@ -500,7 +508,7 @@ PHP_METHOD(Handle, init_transaction) {
 
     if (ret == -1) {
 //        zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to initialize transaction", alpm_errno(intern->handle));
-        zend_throw_exception(php_alpm_handle_exception_class_entry, alpm_strerror(alpm_errno(intern->handle)), alpm_errno(intern->handle));
+        zend_throw_exception(php_alpm_handle_exception_class_entry, alpm_strerror(alpm_errno(intern->handle)), alpm_errno(intern->handle) TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -518,18 +526,18 @@ PHP_METHOD(Handle, load_pkg) {
     size_t fn_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &fn, &fn_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &fn, &fn_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
     err = alpm_pkg_load(intern->handle, fn, 1, ALPM_SIG_PACKAGE_OPTIONAL, &pkg);
     if (err) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "could not load pkg", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "could not load pkg", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -547,12 +555,12 @@ PHP_METHOD(Handle, register_syncdb) {
     size_t *dbname_size;
     long pgp_level;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "sl", &dbname, &dbname_size, &pgp_level) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &dbname, &dbname_size, &pgp_level) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -575,12 +583,12 @@ PHP_METHOD(Handle, remove_assumeinstalled) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -613,12 +621,12 @@ PHP_METHOD(Handle, remove_cachedir) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -636,12 +644,12 @@ PHP_METHOD(Handle, remove_hookdir) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -659,12 +667,12 @@ PHP_METHOD(Handle, remove_ignoregrp) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -682,12 +690,12 @@ PHP_METHOD(Handle, remove_ignorepkg) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -705,12 +713,12 @@ PHP_METHOD(Handle, remove_noextract) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -728,12 +736,12 @@ PHP_METHOD(Handle, remove_noupgrade) {
     size_t arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -753,12 +761,12 @@ PHP_METHOD(Handle, set_arch) {
     size_t *arg_size;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_size) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 
@@ -777,12 +785,12 @@ PHP_METHOD(Handle, set_checkspace) {
     long checkspace;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &checkspace) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &checkspace) == FAILURE) {
         RETURN_NULL()
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0 TSRMLS_CC);
         RETURN_NULL()
     }
 

@@ -112,7 +112,7 @@ void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
     }
 }
 
-void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
+void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv TSRMLS_DC) {
     alpm_list_t *item;
     php_alpm_pkg_object *pkgo;
     zval obj;
@@ -130,7 +130,7 @@ void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
     }
 }
 
-void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
+void alpm_list_to_db_array(alpm_list_t *list, zval *zv TSRMLS_DC) {
     alpm_list_t *item;
     php_alpm_db_object *dbo;
     zval obj;
@@ -157,10 +157,17 @@ void alpm_fileconflicts_to_zval(alpm_list_t *fc_list, zval *zv) {
     for (tmp = fc_list; tmp; tmp = tmp->next) {
         fc = (alpm_fileconflict_t*)tmp->data;
         array_init(&inner);
+#ifdef ZEND_ENGINE_3
         add_assoc_string_ex(&inner, "target", strlen("target"), fc->target);
         add_assoc_long_ex(&inner, "type", strlen("type"), fc->type);
         add_assoc_string_ex(&inner, "file", strlen("file"), fc->file);
         add_assoc_string_ex(&inner, "ctarget", strlen("ctarget"), fc->ctarget);
+#else
+        add_assoc_string_ex(&inner, "target", (uint)strlen("target"), fc->target, 1);
+        add_assoc_long_ex(&inner, "type", (uint)strlen("type"), fc->type);
+        add_assoc_string_ex(&inner, "file", (uint)strlen("file"), fc->file, 1);
+        add_assoc_string_ex(&inner, "ctarget", (uint)strlen("ctarget"), fc->ctarget, 1);
+#endif
         add_next_index_zval(zv, &inner);
     }
 }
@@ -173,9 +180,15 @@ void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
     for (i = 0; i < (ssize_t)flist->count; i++) {
         const alpm_file_t *file = flist->files + i;
         array_init(&inner);
+#ifdef ZEND_ENGINE_3
         add_assoc_string_ex(&inner, "filename", strlen("filename"), file->name);
         add_assoc_long_ex(&inner, "size", strlen("size"), file->size);
         add_assoc_long_ex(&inner, "mode", strlen("mode"), file->mode);
+#else
+        add_assoc_string_ex(&inner, "filename", (uint)strlen("filename"), file->name, 1);
+        add_assoc_long_ex(&inner, "size", (uint)strlen("size"), file->size);
+        add_assoc_long_ex(&inner, "mode", (uint)strlen("mode"), file->mode);
+#endif
         add_next_index_zval(zv, &inner);
     }
 }
@@ -240,20 +253,53 @@ void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv) {
 
 int zval_to_alpm_list(zval *zv, alpm_list_t **list) {
     alpm_list_t *ret = NULL;
-    zval *data;
 
+#ifdef ZEND_ENGINE_3
+    zval *data;
     ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), data) {
         ret = alpm_list_add(ret, Z_STRVAL_P(data));
     } ZEND_HASH_FOREACH_END();
+#else
+    zval **data;
+    long i = 0;
+    for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(zv));
+        zend_hash_get_current_data(Z_ARRVAL_P(zv), (void**)&data) == SUCCESS;
+        zend_hash_move_forward(Z_ARRVAL_P(zv)), i++) {
+
+        zval tmp, *ptmp;
+        char *value;
+        if (Z_TYPE_PP(data) == IS_STRING) {
+            value = Z_STRVAL_PP(data);
+        } else {
+            tmp = **data;
+            zval_copy_ctor(&tmp);
+            ptmp = &tmp;
+            convert_to_string(ptmp);
+
+            value = Z_STRVAL_P(ptmp);
+            zval_dtor(ptmp);
+        }
+
+        ret = alpm_list_add(ret, value);
+    }
+#endif
 
     *list = ret;
     return 0;
 }
 
-void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
+void alpm_group_to_zval(alpm_group_t *grp, zval *zv TSRMLS_DC) {
     zval inner;
 
     array_init(zv);
-    alpm_list_to_pkg_array(grp->packages, &inner);
+    alpm_list_to_pkg_array(grp->packages, &inner TSRMLS_CC);
     add_assoc_zval(zv, grp->name, &inner);
 }
+
+#ifndef ZEND_ENGINE_3
+zend_string *zend_string_init(const char *str, size_t len, int cpy) {
+    zend_string *retval = emalloc(sizeof(zend_string) * len);
+    strcpy(retval, str);
+    return retval;
+}
+#endif
