@@ -8,7 +8,7 @@ there may still be some memory leaking hidden in here.
 
 The main thing to be cautious about is using `AlpmTransaction` as it is very
 leaky. If you are just using this to gather information from a Pacman database
-(using `AlpmHandle`, `AlpmDb`, and `AlpmPkg`) should result in very few
+(using `AlpmHandle`, `AlpmDb`, and `AlpmPkg`), it should result in very few
 problems.
 
 ## Requirements
