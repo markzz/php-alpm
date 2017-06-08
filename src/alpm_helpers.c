@@ -298,8 +298,6 @@ void alpm_group_to_zval(alpm_group_t *grp, zval *zv TSRMLS_DC) {
 
 #ifndef ZEND_ENGINE_3
 zend_string *zend_string_init(const char *str, size_t len, int cpy) {
-    zend_string *retval = emalloc(sizeof(zend_string) * len);
-    strcpy(retval, str);
-    return retval;
+    return (zend_string*)str;
 }
 #endif

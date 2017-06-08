@@ -2372,21 +2372,288 @@ static HashTable *php_alpm_handle_get_properties(zval *object TSRMLS_DC) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(object);
     HashTable *props = zend_std_get_properties(object TSRMLS_CC);
     char *key;
-    const char *val;
-    zval *hval;
+    const char *sval = NULL;
+    long loval;
+    double dval;
+    alpm_list_t *lval = NULL;
+    zval *hval, *cb;
     HashPosition pos;
     ulong num_key;
 
     key = "arch";
-    val = alpm_option_get_arch(intern->handle);
+    sval = alpm_option_get_arch(intern->handle);
     MAKE_STD_ZVAL(hval);
-    if (val == NULL) {
+    if (sval == NULL) {
         ZVAL_NULL(hval);
     } else {
-        ZVAL_STRING(val, strlen(val), 1);
+        ZVAL_STRING(hval, sval, 1);
     }
-    zend_hash_update(props, key, (uint)strlen(key), (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
     zend_hash_move_forward(props);
+
+    key = "assumeinstalled";
+    lval = alpm_option_get_assumeinstalled(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "cachedirs";
+    lval = alpm_option_get_cachedirs(intern->handle);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "checkspace";
+    loval = alpm_option_get_checkspace(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "dbext";
+    sval = alpm_option_get_dbext(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "dbpath";
+    sval = alpm_option_get_dbpath(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "default_siglevel";
+    loval = alpm_option_get_default_siglevel(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "deltaratio";
+    dval = alpm_option_get_deltaratio(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_DOUBLE(hval, dval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "dlcb";
+    cb = global_callback_functions[CB_DOWNLOAD];
+    MAKE_STD_ZVAL(hval);
+    if (cb == NULL) {
+        ZVAL_NULL(hval);
+    } else if (Z_TYPE_P(cb) == IS_STRING) {
+        ZVAL_STRING(hval, Z_STRVAL_P(cb), 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "eventcb";
+    cb = global_callback_functions[CB_EVENT];
+    MAKE_STD_ZVAL(hval);
+    if (cb == NULL) {
+        ZVAL_NULL(hval);
+    } else if (Z_TYPE_P(cb) == IS_STRING) {
+        ZVAL_STRING(hval, Z_STRVAL_P(cb), 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "fetchcb";
+    cb = global_callback_functions[CB_FETCH];
+    MAKE_STD_ZVAL(hval);
+    if (cb == NULL) {
+        ZVAL_NULL(hval);
+    } else if (Z_TYPE_P(cb) == IS_STRING) {
+        ZVAL_STRING(hval, Z_STRVAL_P(cb), 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "gpgdir";
+    sval = alpm_option_get_gpgdir(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "hookdirs";
+    lval = alpm_option_get_hookdirs(intern->handle);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "ignoregrps";
+    lval = alpm_option_get_ignoregroups(intern->handle);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "ignorepkgs";
+    lval = alpm_option_get_ignorepkgs(intern->handle);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "local_file_siglevel";
+    loval = alpm_option_get_local_file_siglevel(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "lockfile";
+    sval = alpm_option_get_lockfile(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "logcb";
+    cb = global_callback_functions[CB_LOG];
+    MAKE_STD_ZVAL(hval);
+    if (cb == NULL) {
+        ZVAL_NULL(hval);
+    } else if (Z_TYPE_P(cb) == IS_STRING) {
+        ZVAL_STRING(hval, Z_STRVAL_P(cb), 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "logfile";
+    sval = alpm_option_get_logfile(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "noextracts";
+    lval = alpm_option_get_noextracts(intern->handle);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "noupgrades";
+    lval = alpm_option_get_noupgrades(intern->handle);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "progresscb";
+    cb = global_callback_functions[CB_PROGRESS];
+    MAKE_STD_ZVAL(hval);
+    if (cb == NULL) {
+        ZVAL_NULL(hval);
+    } else if (Z_TYPE_P(cb) == IS_STRING) {
+        ZVAL_STRING(hval, Z_STRVAL_P(cb), 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "questioncb";
+    cb = global_callback_functions[CB_QUESTION];
+    MAKE_STD_ZVAL(hval);
+    if (cb == NULL) {
+        ZVAL_NULL(hval);
+    } else if (Z_TYPE_P(cb) == IS_STRING) {
+        ZVAL_STRING(hval, Z_STRVAL_P(cb), 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "remote_file_siglevel";
+    loval = alpm_option_get_remote_file_siglevel(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "root";
+    sval = alpm_option_get_root(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "totaldlcb";
+    cb = global_callback_functions[CB_TOTALDL];
+    MAKE_STD_ZVAL(hval);
+    if (cb == NULL) {
+        ZVAL_NULL(hval);
+    } else if (Z_TYPE_P(cb) == IS_STRING) {
+        ZVAL_STRING(hval, Z_STRVAL_P(cb), 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "usesyslog";
+    loval = alpm_option_get_usesyslog(intern->handle);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_BOOL(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    /* TODO: Sort hashtable */
 
     return props;
 }
