@@ -2972,6 +2972,312 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
 
     return props;
 }
+#else
+static HashTable *php_alpm_pkg_get_properties(zval *object TSRMLS_DC) {
+    php_alpm_pkg_object *intern = Z_PKGO_P(object);
+    HashTable *props = zend_std_get_properties(object TSRMLS_CC);
+    zval *hval;
+    char *key;
+
+    const char *sval;
+    long loval;
+    alpm_db_t *dbval;
+    alpm_filelist_t *flist;
+    alpm_list_t *lval;
+
+    key = "arch";
+    sval = alpm_pkg_get_arch(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "backup";
+    lval = alpm_pkg_get_backup(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_backup_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "base";
+    sval = alpm_pkg_get_base(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "base64_sig";
+    sval = alpm_pkg_get_base64_sig(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "conflicts";
+    lval = alpm_pkg_get_conflicts(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_depend_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "db";
+    dbval = alpm_pkg_get_db(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (dbval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        object_init_ex(hval, php_alpm_db_sc_entry);
+        php_alpm_db_object *db = Z_DBO_P(hval);
+        db->db = dbval;
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "deltas";
+    lval = alpm_pkg_get_deltas(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "desc";
+    sval = alpm_pkg_get_desc(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "download_size";
+    loval = (long)alpm_pkg_download_size(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "filename";
+    sval = alpm_pkg_get_filename(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "files";
+    flist = alpm_pkg_get_files(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (flist == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_filelist_to_zval(flist, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "groups";
+    lval = alpm_pkg_get_groups(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "has_scriptlet";
+    loval = (long)alpm_pkg_has_scriptlet(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_BOOL(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "installdate";
+    loval = alpm_pkg_get_installdate(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "isize";
+    loval = alpm_pkg_get_isize(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "licenses";
+    lval = alpm_pkg_get_licenses(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "md5sum";
+    sval = alpm_pkg_get_md5sum(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "name";
+    sval = alpm_pkg_get_name(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "optdepends";
+    lval = alpm_pkg_get_optdepends(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_depend_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "origin";
+    loval = alpm_pkg_get_origin(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "packager";
+    sval = alpm_pkg_get_packager(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "provides";
+    lval = alpm_pkg_get_provides(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_depend_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "reason";
+    loval = alpm_pkg_get_reason(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "replaces";
+    lval = alpm_pkg_get_replaces(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_depend_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "sha256sum";
+    sval = alpm_pkg_get_sha256sum(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "size";
+    loval = alpm_pkg_get_size(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "url";
+    sval = alpm_pkg_get_url(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "version";
+    sval = alpm_pkg_get_version(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    if (sval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        ZVAL_STRING(hval, sval, 1);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "validation";
+    loval = alpm_pkg_get_validation(intern->pkg);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    /* TODO: Sort hashtable */
+
+    return props;
+}
 #endif
 
 PHP_MINIT_FUNCTION(alpm) {
@@ -3038,9 +3344,7 @@ PHP_MINIT_FUNCTION(alpm) {
     alpm_pkg_object_handlers.offset = XtOffsetOf(php_alpm_pkg_object, zo);
     alpm_pkg_object_handlers.free_obj = php_alpm_pkg_free_storage;
 #endif
-#ifdef ZEND_ENGINE_3
     alpm_pkg_object_handlers.get_properties = php_alpm_pkg_get_properties;
-#endif
     alpm_pkg_object_handlers.read_property = php_alpm_pkg_read_property;
     alpm_pkg_object_handlers.write_property = php_alpm_pkg_write_property;
     php_alpm_pkg_sc_entry = zend_register_internal_class(&ce TSRMLS_CC);
