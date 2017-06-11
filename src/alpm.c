@@ -2721,6 +2721,75 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
 
     return props;
 }
+#else
+static HashTable *php_alpm_db_get_properties(zval *object TSRMLS_DC) {
+    php_alpm_db_object *intern = Z_DBO_P(object);
+    HashTable *props = zend_std_get_properties(object TSRMLS_CC);
+    zval *hval;
+    char *key;
+    const char *sval = NULL;
+    long loval;
+    alpm_list_t *lval;
+    alpm_db_usage_t uval;
+
+    key = "grpcache";
+    lval = alpm_db_get_groupcache(intern->db);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_group_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "pkgcache";
+    lval = alpm_db_get_pkgcache(intern->db);
+    MAKE_STD_ZVAL(hval)
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_pkg_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "servers";
+    lval = alpm_db_get_servers(intern->db);
+    MAKE_STD_ZVAL(hval);
+    if (lval == NULL) {
+        ZVAL_NULL(hval);
+    } else {
+        alpm_list_to_zval(lval, hval);
+    }
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "siglevel";
+    loval = alpm_db_get_siglevel(intern->db);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, loval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "usage";
+    alpm_db_get_usage(intern->db, &uval);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_LONG(hval, (long)uval);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    key = "valid";
+    loval = alpm_db_get_valid(intern->db);
+    MAKE_STD_ZVAL(hval);
+    ZVAL_BOOL(hval, loval == 0 ? 1 : 0);
+    zend_hash_update(props, key, (uint)strlen(key) + 1, (void *)&hval, sizeof(zval*), NULL);
+    zend_hash_move_forward(props);
+
+    /* TODO: Sort hashtable */
+
+    return props;
+}
 #endif
 
 #ifdef ZEND_ENGINE_3
@@ -2958,9 +3027,7 @@ PHP_MINIT_FUNCTION(alpm) {
     alpm_db_object_handlers.offset = XtOffsetOf(php_alpm_db_object, zo);
     alpm_db_object_handlers.free_obj = php_alpm_db_free_storage;
 #endif
-#ifdef ZEND_ENGINE_3
     alpm_db_object_handlers.get_properties = php_alpm_db_get_properties;
-#endif
     alpm_db_object_handlers.read_property = php_alpm_db_read_property;
     alpm_db_object_handlers.write_property = php_alpm_db_write_property;
     php_alpm_db_sc_entry = zend_register_internal_class(&ce TSRMLS_CC);
