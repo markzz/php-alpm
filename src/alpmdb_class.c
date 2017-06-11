@@ -1,7 +1,7 @@
 /*
  *  alpmdb_class.c
  *
- *  Copyright (c) 2016 Mark Weiman <contact@markzz.net>
+ *  Copyright (c) 2016-2017 Mark Weiman <contact@markzz.net>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
