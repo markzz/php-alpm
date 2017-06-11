@@ -596,7 +596,7 @@ PHP_METHOD(Handle, remove_assumeinstalled) {
     if (lp != NULL) {
         for (tmp = lp; tmp; tmp = tmp->next) {
             dep = tmp->data;
-            if (strcmp(dep->name, arg)) {
+            if (strcmp(dep->name, arg) == 0) {
                 to_rm = dep;
                 break;
             }
