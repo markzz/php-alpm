@@ -1,3 +1,9 @@
+php-alpm 0.4:
+  * Added PHP 5 support
+  * Add more constants from libalpm
+  * Cleanup code
+  * Add more AlpmHandle and AlpmPkg properties
+
 php-alpm 0.3.1:
   * Patch segfault when reading properties in AlpmDb objects
   * Add alpm_vercmp()

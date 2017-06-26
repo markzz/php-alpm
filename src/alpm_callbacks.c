@@ -21,6 +21,8 @@
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
 
+/* FIXME: The TSMLRS_DC parameters will break a PHP 5 instance of this. Find a way to remove. */
+
 extern zval *global_callback_functions[N_CALLBACKS];
 
 void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args TSRMLS_DC) {
