@@ -126,11 +126,7 @@ PHP_METHOD(Pkg, get_builddate) {
 
     ret = alpm_pkg_get_builddate(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
-    RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
+    RETURN_LONG(ret)
 }
 
 PHP_METHOD(Pkg, get_conflicts) {
