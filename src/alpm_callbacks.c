@@ -21,16 +21,16 @@
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
 
-/* FIXME: The TSMLRS_DC parameters will break a PHP 5 instance of this. Find a way to remove. */
-
 extern zval *global_callback_functions[N_CALLBACKS];
 
-void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args TSRMLS_DC) {
+void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
     char *log;
     int status, vasret;
     zval zl, zlog, ret;
     zend_string *tmp;
     zval *func = global_callback_functions[CB_LOG];
+
+    TSRMLS_FETCH();
 
     ZVAL_LONG(&zl, level);
 
@@ -55,11 +55,13 @@ void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args TSR
     }
 }
 
-void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total TSRMLS_DC) {
+void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
     int status;
     zval zfn, zxf, zt, ret;
     zend_string *tmp;
     zval *func = global_callback_functions[CB_DOWNLOAD];
+
+    TSRMLS_FETCH();
 
     ZVAL_LONG(&zxf, xfered);
     ZVAL_LONG(&zt, total);
@@ -79,10 +81,12 @@ void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total TSRMLS_DC) {
     }
 }
 
-void *php_alpm_fetchcb(off_t total TSRMLS_DC) {
+void *php_alpm_fetchcb(off_t total) {
     int status;
     zval zt, ret;
     zval *func = global_callback_functions[CB_FETCH];
+
+    TSRMLS_FETCH();
 
     ZVAL_LONG(&zt, total);
 
@@ -94,11 +98,13 @@ void *php_alpm_fetchcb(off_t total TSRMLS_DC) {
     }
 }
 
-void *php_alpm_totaldlcb(const char *url, const char *localpath, int force TSRMLS_DC) {
+void *php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
     int status;
     zval zu, zlp, zf, ret;
     zend_string *tmp;
     zval *func = global_callback_functions[CB_TOTALDL];
+
+    TSRMLS_FETCH();
 
     ZVAL_BOOL(&zf, force == 0 ? IS_FALSE : IS_TRUE);
     tmp = zend_string_init(url, strlen(url), 1);
@@ -130,10 +136,12 @@ void *php_alpm_questioncb(alpm_question_t question, void *data1, void *data2, vo
     /* TODO: Write function. */
 }
 
-void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target TSRMLS_DC) {
+void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target) {
     int status;
     zval zop, ztn, zp, znt, zct, ret;
     zval *func = global_callback_functions[CB_PROGRESS];
+
+    TSRMLS_FETCH();
 
     ZVAL_LONG(&zop, op);
     ZVAL_LONG(&zp, percentage);
