@@ -435,7 +435,7 @@ static zend_object_value php_alpm_db_object_new_ex(zend_class_entry *class_type,
     object_properties_init(&intern->zo, class_type);
 
 #ifdef ZEND_ENGINE_3
-    intern->zo.handlers = &alpm_handle_object_handlers;
+    intern->zo.handlers = &alpm_db_object_handlers;
     return &intern->zo;
 #else
     retval.handle = zend_objects_store_put(intern, NULL, (zend_objects_free_object_storage_t) php_alpm_db_free_storage, NULL TSRMLS_CC);
