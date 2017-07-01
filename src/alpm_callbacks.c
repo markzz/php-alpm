@@ -42,11 +42,11 @@ void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
     tmp = zend_string_init(log, strlen(log), 1);
 #ifdef ZEND_ENGINE_3
     ZVAL_STR(&zlog, tmp);
+    zval args[] = { zl, zlog };
 #else
     ZVAL_STRING(&zlog, tmp, 1);
+    zval *args[] = { &zl, &zlog };
 #endif
-
-    zval args[] = { zl, zlog };
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 2, args TSRMLS_CC);
 
@@ -69,11 +69,12 @@ void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
     tmp = zend_string_init(filename, strlen(filename), 1);
 #ifdef ZEND_ENGINE_3
     ZVAL_STR(&zfn, tmp);
+    zval args[] = { zfn, zxf, zt };
 #else
     ZVAL_STRING(&zfn, tmp, 1);
+    zval *args[] = { &zfn, &zxf, &zt };
 #endif
 
-    zval args[] = { zfn, zxf, zt };
     status = call_user_function(CG(function_table), NULL, func, &ret, 3, args TSRMLS_CC);
 
     if (status == FAILURE) {
@@ -90,7 +91,11 @@ void *php_alpm_fetchcb(off_t total) {
 
     ZVAL_LONG(&zt, total);
 
+#ifdef ZEND_ENGINE_3
     zval args[] = { zt };
+#else
+    zval *args[] = { &zt };
+#endif
     status = call_user_function(CG(function_table), NULL, func, &ret, 1, args TSRMLS_CC);
 
     if (status == FAILURE) {
@@ -116,11 +121,12 @@ void *php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
     tmp = zend_string_init(localpath, strlen(localpath), 1);
 #ifdef ZEND_ENGINE_3
     ZVAL_STR(&zlp, tmp);
+    zval args[] = { zu, zlp, zf };
 #else
     ZVAL_STRING(&zlp, tmp, 1);
+    zval *args[] = { &zu, &zlp, &zf };
 #endif
 
-    zval args[] = { zu, zlp, zf };
     status = call_user_function(CG(function_table), NULL, func, &ret, 3, args TSRMLS_CC);
 
     if (status == FAILURE) {
@@ -149,11 +155,12 @@ void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int perce
     ZVAL_LONG(&zct, cur_target);
 #ifdef ZEND_ENGINE_3
     ZVAL_STRING(&ztn, target_name);
+    zval args[] = { zop, ztn, zp, znt, zct };
 #else
     ZVAL_STRING(&ztn, target_name, 1);
+    zval *args[] = { &zop, &ztn, &zp, &znt, &zct };
 #endif
 
-    zval args[] = { zop, ztn, zp, znt, zct };
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 5, args TSRMLS_CC);
 
