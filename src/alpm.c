@@ -56,7 +56,7 @@ PHP_FUNCTION(alpm_vercmp) {
     size_t ver1s, ver2s;
     int ret;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "ss", &ver1, &ver1s, &ver2, &ver2s) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &ver1, &ver1s, &ver2, &ver2s) == FAILURE) {
         RETURN_NULL()
     }
 
