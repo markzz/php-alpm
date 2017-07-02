@@ -1647,7 +1647,7 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
             alpm_option_set_usesyslog(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
         } else {
-            php_error(E_NOTICE, "checkspace must be a bool");
+            php_error(E_NOTICE, "usesyslog must be a bool");
         }
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
