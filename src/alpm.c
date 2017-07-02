@@ -1579,6 +1579,8 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
     } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
         if (Z_TYPE_P(value) == IS_DOUBLE) {
             alpm_option_set_deltaratio(intern->handle, Z_DVAL_P(value));
+        } else if (Z_TYPE_P(value) == IS_LONG) {
+            alpm_option_set_deltaratio(intern->handle, (double)(Z_LVAL_P(value)));
         } else {
             php_error(E_NOTICE, "deltaratio must be a float");
         }
@@ -1708,6 +1710,8 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, con
     } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
         if (Z_TYPE_P(value) == IS_DOUBLE) {
             alpm_option_set_deltaratio(intern->handle, Z_DVAL_P(value));
+        } else if (Z_TYPE_P(value) == IS_LONG) {
+            alpm_option_set_deltaratio(intern->handle, (double)(Z_LVAL_P(value)));
         } else {
             php_error(E_NOTICE, "deltaratio must be a float");
         }
