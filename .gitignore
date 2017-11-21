@@ -31,3 +31,4 @@ test_root
 *.exp
 *.out
 *.php
+cmake-build-debug
