@@ -12,10 +12,10 @@ php:
 
 install:
     - sudo apt-get -qq update
-    - sudo apt-get install -y asciidoc libarchive-dev curl libgpgme11-dev
-    - curl -O https://sources.archlinux.org/other/pacman/pacman-5.0.1.tar.gz
-    - tar -xzvf pacman-5.0.1.tar.gz
-    - cd pacman-5.0.1 && ./configure --prefix=/usr && make && sudo make install
+    - sudo apt-get install -y libarchive-dev
+    - curl -O https://sources.archlinux.org/other/pacman/pacman-5.0.2.tar.gz
+    - tar -xzvf pacman-5.0.2.tar.gz
+    - cd pacman-5.0.2 && ./configure --prefix=/usr --disable-doc && make && sudo make install
     - cd ..
 
 script:
