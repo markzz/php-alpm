@@ -30,10 +30,10 @@ contains libalpm) first:
 
 On Ubuntu (maybe Debian):
 ```
-# apt-get install asciidoc libarchive-dev curl libgpgme11-dev
-$ curl -O https://sources.archlinux.org/other/pacman/pacman-5.0.1.tar.gz
-$ tar -xzvf pacman-5.0.1.tar.gz
-$ cd pacman-5.0.1 && ./configure --prefix=/usr/local && make
+# apt-get install libarchive-dev
+$ curl -O https://sources.archlinux.org/other/pacman/pacman-5.0.2.tar.gz
+$ tar -xzvf pacman-5.0.2.tar.gz
+$ cd pacman-5.0.2 && ./configure --disable-doc && make
 # make install
 ```
 Build it:
