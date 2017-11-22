@@ -29,7 +29,7 @@ object(AlpmHandle)#1 (27) {
   ["dbext"]=>
   string(3) ".db"
   ["dbpath"]=>
-  string(57) "%s"
+  string(%d) "%s"
   ["default_siglevel"]=>
   int(0)
   ["deltaratio"]=>
@@ -45,7 +45,7 @@ object(AlpmHandle)#1 (27) {
   ["hookdirs"]=>
   array(1) {
     [0]=>
-    string(66) "%s"
+    string(%d) "%s"
   }
   ["ignoregrps"]=>
   NULL
@@ -54,7 +54,7 @@ object(AlpmHandle)#1 (27) {
   ["local_file_siglevel"]=>
   int(0)
   ["lockfile"]=>
-  string(63) "%s"
+  string(%d) "%s"
   ["logcb"]=>
   NULL
   ["logfile"]=>
@@ -70,7 +70,7 @@ object(AlpmHandle)#1 (27) {
   ["remote_file_siglevel"]=>
   int(0)
   ["root"]=>
-  string(42) "%s"
+  string(%d) "%s"
   ["totaldlcb"]=>
   NULL
   ["usesyslog"]=>
