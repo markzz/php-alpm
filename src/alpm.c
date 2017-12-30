@@ -20,6 +20,8 @@
 #include "php_alpm_defs.h"
 #include "php_alpm_helpers.h"
 
+#include "ext/standard/info.h"
+
 zend_class_entry *php_alpm_handle_sc_entry;
 zend_class_entry *php_alpm_handle_exception_class_entry;
 zend_class_entry *php_alpm_db_sc_entry;
@@ -3394,6 +3396,16 @@ PHP_MINIT_FUNCTION(alpm) {
     return SUCCESS;
 }
 
+PHP_MINFO_FUNCTION(alpm) {
+    php_info_print_table_start();
+    php_info_print_table_header(2, "alpm module", "enabled");
+    php_info_print_table_row(2, "alpm module version", PHP_ALPM_VERSION);
+    php_info_print_table_row(2, "alpm classes", "AlpmHandle, AlpmDb, AlpmPkg, AlpmTransaction");
+    php_info_print_table_row(2, "libalpm version", alpm_version());
+    php_info_print_table_end();
+    DISPLAY_INI_ENTRIES();
+}
+
 zend_module_entry alpm_module_entry = {
 #if ZEND_MODULE_API_NO >= 20010901
     STANDARD_MODULE_HEADER,
@@ -3404,7 +3416,7 @@ zend_module_entry alpm_module_entry = {
     NULL,
     NULL,
     NULL,
-    NULL,
+    PHP_MINFO(alpm),
 #if ZEND_MODULE_API_NO >= 20010901
     PHP_ALPM_VERSION,
 #endif
