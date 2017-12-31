@@ -136,7 +136,7 @@ void php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
 void php_alpm_eventcb(alpm_event_t *event) {
     int status;
     const char *eventstr;
-    zval ret, val;
+    zval ret, val, type;
     zval *func = global_callback_functions[CB_EVENT];
 
     switch (event->type) {
@@ -258,12 +258,13 @@ void php_alpm_eventcb(alpm_event_t *event) {
 
     TSRMLS_FETCH();
 
+    ZVAL_LONG(&type, event->type);
 #ifdef ZEND_ENGINE_3
     ZVAL_STRING(&val, eventstr);
-    zval args[] = { val };
+    zval args[] = { type, val };
 #else
     ZVAL_STRING(&val, eventstr, 1);
-    zval *args[] = { &val };
+    zval *args[] = { &type, &val };
 #endif
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 1, args TSRMLS_CC);
