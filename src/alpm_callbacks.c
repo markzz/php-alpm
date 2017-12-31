@@ -19,7 +19,6 @@
 #include <stdio.h>
 
 #include "php_alpm_defs.h"
-#include "php_alpm_helpers.h"
 
 extern zval *global_callback_functions[N_CALLBACKS];
 
