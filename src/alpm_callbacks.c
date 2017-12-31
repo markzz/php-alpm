@@ -284,7 +284,7 @@ void php_alpm_questioncb(alpm_question_t *question) {
 #ifdef ZEND_ENGINE_3
     zval args[] = { type };
 #else
-    zval *args[] = { *type };
+    zval *args[] = { &type };
 #endif
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 1, args TSRMLS_CC);
