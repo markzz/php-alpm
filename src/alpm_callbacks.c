@@ -23,7 +23,7 @@
 
 extern zval *global_callback_functions[N_CALLBACKS];
 
-void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
+void php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
     char *log;
     int status, vasret;
     zval zl, zlog, ret;
@@ -55,7 +55,7 @@ void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
     }
 }
 
-void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
+void php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
     int status;
     zval zfn, zxf, zt, ret;
     zend_string *tmp;
@@ -82,7 +82,7 @@ void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
     }
 }
 
-void *php_alpm_fetchcb(off_t total) {
+void php_alpm_fetchcb(off_t total) {
     int status;
     zval zt, ret;
     zval *func = global_callback_functions[CB_FETCH];
@@ -103,7 +103,7 @@ void *php_alpm_fetchcb(off_t total) {
     }
 }
 
-void *php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
+void php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
     int status;
     zval zu, zlp, zf, ret;
     zend_string *tmp;
@@ -134,15 +134,168 @@ void *php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
     }
 }
 
-void *php_alpm_eventcb(alpm_event_t event, void *data1, void *data2) {
-    /* TODO: Write function. */
+void php_alpm_eventcb(alpm_event_t *event) {
+    int status;
+    const char *eventstr;
+    zval ret, val;
+    zval *func = global_callback_functions[CB_EVENT];
+
+    switch (event->type) {
+        case ALPM_EVENT_CHECKDEPS_START:
+            eventstr = "Checking dependencies";
+            break;
+        case ALPM_EVENT_CHECKDEPS_DONE:
+            eventstr = "Done checking dependencies";
+            break;
+        case ALPM_EVENT_FILECONFLICTS_START:
+            eventstr = "Checking file conflicts";
+            break;
+        case ALPM_EVENT_FILECONFLICTS_DONE:
+            eventstr = "Done checking file conflicts";
+            break;
+        case ALPM_EVENT_RESOLVEDEPS_START:
+            eventstr = "Resolving dependencies";
+            break;
+        case ALPM_EVENT_RESOLVEDEPS_DONE:
+            eventstr = "Done resolving dependencies";
+            break;
+        case ALPM_EVENT_INTERCONFLICTS_START:
+            eventstr = "Checking inter conflicts";
+            break;
+        case ALPM_EVENT_INTERCONFLICTS_DONE:
+            eventstr = "Done checking inter conflicts";
+            break;
+        case ALPM_EVENT_PACKAGE_OPERATION_START:
+            eventstr = "Operating on a package";
+            switch(((alpm_event_package_operation_t*)event)->operation) {
+                case ALPM_PACKAGE_INSTALL:
+                    eventstr = "Adding a package";
+                    break;
+                case ALPM_PACKAGE_UPGRADE:
+                    eventstr = "Upgrading a package";
+                    break;
+                case ALPM_PACKAGE_REINSTALL:
+                    eventstr = "Reinstalling a package";
+                    break;
+                case ALPM_PACKAGE_DOWNGRADE:
+                    eventstr = "Downgrading a package";
+                    break;
+                case ALPM_PACKAGE_REMOVE:
+                    eventstr = "Removing a package";
+                    break;
+            }
+            break;
+        case ALPM_EVENT_PACKAGE_OPERATION_DONE:
+            eventstr = "Done operating on a package";
+            switch(((alpm_event_package_operation_t*)event)->operation) {
+                case ALPM_PACKAGE_INSTALL:
+                    eventstr = "Done adding a package";
+                    break;
+                case ALPM_PACKAGE_UPGRADE:
+                    eventstr = "Done upgrading a package";
+                    break;
+                case ALPM_PACKAGE_REINSTALL:
+                    eventstr = "Done reinstalling a package";
+                    break;
+                case ALPM_PACKAGE_DOWNGRADE:
+                    eventstr = "Done downgrading a package";
+                    break;
+                case ALPM_PACKAGE_REMOVE:
+                    eventstr = "Done removing a package";
+                    break;
+            }
+            break;
+        case ALPM_EVENT_INTEGRITY_START:
+            eventstr = "Checking integrity";
+            break;
+        case ALPM_EVENT_INTEGRITY_DONE:
+            eventstr = "Done checking integrity";
+            break;
+        case ALPM_EVENT_LOAD_START:
+        case ALPM_EVENT_LOAD_DONE:
+        case ALPM_EVENT_DELTA_INTEGRITY_START:
+        case ALPM_EVENT_DELTA_INTEGRITY_DONE:
+        case ALPM_EVENT_DELTA_PATCHES_START:
+        case ALPM_EVENT_DELTA_PATCHES_DONE:
+        case ALPM_EVENT_DELTA_PATCH_START:
+            /* info here */
+        case ALPM_EVENT_DELTA_PATCH_DONE:
+        case ALPM_EVENT_DELTA_PATCH_FAILED:
+        case ALPM_EVENT_SCRIPTLET_INFO:
+            /* info here */
+        case ALPM_EVENT_RETRIEVE_START:
+        case ALPM_EVENT_RETRIEVE_DONE:
+        case ALPM_EVENT_RETRIEVE_FAILED:
+            /* info here */
+            eventstr = "event not implemented";
+            break;
+        case ALPM_EVENT_DISKSPACE_START:
+            eventstr = "Checking disk space";
+            break;
+        case ALPM_EVENT_DISKSPACE_DONE:
+            eventstr = "Done checking disk space";
+            break;
+        case ALPM_EVENT_OPTDEP_REMOVAL:
+        case ALPM_EVENT_DATABASE_MISSING:
+            eventstr = "event not implemented";
+            break;
+        case ALPM_EVENT_KEYRING_START:
+            eventstr = "Checking keys in keyring";
+            break;
+        case ALPM_EVENT_KEYRING_DONE:
+            eventstr = "Done checking keys in keyring";
+            break;
+        case ALPM_EVENT_KEY_DOWNLOAD_START:
+        case ALPM_EVENT_KEY_DOWNLOAD_DONE:
+        case ALPM_EVENT_PACNEW_CREATED:
+        case ALPM_EVENT_PACSAVE_CREATED:
+        case ALPM_EVENT_HOOK_START:
+        case ALPM_EVENT_HOOK_DONE:
+        case ALPM_EVENT_HOOK_RUN_START:
+        case ALPM_EVENT_HOOK_RUN_DONE:
+        default:
+            eventstr = "unknown event";
+    }
+
+    TSRMLS_FETCH();
+
+#ifdef ZEND_ENGINE_3
+    ZVAL_STRING(&val, eventstr);
+    zval args[] = { val };
+#else
+    ZVAL_STRING(&val, eventstr, 1);
+    zval *args[] = { &val };
+#endif
+
+    status = call_user_function(CG(function_table), NULL, func, &ret, 1, args TSRMLS_CC);
+
+    if (status == FAILURE) {
+        php_error(E_ERROR, "could not call eventcb");
+    }
 }
 
-void *php_alpm_questioncb(alpm_question_t question, void *data1, void *data2, void *data3, int *retcode) {
-    /* TODO: Write function. */
+void php_alpm_questioncb(alpm_question_t *question) {
+    int status;
+    zval type, ret;
+    zval *func = global_callback_functions[CB_QUESTION];
+
+    TSRMLS_FETCH();
+
+    ZVAL_LONG(&type, question->type);
+#ifdef ZEND_ENGINE_3
+    zval args[] = { type };
+#else
+    zval *args[] = { *type };
+#endif
+
+    status = call_user_function(CG(function_table), NULL, func, &ret, 1, args TSRMLS_CC);
+
+    if (status == FAILURE) {
+        php_error(E_ERROR, "could not call questioncb");
+    }
 }
 
-void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target) {
+void php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target) {
     int status;
     zval zop, ztn, zp, znt, zct, ret;
     zval *func = global_callback_functions[CB_PROGRESS];
@@ -160,7 +313,6 @@ void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int perce
     ZVAL_STRING(&ztn, target_name, 1);
     zval *args[] = { &zop, &ztn, &zp, &znt, &zct };
 #endif
-
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 5, args TSRMLS_CC);
 

@@ -240,12 +240,12 @@ PHP_METHOD(Trans, remove_pkg);
 PHP_METHOD(Trans, system_upgrade);
 
 /* callback function wrappers */
-void *php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args);
-void *php_alpm_dlcb(const char *filename, off_t xfered, off_t total);
-void *php_alpm_fetchcb(off_t total);
-void *php_alpm_totaldlcb(const char *url, const char *localpath, int force);
-void *php_alpm_eventcb(alpm_event_t event, void *data1, void *data2);
-void *php_alpm_questioncb(alpm_question_t question, void *data1, void *data2, void *data3, int *retcode);
-void *php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target);
+void php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args);
+void php_alpm_dlcb(const char *filename, off_t xfered, off_t total);
+void php_alpm_fetchcb(off_t total);
+void php_alpm_totaldlcb(const char *url, const char *localpath, int force);
+void php_alpm_eventcb(alpm_event_t *event);
+void php_alpm_questioncb(alpm_question_t *question);
+void php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target);
 
 #endif /* PHP_ALPM_DEFS_H */
