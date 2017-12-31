@@ -51,7 +51,6 @@ PHP_METHOD(Pkg, compute_requiredby) {
     }
 
     alpm_list_to_zval(alpm_pkg_compute_requiredby(intern->pkg), return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_arch) {
@@ -89,7 +88,6 @@ PHP_METHOD(Pkg, get_backup) {
     }
 
     alpm_backup_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_base64_sig) {
@@ -145,7 +143,6 @@ PHP_METHOD(Pkg, get_conflicts) {
     }
 
     alpm_depend_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_db) {
@@ -167,7 +164,6 @@ PHP_METHOD(Pkg, get_db) {
     object_init_ex(return_value, php_alpm_db_sc_entry);
     new_obj = Z_DBO_P(return_value);
     new_obj->db = db;
-    return;
 }
 
 PHP_METHOD(Pkg, get_depends) {
@@ -182,7 +178,6 @@ PHP_METHOD(Pkg, get_depends) {
 
     list = alpm_pkg_get_depends(intern->pkg);
     alpm_depend_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_desc) {
@@ -256,7 +251,6 @@ PHP_METHOD(Pkg, get_files) {
     }
 
     alpm_filelist_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_groups) {
@@ -275,7 +269,6 @@ PHP_METHOD(Pkg, get_groups) {
     }
 
     alpm_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_has_scriptlet) {
@@ -342,7 +335,6 @@ PHP_METHOD(Pkg, get_licenses) {
     }
 
     alpm_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_md5sum) {
@@ -402,7 +394,6 @@ PHP_METHOD(Pkg, get_optdepends) {
     }
 
     alpm_depend_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_packager) {
@@ -440,7 +431,6 @@ PHP_METHOD(Pkg, get_provides) {
     }
 
     alpm_depend_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_reason) {
@@ -484,7 +474,6 @@ PHP_METHOD(Pkg, get_replaces) {
     }
 
     alpm_depend_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Pkg, get_sha256sum) {

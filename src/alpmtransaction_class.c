@@ -65,7 +65,6 @@ PHP_METHOD(Trans, commit) {
     pmerr = alpm_errno(intern->handle);
     switch (pmerr) {
         case ALPM_ERR_FILE_CONFLICTS:
-            /* TODO: Create alpm_fileconflicts_to_zval() in php_alpm_helpers.h */
             alpm_fileconflicts_to_zval(list, return_value);
             break;
         case ALPM_ERR_PKG_INVALID:
@@ -139,7 +138,6 @@ PHP_METHOD(Trans, prepare) {
 
 PHP_METHOD(Trans, release) {
     php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
-    alpm_errno_t err;
     int ret;
 
     if (zend_parse_parameters_none() == FAILURE) {

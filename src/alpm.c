@@ -568,6 +568,7 @@ static struct _alpm_cb_getset cb_getsets[N_CALLBACKS] = {
 zval *global_callback_functions[N_CALLBACKS];
 
 static zval *_get_cb_attr(php_alpm_handle_object *ho, const struct _alpm_cb_getset *closure) {
+    /* TODO: Figure out how to use ho */
     zval *cb = global_callback_functions[closure->id];
     return cb;
 }
@@ -2118,7 +2119,7 @@ static int hashtable_key_cmp(const void *a, const void *b) {
         }
     } else {
         if (s->key) {
-            return zendi_smart_strcmp(f->key, s->key);
+            return (int) zendi_smart_strcmp(f->key, s->key);
         } else {
             l2 = (zend_long)s->h;
             t = is_numeric_string(f->key->val, f->key->len, &l1, &d, 1);
@@ -2194,7 +2195,6 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     int itmp;
     double dtmp;
     long lotmp;
-    struct _alpm_cb_getset closure;
     alpm_list_t *ltmp;
 
     props = zend_std_get_properties(object);
@@ -3325,7 +3325,7 @@ PHP_MINIT_FUNCTION(alpm) {
     INIT_CLASS_ENTRY(ce, PHP_ALPM_HANDLE_SC_NAME, handle_methods);
     ce.create_object = php_alpm_handle_object_new;
 #ifdef ZEND_ENGINE_3
-    alpm_handle_object_handlers.offset = XtOffsetOf(php_alpm_handle_object, zo);
+    alpm_handle_object_handlers.offset = (int) XtOffsetOf(php_alpm_handle_object, zo);
     alpm_handle_object_handlers.free_obj = php_alpm_handle_free_storage;
 #endif
     alpm_handle_object_handlers.get_properties = php_alpm_handle_get_properties;
@@ -3336,7 +3336,7 @@ PHP_MINIT_FUNCTION(alpm) {
     INIT_CLASS_ENTRY(ce, PHP_ALPM_DB_SC_NAME, db_methods);
     ce.create_object = php_alpm_db_object_new;
 #ifdef ZEND_ENGINE_3
-    alpm_db_object_handlers.offset = XtOffsetOf(php_alpm_db_object, zo);
+    alpm_db_object_handlers.offset = (int) XtOffsetOf(php_alpm_db_object, zo);
     alpm_db_object_handlers.free_obj = php_alpm_db_free_storage;
 #endif
     alpm_db_object_handlers.get_properties = php_alpm_db_get_properties;
@@ -3347,7 +3347,7 @@ PHP_MINIT_FUNCTION(alpm) {
     INIT_CLASS_ENTRY(ce, PHP_ALPM_PKG_SC_NAME, pkg_methods);
     ce.create_object = php_alpm_pkg_object_new;
 #ifdef ZEND_ENGINE_3
-    alpm_pkg_object_handlers.offset = XtOffsetOf(php_alpm_pkg_object, zo);
+    alpm_pkg_object_handlers.offset = (int) XtOffsetOf(php_alpm_pkg_object, zo);
     alpm_pkg_object_handlers.free_obj = php_alpm_pkg_free_storage;
 #endif
     alpm_pkg_object_handlers.get_properties = php_alpm_pkg_get_properties;
@@ -3358,7 +3358,7 @@ PHP_MINIT_FUNCTION(alpm) {
     INIT_CLASS_ENTRY(ce, PHP_ALPM_TRANSACTION_SC_NAME, trans_methods);
     ce.create_object = php_alpm_transaction_object_new;
 #ifdef ZEND_ENGINE_3
-    alpm_transaction_object_handlers.offset = XtOffsetOf(php_alpm_transaction_object, zo);
+    alpm_transaction_object_handlers.offset = (int) XtOffsetOf(php_alpm_transaction_object, zo);
     alpm_transaction_object_handlers.free_obj = php_alpm_transaction_free_storage;
 #endif
     php_alpm_transaction_sc_entry = zend_register_internal_class(&ce TSRMLS_CC);

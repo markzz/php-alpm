@@ -24,7 +24,7 @@ PHP_METHOD(Handle, __construct) {
     char *rootpath;
     char *dbpath;
     size_t rp, dp;
-    enum _alpm_errno_t errcode = 0;
+    int errcode = 0;
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     alpm_handle_t *h;
 
@@ -43,7 +43,7 @@ PHP_METHOD(Handle, __construct) {
 
     create:
 
-    h = alpm_initialize(rootpath, dbpath, &errcode);
+    h = alpm_initialize(rootpath, dbpath, (alpm_errno_t*) &errcode);
     if (!h) {
         zend_throw_exception(php_alpm_handle_exception_class_entry, "unable to create handle object", 0 TSRMLS_CC);
         RETURN_NULL()
@@ -364,7 +364,6 @@ PHP_METHOD(Handle, get_ignoregrps) {
     }
 
     alpm_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Handle, get_ignorepkgs) {
@@ -388,7 +387,6 @@ PHP_METHOD(Handle, get_ignorepkgs) {
     }
 
     alpm_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Handle, get_localdb) {
@@ -413,7 +411,6 @@ PHP_METHOD(Handle, get_localdb) {
     object_init_ex(return_value, php_alpm_db_sc_entry);
     new_obj = Z_DBO_P(return_value);
     new_obj->db = db;
-    return;
 }
 
 PHP_METHOD(Handle, get_noextracts) {
@@ -437,7 +434,6 @@ PHP_METHOD(Handle, get_noextracts) {
     }
 
     alpm_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Handle, get_noupgrades) {
@@ -461,7 +457,6 @@ PHP_METHOD(Handle, get_noupgrades) {
     }
 
     alpm_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Handle, get_syncdbs) {
@@ -483,16 +478,15 @@ PHP_METHOD(Handle, get_syncdbs) {
     }
 
     alpm_list_to_db_array(db_list, return_value TSRMLS_CC);
-    return;
 }
 
-#define FLAGS(a) &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6], &a[8], &a[9], \
-&a[10], &a[11], &a[13], &a[14], &a[15], &a[16], &a[17]
+#define FLAGS(a) &(a)[0], &(a)[1], &(a)[2], &(a)[3], &(a)[4], &(a)[5], &(a)[6], &(a)[8], &(a)[9], \
+&(a)[10], &(a)[11], &(a)[13], &(a)[14], &(a)[15], &(a)[16], &(a)[17]
 
 PHP_METHOD(Handle, init_transaction) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     zend_bool flags[18] = {0};
-    alpm_transflag_t flag_int = 0;
+    int flag_int = 0;
     int i, ret;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|bbbbbbbbbbbbbbbb", FLAGS(flags)) == FAILURE) {
@@ -504,7 +498,7 @@ PHP_METHOD(Handle, init_transaction) {
             flag_int |= 1U << i;
         }
     }
-    ret = alpm_trans_init(intern->handle, flag_int);
+    ret = alpm_trans_init(intern->handle, (alpm_transflag_t) flag_int);
 
     if (ret == -1) {
         zend_throw_exception(php_alpm_handle_exception_class_entry, alpm_strerror(alpm_errno(intern->handle)), alpm_errno(intern->handle) TSRMLS_CC);
@@ -543,7 +537,6 @@ PHP_METHOD(Handle, load_pkg) {
     object_init_ex(return_value, php_alpm_pkg_sc_entry);
     new_obj = Z_PKGO_P(return_value);
     new_obj->pkg = pkg;
-    return;
 }
 
 PHP_METHOD(Handle, register_syncdb) {
@@ -563,7 +556,7 @@ PHP_METHOD(Handle, register_syncdb) {
         RETURN_NULL()
     }
 
-    db = alpm_register_syncdb(intern->handle, dbname, pgp_level);
+    db = alpm_register_syncdb(intern->handle, dbname, (alpm_siglevel_t) pgp_level);
     if (!db) {
         RETURN_NULL()
     }
@@ -571,7 +564,6 @@ PHP_METHOD(Handle, register_syncdb) {
     object_init_ex(return_value, php_alpm_db_sc_entry);
     new_obj = Z_DBO_P(return_value);
     new_obj->db = db;
-    return;
 }
 
 PHP_METHOD(Handle, remove_assumeinstalled) {

@@ -75,7 +75,6 @@ PHP_METHOD(Db, get_grpcache) {
     }
 
     alpm_group_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Db, get_name) {
@@ -129,7 +128,6 @@ PHP_METHOD(Db, get_pkg) {
     object_init_ex(return_value, php_alpm_pkg_sc_entry);
     new_obj = Z_PKGO_P(return_value);
     new_obj->pkg = pkg;
-    return;
 }
 
 PHP_METHOD(Db, get_pkgcache) {
@@ -153,7 +151,6 @@ PHP_METHOD(Db, get_pkgcache) {
     }
 
     alpm_list_to_pkg_array(list, return_value TSRMLS_CC);
-    return;
 }
 
 PHP_METHOD(Db, get_servers) {
@@ -177,7 +174,6 @@ PHP_METHOD(Db, get_servers) {
     }
 
     alpm_list_to_zval(list, return_value);
-    return;
 }
 
 PHP_METHOD(Db, search) {
@@ -196,7 +192,6 @@ PHP_METHOD(Db, search) {
     }
 
     alpm_list_to_pkg_array(result, return_value TSRMLS_CC);
-    return;
 }
 
 PHP_METHOD(Db, read_grp) {
