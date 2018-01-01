@@ -11,13 +11,12 @@ php:
     - 5.5
     - 5.4
 
-install:
-    - sudo apt-get -qq update
-    - sudo apt-get install -y libarchive-dev curl libgpgme11-dev
-    - curl -O https://sources.archlinux.org/other/pacman/pacman-5.0.2.tar.gz
-    - tar -xzvf pacman-5.0.2.tar.gz
-    - cd pacman-5.0.2 && ./configure --prefix=/usr --disable-doc && make && sudo make install
-    - cd ..
+env:
+    - PACMAN_VERSION=git
+    - PACMAN_VERSION=5.0.2
+
+before_script:
+    - bash install_pacman.sh "${PACMAN_VERSION}"
 
 script:
     - export TEST_PHP_EXECUTABLE=`which php`
@@ -25,3 +24,7 @@ script:
     - ./configure --with-alpm && make
     - php run-tests.php -d extension=alpm.so -d extension_dir=modules -n ./tests/*.phpt
     - for i in `ls tests/*.out 2> /dev/null`; do echo "-- START ${i}"; cat $i; echo "-- END"; done
+
+matrix:
+  allow_failures:
+    - env: PACMAN_VERSION=git
