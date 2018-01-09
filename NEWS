@@ -1,3 +1,9 @@
+php-alpm 0.4.3:
+  * Completed all callbacks
+  * Fix deltaratio to accept long values
+  * Added phpinfo information
+  * Bugfixes
+
 php-alpm 0.4.2:
   * Bugfixes
 
