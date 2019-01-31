@@ -1,7 +1,7 @@
 /*
  *  php_alpm_defs.h
  *
- *  Copyright (c) 2016-2018 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
