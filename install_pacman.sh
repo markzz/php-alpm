@@ -24,6 +24,14 @@ fi
 cd pacman-${1}
 set +e
 if [ "${1}" == "git" ]; then
+    cd ..
+    curl -O https://ftp.gnu.org/gnu/bash/bash-4.4.18.tar.gz
+    tar -xzf bash-4.4.18.tar.gz
+    cd bash-4.4.18
+    ./configure
+    make; sudo make install
+    cd ../pacman-${1}
+
     ./autogen.sh
 fi
 ./configure --prefix=/usr --disable-doc
