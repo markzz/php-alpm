@@ -615,7 +615,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
     php_alpm_handle_object *intern;
     zval *retval = NULL;
     zval tmp_member;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     ZVAL_DEREF(member);
     if (Z_TYPE_P(member) != IS_STRING) {
@@ -1006,7 +1006,7 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
     php_alpm_db_object *intern;
     zval *retval = NULL;
     zval tmp_member;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     ZVAL_DEREF(member);
     if (Z_TYPE_P(member) != IS_STRING) {
@@ -1057,7 +1057,7 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
         } else if (strcmp(Z_STRVAL_P(member), "usage") == 0) {
             retval = rv;
             alpm_db_usage_t tmp;
-            alpm_db_get_usage(intern->db, &tmp);
+            alpm_db_get_usage(intern->db, (void*)&tmp);
             ZVAL_LONG(retval, tmp);
         } else if (strcmp(Z_STRVAL_P(member), "valid") == 0) {
             retval = rv;
@@ -1169,7 +1169,7 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
     php_alpm_pkg_object *intern;
     zval *retval = NULL;
     zval tmp_member;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     ZVAL_DEREF(member);
     if (Z_TYPE_P(member) != IS_STRING) {
@@ -1536,7 +1536,7 @@ static zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, co
 void php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     php_alpm_handle_object *intern;
     zval tmp_member;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     ZVAL_DEREF(member);
     if (Z_TYPE_P(member) != IS_STRING) {
@@ -1800,7 +1800,7 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, con
 #ifdef ZEND_ENGINE_3
 void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     zval tmp_member;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     php_alpm_db_object *intern;
     intern = Z_DBO_P(object);
@@ -1896,7 +1896,7 @@ void php_alpm_db_write_property(zval *object, zval *member, zval *value, const z
 void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     php_alpm_pkg_object *intern;
     zval tmp_member;
-    zend_object_handlers *std_hnd;
+    const zend_object_handlers *std_hnd;
 
     ZVAL_DEREF(member);
     if (Z_TYPE_P(member) != IS_STRING) {
@@ -2713,7 +2713,7 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     key = zend_string_init("siglevel", strlen("siglevel"), 1);
     zend_hash_add(props, key, &zv);
 
-    alpm_db_get_usage(intern->db, &utmp);
+    alpm_db_get_usage(intern->db, (void*)&utmp);
     ZVAL_LONG(&zv, (long)utmp);
     key = zend_string_init("usage", strlen("usage"), 1);
     zend_hash_add(props, key, &zv);
