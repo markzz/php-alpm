@@ -1209,6 +1209,7 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
     } \
     key = zend_string_init(keyname, strlen(keyname), 0); \
     zend_hash_add(props, key, &zv); \
+    zend_string_release(key); \
 } while (0)
 
 static int hashtable_key_cmp(const void *a, const void *b) {
@@ -1274,6 +1275,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("assumeinstalled", strlen("assumeinstalled"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_option_get_cachedirs(intern->handle);
     if (ltmp != NULL) {
@@ -1283,11 +1285,13 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("cachedirs", strlen("cachedrs"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     itmp = alpm_option_get_checkspace(intern->handle);
     ZVAL_BOOL(&zv, itmp);
     key = zend_string_init("checkspace", strlen("checkspace"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_option_get_dbext, handle, "dbext");
     ADD_STRING_TO_HASH(alpm_option_get_dbpath, handle, "dbpath");
@@ -1296,11 +1300,13 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("default_siglevel", strlen("default_siglevel"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     dtmp = alpm_option_get_deltaratio(intern->handle);
     ZVAL_DOUBLE(&zv, dtmp);
     key = zend_string_init("deltaratio", strlen("deltaratio"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zv2 = global_callback_functions[CB_DOWNLOAD];
     if (zv2 == NULL) {
@@ -1310,6 +1316,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("dlcb", strlen("dlcb"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zv2 = global_callback_functions[CB_EVENT];
     if (zv2 == NULL) {
@@ -1319,6 +1326,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("eventcb", strlen("eventcb"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zv2 = global_callback_functions[CB_FETCH];
     if (zv2 == NULL) {
@@ -1328,6 +1336,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("fetchcb", strlen("fetchcb"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_option_get_gpgdir, handle, "gpgdir");
 
@@ -1339,6 +1348,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("hookdirs", strlen("hookdirs"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_option_get_ignoregroups(intern->handle);
     if (ltmp != NULL) {
@@ -1348,6 +1358,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("ignoregrps", strlen("ignoregrps"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_option_get_ignorepkgs(intern->handle);
     if (ltmp != NULL) {
@@ -1357,11 +1368,13 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("ignorepkgs", strlen("ignorepkgs"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     lotmp = alpm_option_get_local_file_siglevel(intern->handle);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("local_file_siglevel", strlen("local_file_siglevel"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_option_get_lockfile, handle, "lockfile");
 
@@ -1373,6 +1386,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("logcb", strlen("logcb"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_option_get_logfile, handle, "logfile");
 
@@ -1384,6 +1398,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("noextracts", strlen("noextracts"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_option_get_noupgrades(intern->handle);
     if (ltmp != NULL) {
@@ -1393,6 +1408,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("noupgrades", strlen("noupgrades"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zv2 = global_callback_functions[CB_PROGRESS];
     if (zv2 == NULL) {
@@ -1402,6 +1418,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("progresscb", strlen("progresscb"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zv2 = global_callback_functions[CB_QUESTION];
     if (zv2 == NULL) {
@@ -1411,11 +1428,13 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("questioncb", strlen("questioncb"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     lotmp = alpm_option_get_remote_file_siglevel(intern->handle);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("remote_file_siglevel", strlen("remote_file_siglevel"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_option_get_root, handle, "root");
 
@@ -1427,11 +1446,13 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     }
     key = zend_string_init("totaldlcb", strlen("totaldlcb"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     itmp = alpm_option_get_usesyslog(intern->handle);
     ZVAL_BOOL(&zv, itmp);
     key = zend_string_init("usesyslog", strlen("usesyslog"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zend_hash_sort(props, hashtable_key_cmp, 0);
 
@@ -1459,6 +1480,7 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     }
     key = zend_string_init("grpcache", strlen("grpcache"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_db_get_name, db, "name");
 
@@ -1470,6 +1492,7 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     }
     key = zend_string_init("pkgcache", strlen("pkgcache"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_db_get_servers(intern->db);
     if (ltmp != NULL) {
@@ -1479,21 +1502,25 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     }
     key = zend_string_init("servers", strlen("servers"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     lotmp = alpm_db_get_siglevel(intern->db);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("siglevel", strlen("siglevel"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     alpm_db_get_usage(intern->db, (void*)&utmp);
     ZVAL_LONG(&zv, (long)utmp);
     key = zend_string_init("usage", strlen("usage"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     lotmp = alpm_db_get_valid(intern->db);
     ZVAL_BOOL(&zv, lotmp == 0 ? IS_TRUE : IS_FALSE);
     key = zend_string_init("valid", strlen("valid"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zend_hash_sort(props, hashtable_key_cmp, 0);
 
@@ -1525,6 +1552,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("backup", strlen("backup"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_base, pkg, "base");
     ADD_STRING_TO_HASH(alpm_pkg_get_base64_sig, pkg, "base64_sig");
@@ -1537,6 +1565,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("conflicts", strlen("conflicts"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     dbtmp = alpm_pkg_get_db(intern->pkg);
     if (dbtmp != NULL) {
@@ -1548,6 +1577,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("db", strlen("db"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_pkg_get_deltas(intern->pkg);
     if (ltmp != NULL) {
@@ -1557,6 +1587,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("deltas", strlen("deltas"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_pkg_get_depends(intern->pkg);
     if (ltmp != NULL) {
@@ -1566,6 +1597,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("depends", strlen("depends"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_desc, pkg, "desc");
 
@@ -1573,6 +1605,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("download_size", strlen("download_size"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_filename, pkg, "filename");
 
@@ -1584,6 +1617,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("files", strlen("files"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_pkg_get_groups(intern->pkg);
     if (ltmp != NULL) {
@@ -1593,21 +1627,25 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("groups", strlen("groups"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     itmp = alpm_pkg_has_scriptlet(intern->pkg);
     ZVAL_BOOL(&zv, itmp);
     key = zend_string_init("has_scriptlet", strlen("has_scriptlet"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     lotmp = alpm_pkg_get_installdate(intern->pkg);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("installdate", strlen("installdate"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     lotmp = alpm_pkg_get_isize(intern->pkg);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("isize", strlen("isize"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_pkg_get_licenses(intern->pkg);
     if (ltmp != NULL) {
@@ -1617,6 +1655,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("licenses", strlen("licenses"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_md5sum, pkg, "md5sum");
     ADD_STRING_TO_HASH(alpm_pkg_get_name, pkg, "name");
@@ -1629,11 +1668,13 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("optdepends", strlen("optdepends"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     lotmp = alpm_pkg_get_origin(intern->pkg);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("origin", strlen("origin"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_packager, pkg, "packager");
 
@@ -1645,11 +1686,13 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("provides", strlen("provides"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     itmp = alpm_pkg_get_reason(intern->pkg);
     ZVAL_LONG(&zv, itmp);
     key = zend_string_init("reason", strlen("reason"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_pkg_get_replaces(intern->pkg);
     if (ltmp != NULL) {
@@ -1659,6 +1702,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     }
     key = zend_string_init("replaces", strlen("replaces"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_sha256sum, pkg, "sha256sum");
 
@@ -1666,6 +1710,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("size", strlen("size"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_url, pkg, "url");
     ADD_STRING_TO_HASH(alpm_pkg_get_version, pkg, "version");
@@ -1674,6 +1719,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("validation", strlen("validation"), 0);
     zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     zend_hash_sort(props, hashtable_key_cmp, 0);
 
