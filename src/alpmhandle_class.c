@@ -265,11 +265,7 @@ PHP_METHOD(Handle, get_arch) {
         RETURN_NULL()
     }
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(arch)
-#else
-    RETURN_STRING(arch, 1)
-#endif
 }
 
 PHP_METHOD(Handle, get_cachedirs) {
@@ -336,11 +332,7 @@ PHP_METHOD(Handle, get_dbpath) {
         RETURN_NULL()
     }
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(dbpath)
-#else
-    RETURN_STRING(dbpath, 1)
-#endif
 }
 
 PHP_METHOD(Handle, get_ignoregrps) {

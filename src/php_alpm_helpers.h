@@ -35,8 +35,4 @@ void alpm_backup_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_pkg_list_to_zval(alpm_list_t *list, zval *zv);
 
-#ifndef ZEND_ENGINE_3
-zend_string *zend_string_init(const char *str, size_t len, int cpy);
-#endif
-
 #endif /* PHP_ALPM_HELPERS_H */
