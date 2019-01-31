@@ -65,11 +65,7 @@ PHP_METHOD(Pkg, get_arch) {
 
     ret = alpm_pkg_get_arch(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_backup) {
@@ -105,11 +101,7 @@ PHP_METHOD(Pkg, get_base64_sig) {
         RETURN_NULL()
     }
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_builddate) {
@@ -192,11 +184,7 @@ PHP_METHOD(Pkg, get_desc) {
 
     ret = alpm_pkg_get_desc(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_download_size) {
@@ -225,11 +213,7 @@ PHP_METHOD(Pkg, get_filename) {
 
     ret = alpm_pkg_get_filename(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_files) {
@@ -352,11 +336,7 @@ PHP_METHOD(Pkg, get_md5sum) {
         RETURN_NULL()
     }
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_name) {
@@ -371,11 +351,7 @@ PHP_METHOD(Pkg, get_name) {
 
     ret = alpm_pkg_get_name(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_optdepends) {
@@ -408,11 +384,7 @@ PHP_METHOD(Pkg, get_packager) {
 
     ret = alpm_pkg_get_packager(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_provides) {
@@ -488,11 +460,7 @@ PHP_METHOD(Pkg, get_sha256sum) {
 
     ret = alpm_pkg_get_sha256sum(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_size) {
@@ -521,11 +489,7 @@ PHP_METHOD(Pkg, get_url) {
 
     ret = alpm_pkg_get_url(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, get_version) {
@@ -540,11 +504,7 @@ PHP_METHOD(Pkg, get_version) {
 
     ret = alpm_pkg_get_version(intern->pkg);
 
-#ifdef ZEND_ENGINE_3
     RETURN_STRING(ret)
-#else
-    RETURN_STRING(ret, 1)
-#endif
 }
 
 PHP_METHOD(Pkg, set_reason) {
@@ -554,12 +514,12 @@ PHP_METHOD(Pkg, set_reason) {
     alpm_pkgreason_t reason;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &reason) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &reason) == FAILURE) {
         RETURN_NULL()
     }
 
     if (reason != ALPM_PKG_REASON_DEPEND && reason != ALPM_PKG_REASON_EXPLICIT) {
-        zend_throw_exception(php_alpm_pkg_exception_class_entry, "not a valid install reason", 0 TSRMLS_CC);
+        zend_throw_exception(php_alpm_pkg_exception_class_entry, "not a valid install reason", 0);
         RETURN_FALSE
     }
 

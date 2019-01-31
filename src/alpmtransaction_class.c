@@ -26,7 +26,7 @@ PHP_METHOD(Trans, add_pkg) {
     zval *pkg_zval;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &pkg_zval) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "o", &pkg_zval) == FAILURE) {
         RETURN_NULL()
     }
 
@@ -36,11 +36,7 @@ PHP_METHOD(Trans, add_pkg) {
         RETURN_FALSE
     }
 
-#ifdef ZEND_ENGINE_3
     ZVAL_UNDEF(pkg_zval);
-#else
-    pkg_zval->type = 0;
-#endif
     RETURN_TRUE
 }
 
@@ -58,7 +54,7 @@ PHP_METHOD(Trans, commit) {
 
     if (ret == 0) RETURN_NULL()
     if (ret != -1) {
-        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unexpected return value", ret TSRMLS_CC);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unexpected return value", ret);
         RETURN_NULL()
     }
 
@@ -90,7 +86,7 @@ PHP_METHOD(Trans, interrupt) {
 
     ret = alpm_trans_release(intern->handle);
     if (ret == -1) {
-        zend_throw_exception(php_alpm_transaction_exception_class_entry, "could not release transaction", 0 TSRMLS_CC);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "could not release transaction", 0);
     }
 
     RETURN_NULL()
@@ -146,7 +142,7 @@ PHP_METHOD(Trans, release) {
 
     ret = alpm_trans_release(intern->handle);
     if (ret == -1) {
-        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to release transaction", 0 TSRMLS_CC);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to release transaction", 0);
     }
 
     RETURN_NULL()
@@ -158,7 +154,7 @@ PHP_METHOD(Trans, remove_pkg) {
     zval *pkg_zval;
     int err;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &pkg_zval) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "o", &pkg_zval) == FAILURE) {
         RETURN_NULL()
     }
 
@@ -168,11 +164,7 @@ PHP_METHOD(Trans, remove_pkg) {
         RETURN_FALSE
     }
 
-#ifdef ZEND_ENGINE_3
     ZVAL_UNDEF(pkg_zval);
-#else
-    pkg_zval->type = 0;
-#endif
     RETURN_TRUE
 }
 
@@ -181,14 +173,14 @@ PHP_METHOD(Trans, system_upgrade) {
     zend_bool downgrade = 0;
     int do_downgrade, ret;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|b", &downgrade) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &downgrade) == FAILURE) {
         RETURN_NULL()
     }
 
     do_downgrade = downgrade == 1 ? 1 : 0;
     ret = alpm_sync_sysupgrade(intern->handle, do_downgrade);
     if (ret == -1) {
-        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to perform system upgrade", 0 TSRMLS_CC);
+        zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to perform system upgrade", 0);
     }
     RETURN_NULL()
 }
