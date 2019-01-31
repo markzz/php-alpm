@@ -10,7 +10,6 @@ php:
 
 env:
     - PACMAN_VERSION=git
-    - PACMAN_VERSION=5.0.2
     - PACMAN_VERSION=5.1.2
 
 before_script:
