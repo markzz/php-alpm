@@ -14,8 +14,7 @@ problems.
 ## Requirements
 You need the following to build and run this.
 
-1. PHP >= 5.6
-    * **Note**: Code is written for PHP >=5.3, but is untested.
+1. PHP >= 7.1
 2. libalpm >=10.0
 
 ## Building
@@ -31,7 +30,7 @@ contains libalpm) first:
 On Ubuntu (maybe Debian):
 ```
 # apt-get install libarchive-dev
-$ curl -O https://sources.archlinux.org/other/pacman/pacman-5.0.2.tar.gz
+$ curl -O https://sources.archlinux.org/other/pacman/pacman-5.1.2.tar.gz
 $ tar -xzvf pacman-5.0.2.tar.gz
 $ cd pacman-5.0.2 && ./configure --disable-doc && make
 # make install
