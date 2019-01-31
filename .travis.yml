@@ -4,6 +4,7 @@ sudo: true
 dist: trusty
 
 php:
+    - 7.3
     - 7.2
     - 7.1
     - 7.0
@@ -14,6 +15,7 @@ php:
 env:
     - PACMAN_VERSION=git
     - PACMAN_VERSION=5.0.2
+    - PACMAN_VERSION=5.1.2
 
 before_script:
     - bash install_pacman.sh "${PACMAN_VERSION}"
