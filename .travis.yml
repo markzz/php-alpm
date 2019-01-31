@@ -9,9 +9,7 @@ php:
     - 7.1
 
 env:
-    - PACMAN_VERSION=git
     - PACMAN_VERSION=5.0.2
-    - PACMAN_VERSION=5.1.2
 
 before_script:
     - bash install_pacman.sh "${PACMAN_VERSION}"
