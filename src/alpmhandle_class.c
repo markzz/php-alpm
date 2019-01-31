@@ -75,7 +75,7 @@ PHP_METHOD(Handle, __toString) {
     tmp = (char*)emalloc(sizeof(char*) * (dbsize + rootsize + strlen("(AlpmHandle: root=") + strlen(" dbpath=") + strlen(")")));
     sprintf(tmp, "(AlpmHandle: root=%s dbpath=%s)", rootpath, dbpath);
 
-    ret = zend_string_init(tmp, strlen(tmp), 1);
+    ret = zend_string_init(tmp, strlen(tmp), 0);
     efree(tmp);
 
     RETURN_STR(ret)

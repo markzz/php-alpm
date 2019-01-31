@@ -37,7 +37,7 @@ PHP_METHOD(Pkg, __toString) {
     tmp = (char*)emalloc(sizeof(char*) * (pnsize + pvsize + strlen(" ")));
     sprintf(tmp, "%s %s", pkgname, pkgver);
 
-    ret = zend_string_init(tmp, strlen(tmp), 1);
+    ret = zend_string_init(tmp, strlen(tmp), 0);
     efree(tmp);
 
     RETURN_STR(ret)

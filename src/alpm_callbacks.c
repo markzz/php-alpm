@@ -36,7 +36,7 @@ void php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
         log = "logcb: could not allocate memory";
     }
 
-    tmp = zend_string_init(log, strlen(log), 1);
+    tmp = zend_string_init(log, strlen(log), 0);
     ZVAL_STR(&zlog, tmp);
     zval args[] = { zl, zlog };
 
@@ -56,7 +56,7 @@ void php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
     ZVAL_LONG(&zxf, xfered);
     ZVAL_LONG(&zt, total);
 
-    tmp = zend_string_init(filename, strlen(filename), 1);
+    tmp = zend_string_init(filename, strlen(filename), 0);
     ZVAL_STR(&zfn, tmp);
     zval args[] = { zfn, zxf, zt };
 
@@ -89,9 +89,9 @@ void php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
     zval *func = global_callback_functions[CB_TOTALDL];
 
     ZVAL_BOOL(&zf, force == 0 ? IS_FALSE : IS_TRUE);
-    tmp = zend_string_init(url, strlen(url), 1);
+    tmp = zend_string_init(url, strlen(url), 0);
     ZVAL_STR(&zu, tmp);
-    tmp = zend_string_init(localpath, strlen(localpath), 1);
+    tmp = zend_string_init(localpath, strlen(localpath), 0);
 
     ZVAL_STR(&zlp, tmp);
     zval args[] = { zu, zlp, zf };
