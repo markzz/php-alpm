@@ -794,6 +794,14 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             retval = rv;
             long lotmp = alpm_pkg_get_builddate(intern->pkg);
             ZVAL_LONG(retval, lotmp);
+        } else if (strcmp(Z_STRVAL_P(member), "checkdepends") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_checkdepends(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_depend_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "conflicts") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_conflicts(intern->pkg);
@@ -869,6 +877,14 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             alpm_list_t *ltmp = alpm_pkg_get_licenses(intern->pkg);
             if (ltmp != NULL) {
                 alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
+        } else if (strcmp(Z_STRVAL_P(member), "makedepends") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_pkg_get_makedepends(intern->pkg);
+            if (ltmp != NULL) {
+                alpm_depend_list_to_zval(ltmp, retval);
             } else {
                 ZVAL_NULL(retval);
             }
@@ -1134,6 +1150,8 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
         php_error(E_NOTICE, "cannot set base64_sig");
     } else if (strcmp(Z_STRVAL_P(member), "builddate") == 0) {
         php_error(E_NOTICE, "cannot set builddate");
+    } else if (strcmp(Z_STRVAL_P(member), "checkdepends") == 0) {
+        php_error(E_NOTICE, "cannot set checkdepends");
     } else if (strcmp(Z_STRVAL_P(member), "conflicts") == 0) {
         php_error(E_NOTICE, "cannot set conflicts");
     } else if (strcmp(Z_STRVAL_P(member), "db") == 0) {
@@ -1160,6 +1178,8 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
         php_error(E_NOTICE, "cannot set isize");
     } else if (strcmp(Z_STRVAL_P(member), "licenses") == 0) {
         php_error(E_NOTICE, "cannot set licenses");
+    } else if (strcmp(Z_STRVAL_P(member), "makedepends") == 0) {
+        php_error(E_NOTICE, "cannot set makedepends");
     } else if (strcmp(Z_STRVAL_P(member), "md5sum") == 0) {
         php_error(E_NOTICE, "cannot set md5sum");
     } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
@@ -1557,6 +1577,16 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     ADD_STRING_TO_HASH(alpm_pkg_get_base, pkg, "base");
     ADD_STRING_TO_HASH(alpm_pkg_get_base64_sig, pkg, "base64_sig");
 
+    ltmp = alpm_pkg_get_checkdepends(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("checkdepends", strlen("checkdepends"), 0);
+    zend_hash_add(props, key, &zv);
+    zend_string_release(key);
+
     ltmp = alpm_pkg_get_conflicts(intern->pkg);
     if (ltmp != NULL) {
         alpm_depend_list_to_zval(ltmp, &zv);
@@ -1654,6 +1684,16 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
         ZVAL_NULL(&zv);
     }
     key = zend_string_init("licenses", strlen("licenses"), 0);
+    zend_hash_add(props, key, &zv);
+    zend_string_release(key);
+
+    ltmp = alpm_pkg_get_makedepends(intern->pkg);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("makedepends", strlen("makedepends"), 0);
     zend_hash_add(props, key, &zv);
     zend_string_release(key);
 
