@@ -245,6 +245,142 @@ PHP_METHOD(Handle, add_noupgrade) {
     RETURN_TRUE
 }
 
+PHP_METHOD(Handle, get_arch) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_arch() deprecated, use AlpmHandle->arch instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    const char *arch;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    arch = alpm_option_get_arch(intern->handle);
+    if (arch == NULL) {
+        RETURN_NULL()
+    }
+
+    RETURN_STRING(arch)
+}
+
+PHP_METHOD(Handle, get_cachedirs) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_cachedirs() deprecated, use AlpmHandle->cachedirs instead");
+
+    php_alpm_handle_object *intern;
+    alpm_list_t *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    intern = Z_HANDLEO_P(getThis());
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    list = alpm_option_get_cachedirs(intern->handle);
+    if (list == NULL) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+}
+
+PHP_METHOD(Handle, get_checkspace) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_checkspace() deprecated, use AlpmHandle->checkspace instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    int check_space;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    check_space = alpm_option_get_checkspace(intern->handle);
+    RETURN_LONG((long)check_space)
+}
+
+PHP_METHOD(Handle, get_dbpath) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_dbpath() deprecated, use AlpmHandle->dbpath instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    const char *dbpath;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    dbpath = alpm_option_get_dbpath(intern->handle);
+    if (dbpath == NULL) {
+        RETURN_NULL()
+    }
+
+    RETURN_STRING(dbpath)
+}
+
+PHP_METHOD(Handle, get_ignoregrps) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_ignoregrps() deprecated, use AlpmHandle->ignoregrps instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    list = alpm_option_get_ignoregroups(intern->handle);
+    if (list == NULL) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+}
+
+PHP_METHOD(Handle, get_ignorepkgs) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_ignorepkgs() deprecated, use AlpmHandle->ignorepkgs instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    list = alpm_option_get_ignorepkgs(intern->handle);
+    if (list == NULL) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+}
+
 PHP_METHOD(Handle, get_localdb) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     php_alpm_db_object *new_obj;
@@ -267,6 +403,52 @@ PHP_METHOD(Handle, get_localdb) {
     object_init_ex(return_value, php_alpm_db_sc_entry);
     new_obj = Z_DBO_P(return_value);
     new_obj->db = db;
+}
+
+PHP_METHOD(Handle, get_noextracts) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_noextracts() deprecated, use AlpmHandle->noextracts instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    list = alpm_option_get_noextracts(intern->handle);
+    if (list == NULL) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
+}
+
+PHP_METHOD(Handle, get_noupgrades) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_noupgrades() deprecated, use AlpmHandle->noupgrades instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    alpm_list_t *list;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    list = alpm_option_get_noupgrades(intern->handle);
+    if (list == NULL) {
+        RETURN_NULL()
+    }
+
+    alpm_list_to_zval(list, return_value);
 }
 
 PHP_METHOD(Handle, get_syncdbs) {
@@ -548,6 +730,55 @@ PHP_METHOD(Handle, remove_noupgrade) {
 
     err = alpm_option_remove_noupgrade(intern->handle, arg);
     if (!err) {
+        RETURN_FALSE
+    }
+
+    RETURN_TRUE
+}
+
+PHP_METHOD(Handle, set_arch) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->set_arch() deprecated, set AlpmHandle->arch instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    char *arg;
+    size_t *arg_size;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    err = alpm_option_set_arch(intern->handle, arg);
+    if (err) {
+        RETURN_FALSE
+    }
+
+    RETURN_TRUE
+}
+
+PHP_METHOD(Handle, set_checkspace) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->set_checkspace() deprecated, set AlpmHandle->checkspace instead");
+
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis()) ;
+    long checkspace;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &checkspace) == FAILURE) {
+        RETURN_NULL()
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL()
+    }
+
+    err = alpm_option_set_checkspace(intern->handle, (int)checkspace);
+    if (err) {
         RETURN_FALSE
     }
 
