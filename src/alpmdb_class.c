@@ -50,52 +50,6 @@ PHP_METHOD(Db, add_server) {
     RETURN_TRUE
 }
 
-PHP_METHOD(Db, get_grpcache) {
-    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_grpcache() deprecated, use AlpmDb->grpcache instead");
-
-    php_alpm_db_object *intern = Z_DBO_P(getThis());
-    alpm_list_t *list = NULL;
-
-    if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
-    }
-
-    if (!intern->db) {
-        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
-    }
-
-    list = alpm_db_get_groupcache(intern->db);
-    if (list == NULL) {
-        RETURN_NULL()
-    }
-
-    alpm_group_list_to_zval(list, return_value);
-}
-
-PHP_METHOD(Db, get_name) {
-    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_name() deprecated, use AlpmDb->name instead");
-
-    php_alpm_db_object *intern = Z_DBO_P(getThis());
-    const char *name;
-
-    if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
-    }
-
-    if (!intern->db) {
-        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
-    }
-
-    name = alpm_db_get_name(intern->db);
-    if (name == NULL) {
-        RETURN_NULL()
-    }
-
-    RETURN_STRING(name)
-}
-
 PHP_METHOD(Db, get_pkg) {
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     php_alpm_pkg_object *new_obj;
@@ -120,52 +74,6 @@ PHP_METHOD(Db, get_pkg) {
     object_init_ex(return_value, php_alpm_pkg_sc_entry);
     new_obj = Z_PKGO_P(return_value);
     new_obj->pkg = pkg;
-}
-
-PHP_METHOD(Db, get_pkgcache) {
-    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_pkgcache() deprecated, use AlpmDb->pkgcache instead");
-
-    php_alpm_db_object *intern = Z_DBO_P(getThis());
-    alpm_list_t *list;
-
-    if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
-    }
-
-    if (!intern->db) {
-        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
-    }
-
-    list = alpm_db_get_pkgcache(intern->db);
-    if (list == NULL) {
-        RETURN_NULL()
-    }
-
-    alpm_list_to_pkg_array(list, return_value);
-}
-
-PHP_METHOD(Db, get_servers) {
-    php_error(E_DEPRECATED, "(removed in 1.0) AlpmDb->get_servers() deprecated, use AlpmDb->servers instead");
-
-    php_alpm_db_object *intern = Z_DBO_P(getThis());
-    alpm_list_t *list;
-
-    if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
-    }
-
-    if (!intern->db) {
-        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
-    }
-
-    list = alpm_db_get_servers(intern->db);
-    if (list == NULL) {
-        RETURN_NULL()
-    }
-
-    alpm_list_to_zval(list, return_value);
 }
 
 PHP_METHOD(Db, search) {
