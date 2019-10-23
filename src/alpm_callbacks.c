@@ -182,14 +182,6 @@ void php_alpm_eventcb(alpm_event_t *event) {
             break;
         case ALPM_EVENT_LOAD_START:
         case ALPM_EVENT_LOAD_DONE:
-        case ALPM_EVENT_DELTA_INTEGRITY_START:
-        case ALPM_EVENT_DELTA_INTEGRITY_DONE:
-        case ALPM_EVENT_DELTA_PATCHES_START:
-        case ALPM_EVENT_DELTA_PATCHES_DONE:
-        case ALPM_EVENT_DELTA_PATCH_START:
-            /* info here */
-        case ALPM_EVENT_DELTA_PATCH_DONE:
-        case ALPM_EVENT_DELTA_PATCH_FAILED:
         case ALPM_EVENT_SCRIPTLET_INFO:
             /* info here */
         case ALPM_EVENT_RETRIEVE_START:

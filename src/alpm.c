@@ -533,9 +533,6 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
         } else if (strcmp(Z_STRVAL_P(member), "default_siglevel") == 0) {
             retval = rv;
             ZVAL_LONG(retval, alpm_option_get_default_siglevel(intern->handle));
-        } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
-            retval = rv;
-            ZVAL_DOUBLE(retval, alpm_option_get_deltaratio(intern->handle));
         } else if (strcmp(Z_STRVAL_P(member), "dlcb") == 0) {
             retval = rv;
             zval *tmp;
@@ -820,14 +817,6 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "deltas") == 0) {
-            retval = rv;
-            alpm_list_t *list = alpm_pkg_get_deltas(intern->pkg);
-            if (list != NULL) {
-                alpm_list_to_zval(list, retval);
-            } else {
-                ZVAL_NULL(retval);
-            }
         } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_depends(intern->pkg);
@@ -999,14 +988,6 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
         } else {
             php_error(E_NOTICE, "default_siglevel must be an integer");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "deltaratio") == 0) {
-        if (Z_TYPE_P(value) == IS_DOUBLE) {
-            alpm_option_set_deltaratio(intern->handle, Z_DVAL_P(value));
-        } else if (Z_TYPE_P(value) == IS_LONG) {
-            alpm_option_set_deltaratio(intern->handle, (double)(Z_LVAL_P(value)));
-        } else {
-            php_error(E_NOTICE, "deltaratio must be a float");
-        }
     } else if (strcmp(Z_STRVAL_P(member), "dlcb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_DOWNLOAD];
         _set_cb_attr(intern, value, &closure);
@@ -1156,8 +1137,6 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
         php_error(E_NOTICE, "cannot set conflicts");
     } else if (strcmp(Z_STRVAL_P(member), "db") == 0) {
         php_error(E_NOTICE, "cannot set db");
-    } else if (strcmp(Z_STRVAL_P(member), "deltas") == 0) {
-        php_error(E_NOTICE, "cannot set deltas");
     } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
         php_error(E_NOTICE, "cannot set depends");
     } else if (strcmp(Z_STRVAL_P(member), "desc") == 0) {
@@ -1319,12 +1298,6 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     lotmp = alpm_option_get_default_siglevel(intern->handle);
     ZVAL_LONG(&zv, lotmp);
     key = zend_string_init("default_siglevel", strlen("default_siglevel"), 0);
-    zend_hash_add(props, key, &zv);
-    zend_string_release(key);
-
-    dtmp = alpm_option_get_deltaratio(intern->handle);
-    ZVAL_DOUBLE(&zv, dtmp);
-    key = zend_string_init("deltaratio", strlen("deltaratio"), 0);
     zend_hash_add(props, key, &zv);
     zend_string_release(key);
 
@@ -1609,16 +1582,6 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     zend_hash_add(props, key, &zv);
     zend_string_release(key);
 
-    ltmp = alpm_pkg_get_deltas(intern->pkg);
-    if (ltmp != NULL) {
-        alpm_list_to_zval(ltmp, &zv);
-    } else {
-        ZVAL_NULL(&zv);
-    }
-    key = zend_string_init("deltas", strlen("deltas"), 0);
-    zend_hash_add(props, key, &zv);
-    zend_string_release(key);
-
     ltmp = alpm_pkg_get_depends(intern->pkg);
     if (ltmp != NULL) {
         alpm_depend_list_to_zval(ltmp, &zv);
@@ -1878,13 +1841,6 @@ PHP_MINIT_FUNCTION(alpm) {
     REGISTER_LONG_CONSTANT("ALPM_EVENT_INTEGRITY_DONE", ALPM_EVENT_INTEGRITY_DONE, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_EVENT_LOAD_START", ALPM_EVENT_LOAD_START, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_EVENT_LOAD_DONE", ALPM_EVENT_LOAD_DONE, CONST_CS|CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("ALPM_EVENT_DELTA_INTEGRITY_START", ALPM_EVENT_DELTA_INTEGRITY_START, CONST_CS|CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("ALPM_EVENT_DELTA_INTEGRITY_DONE", ALPM_EVENT_DELTA_INTEGRITY_DONE, CONST_CS|CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("ALPM_EVENT_DELTA_PATCHES_START", ALPM_EVENT_DELTA_PATCHES_START, CONST_CS|CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("ALPM_EVENT_DELTA_PATCHES_DONE", ALPM_EVENT_DELTA_PATCHES_DONE, CONST_CS|CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("ALPM_EVENT_DELTA_PATCH_START", ALPM_EVENT_DELTA_PATCH_START, CONST_CS|CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("ALPM_EVENT_DELTA_PATCH_DONE", ALPM_EVENT_DELTA_PATCH_DONE, CONST_CS|CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("ALPM_EVENT_DELTA_PATCH_FAILED", ALPM_EVENT_DELTA_PATCH_FAILED, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_EVENT_SCRIPTLET_INFO", ALPM_EVENT_SCRIPTLET_INFO, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_EVENT_RETRIEVE_START", ALPM_EVENT_RETRIEVE_START, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_EVENT_RETRIEVE_DONE", ALPM_EVENT_RETRIEVE_DONE, CONST_CS|CONST_PERSISTENT);
