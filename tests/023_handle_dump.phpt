@@ -32,8 +32,6 @@ object(AlpmHandle)#1 (27) {
   string(%d) "%s"
   ["default_siglevel"]=>
   int(0)
-  ["deltaratio"]=>
-  float(0)
   ["dlcb"]=>
   NULL
   ["eventcb"]=>
