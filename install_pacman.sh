@@ -16,7 +16,15 @@ esac
 
 if [ -x "$(command -v apt-get)" ]; then
     sudo apt-get -qq update
-    sudo apt-get install -y autopoint pkg-config libtool gettext libarchive-dev curl libgpgme11-dev
+    sudo apt-get install -y autopoint pkg-config libtool gettext libarchive-dev curl
+
+    # install a newer version of gpgme than is provided by ubuntu
+    curl -O https://www.enupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
+    tar -xjf gpgme-1.13.1.tar.bz2
+    cd gpgme-1.13.1.tar.bz2
+    ./configure --prefix=/usr --disable-fd-passing --disable-static --disable-gpgsm-test
+    make
+    sudo make install
 else
     exit 1
 fi
