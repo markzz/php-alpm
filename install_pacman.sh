@@ -25,6 +25,7 @@ if [ -x "$(command -v apt-get)" ]; then
     ./configure --prefix=/usr --disable-fd-passing --disable-static --disable-gpgsm-test
     make
     sudo make install
+    cd ..
 else
     exit 1
 fi
