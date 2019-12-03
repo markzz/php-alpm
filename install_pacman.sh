@@ -21,7 +21,7 @@ if [ -x "$(command -v apt-get)" ]; then
     # install a newer version of gpgme than is provided by ubuntu
     curl -O https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
     tar -xjf gpgme-1.13.1.tar.bz2
-    cd gpgme-1.13.1.tar.bz2
+    cd gpgme-1.13.1
     ./configure --prefix=/usr --disable-fd-passing --disable-static --disable-gpgsm-test
     make
     sudo make install
