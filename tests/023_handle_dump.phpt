@@ -12,7 +12,7 @@ $h->add_cachedir("/var/cache/pacman2");
 var_dump($h);
 ?>
 --EXPECTF--
-object(AlpmHandle)#1 (27) {
+object(AlpmHandle)#1 (26) {
   ["arch"]=>
   string(4) "i686"
   ["assumeinstalled"]=>
