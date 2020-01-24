@@ -66,7 +66,6 @@ PHP_METHOD(Trans, commit) {
         case ALPM_ERR_PKG_INVALID:
         case ALPM_ERR_PKG_INVALID_CHECKSUM:
         case ALPM_ERR_PKG_INVALID_SIG:
-        case ALPM_ERR_DLT_INVALID:
             alpm_list_to_zval(list, return_value);
             break;
         default:
