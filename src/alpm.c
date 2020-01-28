@@ -942,7 +942,7 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
     return retval;
 }
 
-void php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+zval *php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     php_alpm_handle_object *intern;
     zval tmp_member;
     const zend_object_handlers *std_hnd;
@@ -1060,9 +1060,11 @@ void php_alpm_handle_write_property(zval *object, zval *member, zval *value, voi
     if (member == &tmp_member) {
         zval_dtor(member);
     }
+
+    return value;
 }
 
-void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+zval *php_alpm_db_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     zval tmp_member;
     const zend_object_handlers *std_hnd;
 
@@ -1103,9 +1105,11 @@ void php_alpm_db_write_property(zval *object, zval *member, zval *value, void **
     if (member == &tmp_member) {
         zval_dtor(member);
     }
+
+    return value;
 }
 
-void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+zval *php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
     php_alpm_pkg_object *intern;
     zval tmp_member;
     const zend_object_handlers *std_hnd;
@@ -1196,6 +1200,8 @@ void php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void *
     if (member == &tmp_member) {
         zval_dtor(member);
     }
+
+    return value;
 }
 
 #define ADD_STRING_TO_HASH(func, type, keyname) do { \
