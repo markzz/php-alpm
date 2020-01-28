@@ -16,7 +16,7 @@ esac
 
 if [ -x "$(command -v apt-get)" ]; then
     sudo apt-get -qq update
-    sudo apt-get install -y autopoint pkg-config libtool gettext libarchive-dev curl libgpg-error-dev libassuan-dev
+    sudo apt-get install -y autopoint pkg-config libtool gettext libarchive-dev curl libgpg-error-dev libassuan-dev meson ninja-build
 
     # install a newer version of gpgme than is provided by ubuntu
     curl -O https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
