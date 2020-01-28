@@ -1,3 +1,7 @@
+php-alpm 0.6:
+  * Made compatible with PHP 7.4.x (write_property changes)
+  * Brought up to date with pacman 5.2
+
 php-alpm 0.5:
   * Made compatible with PHP 7.3.x (zend_string stuff)
   * Removed PHP 5.x code (upgrade you fools!)
