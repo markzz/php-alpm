@@ -16,7 +16,10 @@ esac
 
 if [ -x "$(command -v apt-get)" ]; then
     sudo apt-get -qq update
-    sudo apt-get install -y autopoint pkg-config libtool gettext libarchive-dev curl libgpg-error-dev libassuan-dev meson ninja-build
+    sudo apt-get install -y autopoint pkg-config libtool gettext libarchive-dev curl libgpg-error-dev libassuan-dev \
+                            ninja-build python3 python3-pip python3-setuptools python3-wheel
+    sudo pip3 install meson
+
 
     # install a newer version of gpgme than is provided by ubuntu
     curl -O https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.13.1.tar.bz2
