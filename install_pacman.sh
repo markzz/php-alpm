@@ -40,9 +40,8 @@ if [ "${1}" == "git" ]; then
     ./configure
     make; sudo make install
     cd ../pacman-${1}
-
-    ./autogen.sh
 fi
-./configure --prefix=/usr --disable-doc
-make
-sudo make install
+meson --prefix=/usr build
+cd build
+ninja
+sudo ninja install
