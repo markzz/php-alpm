@@ -12,4 +12,4 @@ $h->remote_file_siglevel = ALPM_SIG_PACKAGE|ALPM_SIG_DATABASE_OPTIONAL;
 echo $h->remote_file_siglevel;
 ?>
 --EXPECT--
-10737418242049
+02049

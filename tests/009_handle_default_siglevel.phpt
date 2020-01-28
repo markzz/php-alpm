@@ -11,4 +11,4 @@ $h->default_siglevel = ALPM_SIG_PACKAGE|ALPM_SIG_DATABASE_OPTIONAL;
 echo $h->default_siglevel;
 ?>
 --EXPECT--
-10737418242049
+02049
