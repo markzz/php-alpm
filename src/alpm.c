@@ -459,7 +459,7 @@ static int _set_cb_attr(php_alpm_handle_object *ho, zval *value, const struct _a
     if (Z_TYPE_P(value) == IS_NULL) {
         efree(global_callback_functions[closure->id]);
         closure->setter(ho->handle, NULL);
-    } else if (zend_is_callable(value, IS_CALLABLE_CHECK_NO_ACCESS, NULL)) {
+    } else if (zend_is_callable(value, IS_CALLABLE, NULL)) {
         efree(global_callback_functions[closure->id]);
         global_callback_functions[closure->id] = value;
         closure->setter(ho->handle, closure->cb_wrapper);
