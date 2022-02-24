@@ -504,8 +504,14 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
     } else {
         intern = Z_HANDLEO_P(object);
 
-        if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
-            RET_STRING_VAL(alpm_option_get_arch, handle);
+        if (strcmp(Z_STRVAL_P(member), "architectures") == 0) {
+            retval = rv;
+            alpm_list_t *ltmp = alpm_option_get_architectures(intern->handle);
+            if (ltmp != NULL) {
+                alpm_list_to_zval(ltmp, retval);
+            } else {
+                ZVAL_NULL(retval);
+            }
         } else if (strcmp(Z_STRVAL_P(member), "assumeinstalled") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_assumeinstalled(intern->handle);
@@ -957,12 +963,8 @@ zval *php_alpm_handle_write_property(zval *object, zval *member, zval *value, vo
     std_hnd = zend_get_std_object_handlers();
     intern = Z_HANDLEO_P(object);
 
-    if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
-        if (Z_TYPE_P(value) == IS_STRING) {
-            alpm_option_set_arch(intern->handle, Z_STRVAL_P(value));
-        } else {
-            php_error(E_NOTICE, "arch must be a string");
-        }
+    if (strcmp(Z_STRVAL_P(member), "architectures") == 0) {
+        php_error(E_NOTICE, "cannot set architectures directly");
     } else if (strcmp(Z_STRVAL_P(member), "assumeinstalled") == 0) {
         php_error(E_NOTICE, "cannot set assumeinstalled directly");
     } else if (strcmp(Z_STRVAL_P(member), "cachedirs") == 0) {
@@ -1269,7 +1271,15 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     props = zend_std_get_properties(object);
     intern = Z_HANDLEO_P(object);
 
-    ADD_STRING_TO_HASH(alpm_option_get_arch, handle, "arch");
+    ltmp = alpm_option_get_architectures(intern->handle);
+    if (ltmp != NULL) {
+        alpm_depend_list_to_zval(ltmp, &zv);
+    } else {
+        ZVAL_NULL(&zv);
+    }
+    key = zend_string_init("architectures", strlen("architectures"), 0);
+    zend_hash_add(props, key, &zv);
+    zend_string_release(key);
 
     ltmp = alpm_option_get_assumeinstalled(intern->handle);
     if (ltmp != NULL) {

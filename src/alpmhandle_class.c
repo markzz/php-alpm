@@ -81,6 +81,29 @@ PHP_METHOD(Handle, __toString) {
     RETURN_STR(ret);
 }
 
+PHP_METHOD(Handle, add_architecture) {
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    char *arg;
+    size_t arg_size;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL();
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error",  0);
+        RETURN_NULL();
+    }
+
+    err = alpm_option_add_architecture(intern->handle, arg);
+    if (err) {
+        RETURN_FALSE;
+    }
+
+    RETURN_TRUE;
+}
+
 PHP_METHOD(Handle, add_assumeinstalled) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     char *arg1;
@@ -245,11 +268,11 @@ PHP_METHOD(Handle, add_noupgrade) {
     RETURN_TRUE;
 }
 
-PHP_METHOD(Handle, get_arch) {
-    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_arch() deprecated, use AlpmHandle->arch instead");
+PHP_METHOD(Handle, get_architectures) {
+    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_arch() deprecated, use AlpmHandle->architectures instead");
 
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
-    const char *arch;
+    alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
         RETURN_NULL();
@@ -260,12 +283,12 @@ PHP_METHOD(Handle, get_arch) {
         RETURN_NULL();
     }
 
-    arch = alpm_option_get_arch(intern->handle);
-    if (arch == NULL) {
+    list = alpm_option_get_architectures(intern->handle);
+    if (list == NULL) {
         RETURN_NULL();
     }
 
-    RETURN_STRING(arch);
+    alpm_list_to_zval(list, return_value);
 }
 
 PHP_METHOD(Handle, get_cachedirs) {
@@ -558,6 +581,29 @@ PHP_METHOD(Handle, register_syncdb) {
     new_obj->db = db;
 }
 
+PHP_METHOD(Handle, remove_architecture) {
+    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
+    char *arg;
+    size_t arg_size;
+    int err;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
+        RETURN_NULL();
+    }
+
+    if (!intern->handle) {
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
+        RETURN_NULL();
+    }
+
+    err = alpm_option_remove_architecture(intern->handle, arg);
+    if (!err) {
+        RETURN_FALSE;
+    }
+
+    RETURN_TRUE;
+}
+
 PHP_METHOD(Handle, remove_assumeinstalled) {
     php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
     alpm_depend_t *dep = NULL, *to_rm = NULL;
@@ -730,31 +776,6 @@ PHP_METHOD(Handle, remove_noupgrade) {
 
     err = alpm_option_remove_noupgrade(intern->handle, arg);
     if (!err) {
-        RETURN_FALSE;
-    }
-
-    RETURN_TRUE;
-}
-
-PHP_METHOD(Handle, set_arch) {
-    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->set_arch() deprecated, set AlpmHandle->arch instead");
-
-    php_alpm_handle_object *intern = Z_HANDLEO_P(getThis());
-    char *arg;
-    size_t *arg_size;
-    int err;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
-        RETURN_NULL();
-    }
-
-    if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
-        RETURN_NULL();
-    }
-
-    err = alpm_option_set_arch(intern->handle, arg);
-    if (err) {
         RETURN_FALSE;
     }
 
