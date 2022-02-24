@@ -485,20 +485,12 @@ static int _set_cb_attr(php_alpm_handle_object *ho, zval *value, const struct _a
     } \
 } while(0)
 
-zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) {
+zval *php_alpm_handle_read_property(zend_object *object, zend_string *member, int type, void **cache_slot, zval *rv) {
     int ret;
     php_alpm_handle_object *intern;
     zval *retval = NULL;
     zval tmp_member;
     const zend_object_handlers *std_hnd;
-
-    ZVAL_DEREF(member);
-    if (Z_TYPE_P(member) != IS_STRING) {
-        tmp_member = *member;
-        zval_copy_ctor(&tmp_member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-    }
 
     std_hnd = zend_get_std_object_handlers();
 
@@ -507,9 +499,9 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
     if (ret) {
         retval = std_hnd->read_property(object, member, type, cache_slot, rv);
     } else {
-        intern = Z_HANDLEO_P(object);
+        intern = php_alpm_handle_fetch_object(object);
 
-        if (strcmp(Z_STRVAL_P(member), "architectures") == 0) {
+        if (strcmp(ZSTR_VAL(member), "architectures") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_architectures(intern->handle);
             if (ltmp != NULL) {
@@ -517,7 +509,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "assumeinstalled") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "assumeinstalled") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_assumeinstalled(intern->handle);
             if (ltmp != NULL) {
@@ -525,7 +517,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "cachedirs") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "cachedirs") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_cachedirs(intern->handle);
             if (ltmp != NULL) {
@@ -533,17 +525,17 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "checkspace") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "checkspace") == 0) {
             retval = rv;
             ZVAL_BOOL(retval, alpm_option_get_checkspace(intern->handle));
-        } else if (strcmp(Z_STRVAL_P(member), "dbext") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "dbext") == 0) {
             RET_STRING_VAL(alpm_option_get_dbext, handle);
-        } else if (strcmp(Z_STRVAL_P(member), "dbpath") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "dbpath") == 0) {
             RET_STRING_VAL(alpm_option_get_dbpath, handle);
-        } else if (strcmp(Z_STRVAL_P(member), "default_siglevel") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "default_siglevel") == 0) {
             retval = rv;
             ZVAL_LONG(retval, alpm_option_get_default_siglevel(intern->handle));
-        } else if (strcmp(Z_STRVAL_P(member), "dlcb") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "dlcb") == 0) {
             retval = rv;
             zval *tmp;
             struct _alpm_cb_getset closure = cb_getsets[CB_DOWNLOAD];
@@ -553,7 +545,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "eventcb") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "eventcb") == 0) {
             retval = rv;
             zval *tmp;
             struct _alpm_cb_getset closure = cb_getsets[CB_EVENT];
@@ -563,7 +555,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "fetchcb") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "fetchcb") == 0) {
             retval = rv;
             zval *tmp;
             struct _alpm_cb_getset closure = cb_getsets[CB_FETCH];
@@ -573,9 +565,9 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "gpgdir") == 0) {
             RET_STRING_VAL(alpm_option_get_gpgdir, handle);
-        } else if (strcmp(Z_STRVAL_P(member), "hookdirs") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "hookdirs") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_hookdirs(intern->handle);
             if (ltmp != NULL) {
@@ -583,7 +575,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "ignoregrps") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "ignoregrps") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_ignoregroups(intern->handle);
             if (ltmp != NULL) {
@@ -591,7 +583,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "ignorepkgs") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "ignorepkgs") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_ignorepkgs(intern->handle);
             if (ltmp != NULL) {
@@ -599,12 +591,12 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "local_file_siglevel") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "local_file_siglevel") == 0) {
             retval = rv;
             ZVAL_LONG(retval, alpm_option_get_local_file_siglevel(intern->handle));
-        } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "lockfile") == 0) {
             RET_STRING_VAL(alpm_option_get_lockfile, handle);
-        } else if (strcmp(Z_STRVAL_P(member), "logcb") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "logcb") == 0) {
             retval = rv;
             zval *tmp;
             struct _alpm_cb_getset closure = cb_getsets[CB_LOG];
@@ -614,9 +606,9 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "logfile") == 0) {
             RET_STRING_VAL(alpm_option_get_logfile, handle);
-        } else if (strcmp(Z_STRVAL_P(member), "noextracts") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "noextracts") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_noextracts(intern->handle);
             if (ltmp != NULL) {
@@ -624,7 +616,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "noupgrades") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "noupgrades") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_option_get_noupgrades(intern->handle);
             if (ltmp != NULL) {
@@ -632,7 +624,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "progresscb") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "progresscb") == 0) {
             retval = rv;
             zval *tmp;
             struct _alpm_cb_getset closure = cb_getsets[CB_PROGRESS];
@@ -642,7 +634,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "questioncb") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "questioncb") == 0) {
             retval = rv;
             zval *tmp;
             struct _alpm_cb_getset closure = cb_getsets[CB_QUESTION];
@@ -652,12 +644,12 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "remote_file_siglevel") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "remote_file_siglevel") == 0) {
             retval = rv;
             ZVAL_LONG(retval, alpm_option_get_remote_file_siglevel(intern->handle));
-        } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "root") == 0) {
             RET_STRING_VAL(alpm_option_get_root, handle);
-        } else if (strcmp(Z_STRVAL_P(member), "totaldlcb") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "totaldlcb") == 0) {
             retval = rv;
             zval *tmp;
             struct _alpm_cb_getset closure = cb_getsets[CB_TOTALDL];
@@ -667,7 +659,7 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "usesyslog") == 0) {
             retval = rv;
             ZVAL_BOOL(retval, alpm_option_get_usesyslog(intern->handle));
         }
@@ -677,27 +669,15 @@ zval *php_alpm_handle_read_property(zval *object, zval *member, int type, void *
         retval = &EG(uninitialized_zval);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
     return retval;
 }
 
-zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) {
+zval *php_alpm_db_read_property(zend_object *object, zend_string *member, int type, void **cache_slot, zval *rv) {
     int ret;
     php_alpm_db_object *intern;
     zval *retval = NULL;
     zval tmp_member;
     const zend_object_handlers *std_hnd;
-
-    ZVAL_DEREF(member);
-    if (Z_TYPE_P(member) != IS_STRING) {
-        tmp_member = *member;
-        zval_copy_ctor(&tmp_member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-    }
 
     std_hnd = zend_get_std_object_handlers();
 
@@ -706,9 +686,9 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
     if (ret) {
         retval = std_hnd->read_property(object, member, type, cache_slot, rv);
     } else {
-        intern = Z_DBO_P(object);
+        intern = php_alpm_db_fetch_object(object);
 
-        if (strcmp(Z_STRVAL_P(member), "grpcache") == 0) {
+        if (strcmp(ZSTR_VAL(member), "grpcache") == 0) {
             alpm_list_t *list = alpm_db_get_groupcache(intern->db);
             if (list != NULL) {
                 retval = rv;
@@ -716,9 +696,9 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "name") == 0) {
             RET_STRING_VAL(alpm_db_get_name, db);
-        } else if (strcmp(Z_STRVAL_P(member), "pkgcache") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "pkgcache") == 0) {
             retval = rv;
             alpm_list_t *list = alpm_db_get_pkgcache(intern->db);
             if (list != NULL) {
@@ -726,7 +706,7 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "servers") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "servers") == 0) {
             retval = rv;
             alpm_list_t *list = alpm_db_get_servers(intern->db);
             if (list != NULL) {
@@ -734,15 +714,15 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "siglevel") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "siglevel") == 0) {
             retval = rv;
             ZVAL_LONG(retval, alpm_db_get_siglevel(intern->db));
-        } else if (strcmp(Z_STRVAL_P(member), "usage") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "usage") == 0) {
             retval = rv;
             alpm_db_usage_t tmp;
             alpm_db_get_usage(intern->db, (void*)&tmp);
             ZVAL_LONG(retval, tmp);
-        } else if (strcmp(Z_STRVAL_P(member), "valid") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "valid") == 0) {
             retval = rv;
             ZVAL_BOOL(retval, alpm_db_get_valid(intern->db) == 0 ? IS_TRUE : IS_FALSE);
         }
@@ -752,27 +732,15 @@ zval *php_alpm_db_read_property(zval *object, zval *member, int type, void **cac
         retval = &EG(uninitialized_zval);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
     return retval;
 }
 
-zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **cache_slot, zval *rv) {
+zval *php_alpm_pkg_read_property(zend_object *object, zend_string *member, int type, void **cache_slot, zval *rv) {
     int ret;
     php_alpm_pkg_object *intern;
     zval *retval = NULL;
     zval tmp_member;
     const zend_object_handlers *std_hnd;
-
-    ZVAL_DEREF(member);
-    if (Z_TYPE_P(member) != IS_STRING) {
-        tmp_member = *member;
-        zval_copy_ctor(&tmp_member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-    }
 
     std_hnd = zend_get_std_object_handlers();
 
@@ -781,11 +749,11 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
     if (ret) {
         retval = std_hnd->read_property(object, member, type, cache_slot, rv);
     } else {
-        intern = Z_PKGO_P(object);
+        intern = php_alpm_pkg_fetch_object(object);
 
-        if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
+        if (strcmp(ZSTR_VAL(member), "arch") == 0) {
             RET_STRING_VAL(alpm_pkg_get_arch, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "backup") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "backup") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_backup(intern->pkg);
             if (ltmp != NULL) {
@@ -793,15 +761,15 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "base") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "base") == 0) {
             RET_STRING_VAL(alpm_pkg_get_base, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "base64_sig") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "base64_sig") == 0) {
             RET_STRING_VAL(alpm_pkg_get_base64_sig, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "builddate") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "builddate") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_get_builddate(intern->pkg);
             ZVAL_LONG(retval, lotmp);
-        } else if (strcmp(Z_STRVAL_P(member), "checkdepends") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "checkdepends") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_checkdepends(intern->pkg);
             if (ltmp != NULL) {
@@ -809,7 +777,7 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "conflicts") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "conflicts") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_conflicts(intern->pkg);
             if (ltmp != NULL) {
@@ -817,7 +785,7 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "db") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "db") == 0) {
             retval = rv;
             alpm_db_t *dbtmp = alpm_pkg_get_db(intern->pkg);
             if (dbtmp != NULL) {
@@ -827,7 +795,7 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "depends") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_depends(intern->pkg);
             if (ltmp != NULL) {
@@ -835,15 +803,15 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "desc") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "desc") == 0) {
             RET_STRING_VAL(alpm_pkg_get_desc, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "download_size") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "download_size") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_download_size(intern->pkg);
             ZVAL_LONG(retval, lotmp);
-        } else if (strcmp(Z_STRVAL_P(member), "filename") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "filename") == 0) {
             RET_STRING_VAL(alpm_pkg_get_filename, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "files") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "files") == 0) {
             retval = rv;
             alpm_filelist_t *fltmp = alpm_pkg_get_files(intern->pkg);
             if (fltmp != NULL) {
@@ -851,7 +819,7 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "groups") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "groups") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_groups(intern->pkg);
             if (ltmp != NULL) {
@@ -859,19 +827,19 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "has_scriptlet") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "has_scriptlet") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_has_scriptlet(intern->pkg);
             ZVAL_BOOL(retval, lotmp);
-        } else if (strcmp(Z_STRVAL_P(member), "installdate") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "installdate") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_get_installdate(intern->pkg);
             ZVAL_LONG(retval, lotmp);
-        } else if (strcmp(Z_STRVAL_P(member), "isize") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "isize") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_get_isize(intern->pkg);
             ZVAL_LONG(retval, lotmp);
-        } else if (strcmp(Z_STRVAL_P(member), "licenses") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "licenses") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_licenses(intern->pkg);
             if (ltmp != NULL) {
@@ -879,7 +847,7 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "makedepends") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "makedepends") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_makedepends(intern->pkg);
             if (ltmp != NULL) {
@@ -887,11 +855,11 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "md5sum") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "md5sum") == 0) {
             RET_STRING_VAL(alpm_pkg_get_md5sum, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "name") == 0) {
             RET_STRING_VAL(alpm_pkg_get_name, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "optdepends") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "optdepends") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_optdepends(intern->pkg);
             if (ltmp != NULL) {
@@ -899,12 +867,12 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "origin") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "origin") == 0) {
             retval = rv;
             ZVAL_LONG(retval, alpm_pkg_get_origin(intern->pkg));
-        } else if (strcmp(Z_STRVAL_P(member), "packager") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "packager") == 0) {
             RET_STRING_VAL(alpm_pkg_get_packager, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "provides") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "provides") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_provides(intern->pkg);
             if (ltmp != NULL) {
@@ -912,11 +880,11 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "reason") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "reason") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_get_reason(intern->pkg);
             ZVAL_LONG(retval, lotmp);
-        } else if (strcmp(Z_STRVAL_P(member), "replaces") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "replaces") == 0) {
             retval = rv;
             alpm_list_t *ltmp = alpm_pkg_get_replaces(intern->pkg);
             if (ltmp != NULL) {
@@ -924,17 +892,17 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(Z_STRVAL_P(member), "sha256sum") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "sha256sum") == 0) {
             RET_STRING_VAL(alpm_pkg_get_sha256sum, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "size") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "size") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_get_size(intern->pkg);
             ZVAL_LONG(retval, lotmp);
-        } else if (strcmp(Z_STRVAL_P(member), "url") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "url") == 0) {
             RET_STRING_VAL(alpm_pkg_get_url, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "version") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "version") == 0) {
             RET_STRING_VAL(alpm_pkg_get_version, pkg);
-        } else if (strcmp(Z_STRVAL_P(member), "validation") == 0) {
+        } else if (strcmp(ZSTR_VAL(member), "validation") == 0) {
             retval = rv;
             long lotmp = alpm_pkg_get_validation(intern->pkg);
             ZVAL_LONG(retval, lotmp);
@@ -945,115 +913,103 @@ zval *php_alpm_pkg_read_property(zval *object, zval *member, int type, void **ca
         retval = &EG(uninitialized_zval);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
     return retval;
 }
 
-zval *php_alpm_handle_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+zval *php_alpm_handle_write_property(zend_object *object, zend_string *member, zval *value, void **cache_slot) {
     php_alpm_handle_object *intern;
     zval tmp_member;
     const zend_object_handlers *std_hnd;
 
-    ZVAL_DEREF(member);
-    if (Z_TYPE_P(member) != IS_STRING) {
-        tmp_member = *member;
-        zval_copy_ctor(&tmp_member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-    }
-
     std_hnd = zend_get_std_object_handlers();
-    intern = Z_HANDLEO_P(object);
+    intern = php_alpm_handle_fetch_object(object);
 
-    if (strcmp(Z_STRVAL_P(member), "architectures") == 0) {
+    if (strcmp(ZSTR_VAL(member), "architectures") == 0) {
         php_error(E_NOTICE, "cannot set architectures directly");
-    } else if (strcmp(Z_STRVAL_P(member), "assumeinstalled") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "assumeinstalled") == 0) {
         php_error(E_NOTICE, "cannot set assumeinstalled directly");
-    } else if (strcmp(Z_STRVAL_P(member), "cachedirs") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "cachedirs") == 0) {
         php_error(E_NOTICE, "cannot set cachedirs directly");
-    } else if (strcmp(Z_STRVAL_P(member), "checkspace") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "checkspace") == 0) {
         if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
             alpm_option_set_checkspace(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
         } else {
             php_error(E_NOTICE, "checkspace must be a bool");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "dbext") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "dbext") == 0) {
         if (Z_TYPE_P(value) == IS_STRING) {
             alpm_option_set_dbext(intern->handle, Z_STRVAL_P(value));
         } else {
             php_error(E_NOTICE, "dbext must be a string");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "dbpath") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "dbpath") == 0) {
         php_error(E_NOTICE, "Cannot set dbpath");
-    } else if (strcmp(Z_STRVAL_P(member), "default_siglevel") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "default_siglevel") == 0) {
         if (Z_TYPE_P(value) == IS_LONG) {
             alpm_option_set_default_siglevel(intern->handle, (alpm_siglevel_t)Z_LVAL_P(value));
         } else {
             php_error(E_NOTICE, "default_siglevel must be an integer");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "dlcb") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "dlcb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_DOWNLOAD];
         _set_cb_attr(intern, value, &closure);
-    } else if (strcmp(Z_STRVAL_P(member), "fetchcb") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "fetchcb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_FETCH];
         _set_cb_attr(intern, value, &closure);
-    } else if (strcmp(Z_STRVAL_P(member), "eventcb") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "eventcb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_EVENT];
         _set_cb_attr(intern, value, &closure);
-    } else if (strcmp(Z_STRVAL_P(member), "gpgdir") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "gpgdir") == 0) {
         if (Z_TYPE_P(value) == IS_STRING) {
             alpm_option_set_gpgdir(intern->handle, Z_STRVAL_P(value));
         } else {
             php_error(E_NOTICE, "gpgdir must be a string");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "hookdirs") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "hookdirs") == 0) {
         php_error(E_NOTICE, "cannot set hookdirs directly");
-    } else if (strcmp(Z_STRVAL_P(member), "ignoregrps") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "ignoregrps") == 0) {
         php_error(E_NOTICE, "cannot set ignoregrps directly");
-    } else if (strcmp(Z_STRVAL_P(member), "ignorepkgs") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "ignorepkgs") == 0) {
         php_error(E_NOTICE, "cannot set ignorepkgs directly");
-    } else if (strcmp(Z_STRVAL_P(member), "local_file_siglevel") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "local_file_siglevel") == 0) {
         if (Z_TYPE_P(value) == IS_LONG) {
             alpm_option_set_local_file_siglevel(intern->handle, (alpm_siglevel_t)Z_LVAL_P(value));
         } else {
             php_error(E_NOTICE, "local_file_siglevel must be an integer");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "lockfile") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "lockfile") == 0) {
         php_error(E_NOTICE, "Cannot set lockfile");
-    } else if (strcmp(Z_STRVAL_P(member), "logcb") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "logcb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_LOG];
         _set_cb_attr(intern, value, &closure);
-    } else if (strcmp(Z_STRVAL_P(member), "logfile") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "logfile") == 0) {
         if (Z_TYPE_P(value) == IS_STRING) {
             alpm_option_set_logfile(intern->handle, Z_STRVAL_P(value));
         } else {
             php_error(E_NOTICE, "logfile must be a string");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "noextracts") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "noextracts") == 0) {
         php_error(E_NOTICE, "cannot set noextracts directly");
-    } else if (strcmp(Z_STRVAL_P(member), "noupgrades") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "noupgrades") == 0) {
         php_error(E_NOTICE, "cannot set noupgrades directly");
-    } else if (strcmp(Z_STRVAL_P(member), "progresscb") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "progresscb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_PROGRESS];
         _set_cb_attr(intern, value, &closure);
-    } else if (strcmp(Z_STRVAL_P(member), "questioncb") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "questioncb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_QUESTION];
         _set_cb_attr(intern, value, &closure);
-    } else if (strcmp(Z_STRVAL_P(member), "remote_file_siglevel") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "remote_file_siglevel") == 0) {
         if (Z_TYPE_P(value) == IS_LONG) {
             alpm_option_set_remote_file_siglevel(intern->handle, (alpm_siglevel_t)Z_LVAL_P(value));
         } else {
             php_error(E_NOTICE, "remote_file_siglevel must be an integer");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "root") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "root") == 0) {
         php_error(E_NOTICE, "Cannot set root");
-    } else if (strcmp(Z_STRVAL_P(member), "totaldlcb") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "totaldlcb") == 0) {
         struct _alpm_cb_getset closure = cb_getsets[CB_TOTALDL];
         _set_cb_attr(intern, value, &closure);
-    } else if (strcmp(Z_STRVAL_P(member), "usesyslog") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "usesyslog") == 0) {
         if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
             alpm_option_set_usesyslog(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
         } else {
@@ -1063,148 +1019,120 @@ zval *php_alpm_handle_write_property(zval *object, zval *member, zval *value, vo
         std_hnd->write_property(object, member, value, cache_slot);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
     return value;
 }
 
-zval *php_alpm_db_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+zval *php_alpm_db_write_property(zend_object *object, zend_string *member, zval *value, void **cache_slot) {
     zval tmp_member;
     const zend_object_handlers *std_hnd;
 
     php_alpm_db_object *intern;
-    intern = Z_DBO_P(object);
-
-    ZVAL_DEREF(member);
-    if (Z_TYPE_P(member) != IS_STRING) {
-        tmp_member = *member;
-        zval_copy_ctor(&tmp_member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-    }
+    intern = php_alpm_db_fetch_object(object);
 
     std_hnd = zend_get_std_object_handlers();
-    if (strcmp(Z_STRVAL_P(member), "grpcache") == 0) {
+    if (strcmp(ZSTR_VAL(member), "grpcache") == 0) {
         php_error(E_NOTICE, "cannot set grpcache");
-    } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "name") == 0) {
         php_error(E_NOTICE, "cannot set name");
-    } else if (strcmp(Z_STRVAL_P(member), "pkgcache") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "pkgcache") == 0) {
         php_error(E_NOTICE, "cannot set pkgcache");
-    } else if (strcmp(Z_STRVAL_P(member), "servers") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "servers") == 0) {
         php_error(E_NOTICE, "cannot set servers");
-    } else if (strcmp(Z_STRVAL_P(member), "siglevel") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "siglevel") == 0) {
         php_error(E_NOTICE, "cannot set siglevel");
-    } else if (strcmp(Z_STRVAL_P(member), "usage") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "usage") == 0) {
         if (Z_TYPE_P(value) == IS_LONG) {
             alpm_db_set_usage(intern->db, (alpm_db_usage_t) Z_LVAL_P(value));
         } else {
             php_error(E_NOTICE, "usage must be type long");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "valid") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "valid") == 0) {
         php_error(E_NOTICE, "cannot set valid");
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
     }
 
-    if (member == &tmp_member) {
-        zval_dtor(member);
-    }
-
     return value;
 }
 
-zval *php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void **cache_slot) {
+zval *php_alpm_pkg_write_property(zend_object *object, zend_string *member, zval *value, void **cache_slot) {
     php_alpm_pkg_object *intern;
     zval tmp_member;
     const zend_object_handlers *std_hnd;
 
-    ZVAL_DEREF(member);
-    if (Z_TYPE_P(member) != IS_STRING) {
-        tmp_member = *member;
-        zval_copy_ctor(&tmp_member);
-        convert_to_string(&tmp_member);
-        member = &tmp_member;
-    }
-
     std_hnd = zend_get_std_object_handlers();
-    intern = Z_PKGO_P(object);
+    intern = php_alpm_pkg_fetch_object(object);
 
-    if (strcmp(Z_STRVAL_P(member), "arch") == 0) {
+    if (strcmp(ZSTR_VAL(member), "arch") == 0) {
         php_error(E_NOTICE, "cannot set arch");
-    } else if (strcmp(Z_STRVAL_P(member), "backup") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "backup") == 0) {
         php_error(E_NOTICE, "cannot set backup");
-    } else if (strcmp(Z_STRVAL_P(member), "base") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "base") == 0) {
         php_error(E_NOTICE, "cannot set base");
-    } else if (strcmp(Z_STRVAL_P(member), "base64_sig") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "base64_sig") == 0) {
         php_error(E_NOTICE, "cannot set base64_sig");
-    } else if (strcmp(Z_STRVAL_P(member), "builddate") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "builddate") == 0) {
         php_error(E_NOTICE, "cannot set builddate");
-    } else if (strcmp(Z_STRVAL_P(member), "checkdepends") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "checkdepends") == 0) {
         php_error(E_NOTICE, "cannot set checkdepends");
-    } else if (strcmp(Z_STRVAL_P(member), "conflicts") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "conflicts") == 0) {
         php_error(E_NOTICE, "cannot set conflicts");
-    } else if (strcmp(Z_STRVAL_P(member), "db") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "db") == 0) {
         php_error(E_NOTICE, "cannot set db");
-    } else if (strcmp(Z_STRVAL_P(member), "depends") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "depends") == 0) {
         php_error(E_NOTICE, "cannot set depends");
-    } else if (strcmp(Z_STRVAL_P(member), "desc") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "desc") == 0) {
         php_error(E_NOTICE, "cannot set desc");
-    } else if (strcmp(Z_STRVAL_P(member), "download_size") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "download_size") == 0) {
         php_error(E_NOTICE, "cannot set download_size");
-    } else if (strcmp(Z_STRVAL_P(member), "filename") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "filename") == 0) {
         php_error(E_NOTICE, "cannot set filename");
-    } else if (strcmp(Z_STRVAL_P(member), "files") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "files") == 0) {
         php_error(E_NOTICE, "cannot set files");
-    } else if (strcmp(Z_STRVAL_P(member), "groups") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "groups") == 0) {
         php_error(E_NOTICE, "cannot set groups");
-    } else if (strcmp(Z_STRVAL_P(member), "has_scriptlet") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "has_scriptlet") == 0) {
         php_error(E_NOTICE, "cannot set has_scriptlet");
-    } else if (strcmp(Z_STRVAL_P(member), "installdate") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "installdate") == 0) {
         php_error(E_NOTICE, "cannot set installdate");
-    } else if (strcmp(Z_STRVAL_P(member), "isize") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "isize") == 0) {
         php_error(E_NOTICE, "cannot set isize");
-    } else if (strcmp(Z_STRVAL_P(member), "licenses") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "licenses") == 0) {
         php_error(E_NOTICE, "cannot set licenses");
-    } else if (strcmp(Z_STRVAL_P(member), "makedepends") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "makedepends") == 0) {
         php_error(E_NOTICE, "cannot set makedepends");
-    } else if (strcmp(Z_STRVAL_P(member), "md5sum") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "md5sum") == 0) {
         php_error(E_NOTICE, "cannot set md5sum");
-    } else if (strcmp(Z_STRVAL_P(member), "name") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "name") == 0) {
         php_error(E_NOTICE, "cannot set name");
-    } else if (strcmp(Z_STRVAL_P(member), "optdepends") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "optdepends") == 0) {
         php_error(E_NOTICE, "cannot set optdepends");
-    } else if (strcmp(Z_STRVAL_P(member), "origin") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "origin") == 0) {
         php_error(E_NOTICE, "cannot set origin");
-    } else if (strcmp(Z_STRVAL_P(member), "packager") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "packager") == 0) {
         php_error(E_NOTICE, "cannot set packager");
-    } else if (strcmp(Z_STRVAL_P(member), "provides") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "provides") == 0) {
         php_error(E_NOTICE, "cannot set provides");
-    } else if (strcmp(Z_STRVAL_P(member), "reason") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "reason") == 0) {
         if (Z_TYPE_P(value) == IS_LONG) {
             alpm_pkg_set_reason(intern->pkg, (alpm_pkgreason_t)Z_LVAL_P(value));
         } else {
             php_error(E_NOTICE, "reason must be type long");
         }
-    } else if (strcmp(Z_STRVAL_P(member), "replaces") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "replaces") == 0) {
         php_error(E_NOTICE, "cannot set replaces");
-    } else if (strcmp(Z_STRVAL_P(member), "sha256sum") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "sha256sum") == 0) {
         php_error(E_NOTICE, "cannot set sha256sum");
-    } else if (strcmp(Z_STRVAL_P(member), "size") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "size") == 0) {
         php_error(E_NOTICE, "cannot set size");
-    } else if (strcmp(Z_STRVAL_P(member), "url") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "url") == 0) {
         php_error(E_NOTICE, "cannot set url");
-    } else if (strcmp(Z_STRVAL_P(member), "version") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "version") == 0) {
         php_error(E_NOTICE, "cannot set version");
-    } else if (strcmp(Z_STRVAL_P(member), "validation") == 0) {
+    } else if (strcmp(ZSTR_VAL(member), "validation") == 0) {
         php_error(E_NOTICE, "cannot set validation");
     } else {
         std_hnd->write_property(object, member, value, cache_slot);
-    }
-
-    if (member == &tmp_member) {
-        zval_dtor(member);
     }
 
     return value;
@@ -1223,9 +1151,7 @@ zval *php_alpm_pkg_write_property(zval *object, zval *member, zval *value, void 
     zend_string_release(key); \
 } while (0)
 
-static int hashtable_key_cmp(const void *a, const void *b) {
-    Bucket *f = (Bucket *) a;
-    Bucket *s = (Bucket *) b;
+static int hashtable_key_cmp(Bucket *f, Bucket *s) {
     zend_uchar t;
     zend_long l1, l2;
     double d;
@@ -1262,7 +1188,7 @@ static int hashtable_key_cmp(const void *a, const void *b) {
     return l1 > l2 ? 1 : (l1 < l2 ? -1 : 0);
 }
 
-static HashTable *php_alpm_handle_get_properties(zval *object) {
+static HashTable *php_alpm_handle_get_properties(zend_object *object) {
     php_alpm_handle_object *intern;
     HashTable *props;
     zend_string *key, *val;
@@ -1274,7 +1200,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     alpm_list_t *ltmp;
 
     props = zend_std_get_properties(object);
-    intern = Z_HANDLEO_P(object);
+    intern = php_alpm_handle_fetch_object(object);
 
     ltmp = alpm_option_get_architectures(intern->handle);
     if (ltmp != NULL) {
@@ -1472,7 +1398,7 @@ static HashTable *php_alpm_handle_get_properties(zval *object) {
     return props;
 }
 
-static HashTable *php_alpm_db_get_properties(zval *object) {
+static HashTable *php_alpm_db_get_properties(zend_object *object) {
     php_alpm_db_object *intern;
     HashTable *props;
     zend_string *key, *val;
@@ -1483,7 +1409,7 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     alpm_list_t *ltmp;
 
     props = zend_std_get_properties(object);
-    intern = Z_DBO_P(object);
+    intern = php_alpm_db_fetch_object(object);
 
     ltmp = alpm_db_get_groupcache(intern->db);
     if (ltmp != NULL) {
@@ -1540,7 +1466,7 @@ static HashTable *php_alpm_db_get_properties(zval *object) {
     return props;
 }
 
-static HashTable *php_alpm_pkg_get_properties(zval *object) {
+static HashTable *php_alpm_pkg_get_properties(zend_object *object) {
     php_alpm_pkg_object *intern;
     HashTable *props;
     zend_string *key, *val;
@@ -1553,7 +1479,7 @@ static HashTable *php_alpm_pkg_get_properties(zval *object) {
     alpm_db_t *dbtmp;
 
     props = zend_std_get_properties(object);
-    intern = Z_PKGO_P(object);
+    intern = php_alpm_pkg_fetch_object(object);
 
     ADD_STRING_TO_HASH(alpm_pkg_get_arch, pkg, "arch");
 
