@@ -426,6 +426,7 @@ PHP_METHOD(Handle, get_localdb) {
     object_init_ex(return_value, php_alpm_db_sc_entry);
     new_obj = Z_DBO_P(return_value);
     new_obj->db = db;
+    new_obj->handle = intern->handle;
 }
 
 PHP_METHOD(Handle, get_noextracts) {
@@ -492,7 +493,7 @@ PHP_METHOD(Handle, get_syncdbs) {
         RETURN_NULL();
     }
 
-    alpm_list_to_db_array(db_list, return_value);
+    alpm_list_to_db_array(intern->handle, db_list, return_value);
 }
 
 #define FLAGS(a) &(a)[0], &(a)[1], &(a)[2], &(a)[3], &(a)[4], &(a)[5], &(a)[6], &(a)[8], &(a)[9], \

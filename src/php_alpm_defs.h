@@ -53,6 +53,7 @@ typedef struct _php_alpm_handle_object {
 
 typedef struct _php_alpm_db_object {
     alpm_db_t *db;
+    alpm_handle_t *handle;
     zend_object zo;
 } php_alpm_db_object;
 

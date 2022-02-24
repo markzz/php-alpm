@@ -26,7 +26,7 @@ void alpm_conflict_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_group_list_to_zval(alpm_list_t *list, zval *zv);
 void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv);
-void alpm_list_to_db_array(alpm_list_t *list, zval *zv);
+void alpm_list_to_db_array(alpm_handle_t *handle, alpm_list_t *list, zval *zv);
 int zval_to_alpm_list(zval *zv, alpm_list_t **list);
 void alpm_fileconflicts_to_zval(alpm_list_t *fc_list, zval *zv);
 void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv);

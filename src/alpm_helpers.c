@@ -130,7 +130,7 @@ void alpm_list_to_pkg_array(alpm_list_t *list, zval *zv) {
     }
 }
 
-void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
+void alpm_list_to_db_array(alpm_handle_t *handle, alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     php_alpm_db_object *dbo;
     zval obj;
@@ -144,6 +144,7 @@ void alpm_list_to_db_array(alpm_list_t *list, zval *zv) {
         object_init_ex(&obj, php_alpm_db_sc_entry);
         dbo = Z_DBO_P(&obj);
         dbo->db = (alpm_db_t*)item->data;
+        dbo->handle = handle;
         add_next_index_zval(zv, &obj);
     }
 }

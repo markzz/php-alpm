@@ -172,14 +172,15 @@ PHP_METHOD(Db, search) {
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     zval *arr;
     alpm_list_t *list = NULL, *result = NULL;
+    int ret;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &arr) == FAILURE) {
         RETURN_NULL();
     }
 
     zval_to_alpm_list(arr, &list);
-    result = alpm_db_search(intern->db, list);
-    if (!result) {
+    ret = alpm_db_search(intern->db, list, &result);
+    if (ret) {
         RETURN_NULL();
     }
 
@@ -225,6 +226,7 @@ PHP_METHOD(Db, remove_server) {
 PHP_METHOD(Db, update) {
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     zend_bool force = 0;
+    alpm_list_t *db_list = NULL;
     int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &force) == FAILURE) {
@@ -236,7 +238,9 @@ PHP_METHOD(Db, update) {
         RETURN_NULL();
     }
 
-    err = alpm_db_update(force, intern->db);
+    db_list = alpm_list_add(db_list, intern->db);
+    err = alpm_db_update(intern->handle, db_list, force);
+    alpm_list_free(db_list);
     if (err == 1) {
         RETURN_FALSE;
     } else if (err == 0) {
