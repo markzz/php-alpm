@@ -59,19 +59,19 @@ PHP_FUNCTION(alpm_vercmp) {
     int ret;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "ss", &ver1, &ver1s, &ver2, &ver2s) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_vercmp(ver1, ver2);
-    RETURN_LONG((long)ret)
+    RETURN_LONG((long)ret);
 }
 
 PHP_FUNCTION(alpm_version) {
-    RETURN_STRING(alpm_version())
+    RETURN_STRING(alpm_version());
 }
 
 PHP_FUNCTION(php_alpm_version) {
-    RETURN_STRING(PHP_ALPM_VERSION)
+    RETURN_STRING(PHP_ALPM_VERSION);
 }
 
 /* arginfo goes here */
