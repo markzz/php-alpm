@@ -217,7 +217,6 @@ static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, remove_ignorepkg,       handle_one_param_package,          ZEND_ACC_PUBLIC)
     PHP_ME(Handle, remove_noextract,       handle_one_param_file,             ZEND_ACC_PUBLIC)
     PHP_ME(Handle, remove_noupgrade,       handle_one_param_file,             ZEND_ACC_PUBLIC)
-    PHP_ME(Handle, set_arch,               handle_set_arch_args,              ZEND_ACC_PUBLIC)
     PHP_ME(Handle, set_checkspace,         handle_set_checkspace_args,        ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
