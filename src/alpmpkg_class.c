@@ -40,14 +40,14 @@ PHP_METHOD(Pkg, __toString) {
     ret = zend_string_init(tmp, strlen(tmp), 0);
     efree(tmp);
 
-    RETURN_STR(ret)
+    RETURN_STR(ret);
 }
 
 PHP_METHOD(Pkg, compute_requiredby) {
     php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_list_to_zval(alpm_pkg_compute_requiredby(intern->pkg), return_value);
@@ -60,12 +60,12 @@ PHP_METHOD(Pkg, get_arch) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_arch(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_backup) {
@@ -75,12 +75,12 @@ PHP_METHOD(Pkg, get_backup) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_backup(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_backup_list_to_zval(list, return_value);
@@ -93,15 +93,15 @@ PHP_METHOD(Pkg, get_base64_sig) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_base64_sig(intern->pkg);
     if (ret == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_builddate) {
@@ -111,12 +111,12 @@ PHP_METHOD(Pkg, get_builddate) {
     long ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_builddate(intern->pkg);
 
-    RETURN_LONG(ret)
+    RETURN_LONG(ret);
 }
 
 PHP_METHOD(Pkg, get_conflicts) {
@@ -126,12 +126,12 @@ PHP_METHOD(Pkg, get_conflicts) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_conflicts(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_depend_list_to_zval(list, return_value);
@@ -145,12 +145,12 @@ PHP_METHOD(Pkg, get_db) {
     alpm_db_t *db;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     db = alpm_pkg_get_db(intern->pkg);
     if (!db) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     object_init_ex(return_value, php_alpm_db_sc_entry);
@@ -165,7 +165,7 @@ PHP_METHOD(Pkg, get_depends) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_depends(intern->pkg);
@@ -179,12 +179,12 @@ PHP_METHOD(Pkg, get_desc) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_desc(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_download_size) {
@@ -194,11 +194,11 @@ PHP_METHOD(Pkg, get_download_size) {
     long ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_download_size(intern->pkg);
-    RETURN_LONG(ret)
+    RETURN_LONG(ret);
 }
 
 PHP_METHOD(Pkg, get_filename) {
@@ -208,12 +208,12 @@ PHP_METHOD(Pkg, get_filename) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_filename(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_files) {
@@ -223,15 +223,15 @@ PHP_METHOD(Pkg, get_files) {
     alpm_filelist_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_files(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
     if (list->count == 0) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_filelist_to_zval(list, return_value);
@@ -244,12 +244,12 @@ PHP_METHOD(Pkg, get_groups) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_groups(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_list_to_zval(list, return_value);
@@ -262,17 +262,17 @@ PHP_METHOD(Pkg, get_has_scriptlet) {
     int has_scriptlet;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     has_scriptlet = alpm_pkg_has_scriptlet(intern->pkg);
     if (has_scriptlet == 0) {
-        RETURN_TRUE
+        RETURN_TRUE;
     } else {
-        RETURN_FALSE
+        RETURN_FALSE;
     }
 
-    RETURN_NULL()
+    RETURN_NULL();
 }
 
 PHP_METHOD(Pkg, get_installdate) {
@@ -282,11 +282,11 @@ PHP_METHOD(Pkg, get_installdate) {
     alpm_time_t ret = 0;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_installdate(intern->pkg);
-    RETURN_LONG(ret)
+    RETURN_LONG(ret);
 }
 
 PHP_METHOD(Pkg, get_isize) {
@@ -296,11 +296,11 @@ PHP_METHOD(Pkg, get_isize) {
     long ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_isize(intern->pkg);
-    RETURN_LONG(ret)
+    RETURN_LONG(ret);
 }
 
 PHP_METHOD(Pkg, get_licenses) {
@@ -310,12 +310,12 @@ PHP_METHOD(Pkg, get_licenses) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_licenses(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_list_to_zval(list, return_value);
@@ -328,15 +328,15 @@ PHP_METHOD(Pkg, get_md5sum) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_md5sum(intern->pkg);
     if (ret == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_name) {
@@ -346,12 +346,12 @@ PHP_METHOD(Pkg, get_name) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_name(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_optdepends) {
@@ -361,12 +361,12 @@ PHP_METHOD(Pkg, get_optdepends) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_optdepends(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_depend_list_to_zval(list, return_value);
@@ -379,12 +379,12 @@ PHP_METHOD(Pkg, get_packager) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_packager(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_provides) {
@@ -394,12 +394,12 @@ PHP_METHOD(Pkg, get_provides) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_provides(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_depend_list_to_zval(list, return_value);
@@ -412,7 +412,7 @@ PHP_METHOD(Pkg, get_reason) {
     alpm_pkgreason_t ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_reason(intern->pkg);
@@ -422,11 +422,11 @@ PHP_METHOD(Pkg, get_reason) {
      * RETURN_LONG(ret) line instead
      */
     if (ret == ALPM_PKG_REASON_EXPLICIT) {
-        RETURN_LONG(ALPM_PKG_REASON_EXPLICIT) /* 0 */
+        RETURN_LONG(ALPM_PKG_REASON_EXPLICIT); /* 0 */
     } else if (ret == ALPM_PKG_REASON_DEPEND){
-        RETURN_LONG(ALPM_PKG_REASON_DEPEND) /* 1 */
+        RETURN_LONG(ALPM_PKG_REASON_DEPEND); /* 1 */
     } else {
-        RETURN_LONG(-1)
+        RETURN_LONG(-1);
     }
 }
 
@@ -437,12 +437,12 @@ PHP_METHOD(Pkg, get_replaces) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_pkg_get_replaces(intern->pkg);
     if (!list) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_depend_list_to_zval(list, return_value);
@@ -455,12 +455,12 @@ PHP_METHOD(Pkg, get_sha256sum) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_sha256sum(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_size) {
@@ -470,11 +470,11 @@ PHP_METHOD(Pkg, get_size) {
     long ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_size(intern->pkg);
-    RETURN_LONG(ret)
+    RETURN_LONG(ret);
 }
 
 PHP_METHOD(Pkg, get_url) {
@@ -484,12 +484,12 @@ PHP_METHOD(Pkg, get_url) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_url(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, get_version) {
@@ -499,12 +499,12 @@ PHP_METHOD(Pkg, get_version) {
     const char *ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_pkg_get_version(intern->pkg);
 
-    RETURN_STRING(ret)
+    RETURN_STRING(ret);
 }
 
 PHP_METHOD(Pkg, set_reason) {
@@ -515,17 +515,17 @@ PHP_METHOD(Pkg, set_reason) {
     int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &reason) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (reason != ALPM_PKG_REASON_DEPEND && reason != ALPM_PKG_REASON_EXPLICIT) {
         zend_throw_exception(php_alpm_pkg_exception_class_entry, "not a valid install reason", 0);
-        RETURN_FALSE
+        RETURN_FALSE;
     }
 
     err = alpm_pkg_set_reason(intern->pkg, reason);
     if (err == -1) {
-        RETURN_FALSE
+        RETURN_FALSE;
     }
-    RETURN_TRUE
+    RETURN_TRUE;
 }

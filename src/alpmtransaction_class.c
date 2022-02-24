@@ -27,17 +27,17 @@ PHP_METHOD(Trans, add_pkg) {
     int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "o", &pkg_zval) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     pkg_object = Z_PKGO_P(pkg_zval);
     err = alpm_add_pkg(intern->handle, pkg_object->pkg);
     if (err == -1) {
-        RETURN_FALSE
+        RETURN_FALSE;
     }
 
     ZVAL_UNDEF(pkg_zval);
-    RETURN_TRUE
+    RETURN_TRUE;
 }
 
 PHP_METHOD(Trans, commit) {
@@ -47,15 +47,15 @@ PHP_METHOD(Trans, commit) {
     alpm_list_t *list = NULL;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_trans_commit(intern->handle, &list);
 
-    if (ret == 0) RETURN_NULL()
+    if (ret == 0) RETURN_NULL();
     if (ret != -1) {
         zend_throw_exception(php_alpm_transaction_exception_class_entry, "unexpected return value", ret);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     pmerr = alpm_errno(intern->handle);
@@ -72,7 +72,7 @@ PHP_METHOD(Trans, commit) {
             break;
     }
 
-    RETURN_NULL()
+    RETURN_NULL();
 }
 
 PHP_METHOD(Trans, interrupt) {
@@ -80,7 +80,7 @@ PHP_METHOD(Trans, interrupt) {
     int ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_trans_release(intern->handle);
@@ -88,7 +88,7 @@ PHP_METHOD(Trans, interrupt) {
         zend_throw_exception(php_alpm_transaction_exception_class_entry, "could not release transaction", 0);
     }
 
-    RETURN_NULL()
+    RETURN_NULL();
 }
 
 PHP_METHOD(Trans, prepare) {
@@ -99,7 +99,7 @@ PHP_METHOD(Trans, prepare) {
     int ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_trans_prepare(intern->handle, &data);
@@ -128,7 +128,7 @@ PHP_METHOD(Trans, prepare) {
         return;
     }
 
-    RETURN_NULL()
+    RETURN_NULL();
 }
 
 PHP_METHOD(Trans, release) {
@@ -136,7 +136,7 @@ PHP_METHOD(Trans, release) {
     int ret;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     ret = alpm_trans_release(intern->handle);
@@ -144,7 +144,7 @@ PHP_METHOD(Trans, release) {
         zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to release transaction", 0);
     }
 
-    RETURN_NULL()
+    RETURN_NULL();
 }
 
 PHP_METHOD(Trans, remove_pkg) {
@@ -154,17 +154,17 @@ PHP_METHOD(Trans, remove_pkg) {
     int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "o", &pkg_zval) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     pkg_object = Z_PKGO_P(pkg_zval);
     err = alpm_remove_pkg(intern->handle, pkg_object->pkg);
     if (err == -1) {
-        RETURN_FALSE
+        RETURN_FALSE;
     }
 
     ZVAL_UNDEF(pkg_zval);
-    RETURN_TRUE
+    RETURN_TRUE;
 }
 
 PHP_METHOD(Trans, system_upgrade) {
@@ -173,7 +173,7 @@ PHP_METHOD(Trans, system_upgrade) {
     int do_downgrade, ret;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &downgrade) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     do_downgrade = downgrade == 1 ? 1 : 0;
@@ -181,5 +181,5 @@ PHP_METHOD(Trans, system_upgrade) {
     if (ret == -1) {
         zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to perform system upgrade", 0);
     }
-    RETURN_NULL()
+    RETURN_NULL();
 }

@@ -34,20 +34,20 @@ PHP_METHOD(Db, add_server) {
     int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (!intern->db) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     err = alpm_db_add_server(intern->db, arg);
     if (err) {
-        RETURN_FALSE
+        RETURN_FALSE;
     }
 
-    RETURN_TRUE
+    RETURN_TRUE;
 }
 
 PHP_METHOD(Db, get_grpcache) {
@@ -57,17 +57,17 @@ PHP_METHOD(Db, get_grpcache) {
     alpm_list_t *list = NULL;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (!intern->db) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_db_get_groupcache(intern->db);
     if (list == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_group_list_to_zval(list, return_value);
@@ -80,20 +80,20 @@ PHP_METHOD(Db, get_name) {
     const char *name;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (!intern->db) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     name = alpm_db_get_name(intern->db);
     if (name == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
-    RETURN_STRING(name)
+    RETURN_STRING(name);
 }
 
 PHP_METHOD(Db, get_pkg) {
@@ -104,17 +104,17 @@ PHP_METHOD(Db, get_pkg) {
     alpm_pkg_t *pkg;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (!intern->db) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     pkg = alpm_db_get_pkg(intern->db, arg);
     if (pkg == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     object_init_ex(return_value, php_alpm_pkg_sc_entry);
@@ -129,17 +129,17 @@ PHP_METHOD(Db, get_pkgcache) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (!intern->db) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_db_get_pkgcache(intern->db);
     if (list == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_list_to_pkg_array(list, return_value);
@@ -152,17 +152,17 @@ PHP_METHOD(Db, get_servers) {
     alpm_list_t *list;
 
     if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (!intern->db) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     list = alpm_db_get_servers(intern->db);
     if (list == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_list_to_zval(list, return_value);
@@ -174,13 +174,13 @@ PHP_METHOD(Db, search) {
     alpm_list_t *list = NULL, *result = NULL;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &arr) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     zval_to_alpm_list(arr, &list);
     result = alpm_db_search(intern->db, list);
     if (!result) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_list_to_pkg_array(result, return_value);
@@ -193,12 +193,12 @@ PHP_METHOD(Db, read_grp) {
     alpm_group_t *grp;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &grpname, &grpname_size) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     grp = alpm_db_get_group(intern->db, grpname);
     if (grp == NULL) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     alpm_group_to_zval(grp, return_value);
@@ -211,15 +211,15 @@ PHP_METHOD(Db, remove_server) {
     int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     err = alpm_db_remove_server(intern->db, arg);
     if (err) {
-        RETURN_FALSE
+        RETURN_FALSE;
     }
 
-    RETURN_TRUE
+    RETURN_TRUE;
 }
 
 PHP_METHOD(Db, update) {
@@ -228,21 +228,21 @@ PHP_METHOD(Db, update) {
     int err;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &force) == FAILURE) {
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     if (!intern->db) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
-        RETURN_NULL()
+        RETURN_NULL();
     }
 
     err = alpm_db_update(force, intern->db);
     if (err == 1) {
-        RETURN_FALSE
+        RETURN_FALSE;
     } else if (err == 0) {
-        RETURN_TRUE
+        RETURN_TRUE;
     } else if (err == -1) {
         zend_throw_exception(php_alpm_db_exception_class_entry, "could not update database (most likely no permissions)", 0);
-        RETURN_FALSE
+        RETURN_FALSE;
     }
 }
