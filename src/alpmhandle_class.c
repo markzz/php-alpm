@@ -580,6 +580,7 @@ PHP_METHOD(Handle, register_syncdb) {
     object_init_ex(return_value, php_alpm_db_sc_entry);
     new_obj = Z_DBO_P(return_value);
     new_obj->db = db;
+    new_obj->handle = intern->handle;
 }
 
 PHP_METHOD(Handle, remove_architecture) {

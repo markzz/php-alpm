@@ -1204,7 +1204,7 @@ static HashTable *php_alpm_handle_get_properties(zend_object *object) {
 
     ltmp = alpm_option_get_architectures(intern->handle);
     if (ltmp != NULL) {
-        alpm_depend_list_to_zval(ltmp, &zv);
+        alpm_list_to_zval(ltmp, &zv);
     } else {
         ZVAL_NULL(&zv);
     }

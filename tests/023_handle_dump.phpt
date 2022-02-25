@@ -5,7 +5,7 @@ AlpmHandle var dump test
 $pwd = getcwd();
 $h = new AlpmHandle($pwd . "/test_root", $pwd . "/test_root/var/lib/pacman");
 
-$h->arch = "i686";
+$h->add_architecture("i686");
 $h->add_cachedir("/var/cache/pacman");
 $h->add_cachedir("/var/cache/pacman2");
 
@@ -13,8 +13,11 @@ var_dump($h);
 ?>
 --EXPECTF--
 object(AlpmHandle)#1 (26) {
-  ["arch"]=>
-  string(4) "i686"
+  ["architectures"]=>
+  array(1) {
+    [0]=>
+    string(4) "i686"
+  }
   ["assumeinstalled"]=>
   NULL
   ["cachedir"]=>

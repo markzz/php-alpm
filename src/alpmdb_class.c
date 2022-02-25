@@ -246,7 +246,7 @@ PHP_METHOD(Db, update) {
     } else if (err == 0) {
         RETURN_TRUE;
     } else if (err == -1) {
-        zend_throw_exception(php_alpm_db_exception_class_entry, "could not update database (most likely no permissions)", 0);
+        zend_throw_exception(php_alpm_db_exception_class_entry, alpm_strerror(alpm_errno(intern->handle)), alpm_errno(intern->handle));
         RETURN_FALSE;
     }
 }
