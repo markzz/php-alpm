@@ -1,0 +1,17 @@
+pkgname=testpkg
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Test package for php-alpm tests"
+arch=('any')
+url="https://example.com"
+license=('MIT')
+depends=()
+provides=('test-provider')
+conflicts=('test-conflict')
+replaces=('old-testpkg')
+groups=('test-group')
+
+package() {
+    mkdir -p "$pkgdir/usr/share/testpkg"
+    echo "test content" > "$pkgdir/usr/share/testpkg/testfile.txt"
+}

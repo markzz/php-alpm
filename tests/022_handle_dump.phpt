@@ -12,7 +12,7 @@ $h->add_cachedir("/var/cache/pacman2");
 var_dump($h);
 ?>
 --EXPECTF--
-object(AlpmHandle)#1 (26) {
+object(AlpmHandle)#1 (25) {
   ["architectures"]=>
   array(1) {
     [0]=>
@@ -20,7 +20,7 @@ object(AlpmHandle)#1 (26) {
   }
   ["assumeinstalled"]=>
   NULL
-  ["cachedir"]=>
+  ["cachedirs"]=>
   array(2) {
     [0]=>
     string(18) "/var/cache/pacman/"
@@ -72,8 +72,6 @@ object(AlpmHandle)#1 (26) {
   int(0)
   ["root"]=>
   string(%d) "%s"
-  ["totaldlcb"]=>
-  NULL
   ["usesyslog"]=>
   bool(false)
 }

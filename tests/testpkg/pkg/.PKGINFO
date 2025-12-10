@@ -1,0 +1,12 @@
+pkgname = testpkg
+pkgbase = testpkg
+pkgver = 1.0.0-1
+pkgdesc = Test package for php-alpm tests
+url = https://example.com
+builddate = 1700000000
+packager = Test Packager <test@example.com>
+size = 1024
+arch = any
+license = MIT
+provides = test-provider
+depend = bash

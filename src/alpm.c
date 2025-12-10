@@ -79,6 +79,9 @@ PHP_FUNCTION(php_alpm_version) {
 ZEND_BEGIN_ARG_INFO_EX(zero_args, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_tostring, 0, 0, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(two_string, 0, 0, 2)
     ZEND_ARG_INFO(0, a)
     ZEND_ARG_INFO(0, b)
@@ -187,7 +190,7 @@ static zend_function_entry php_alpm_functions[] = {
 
 static zend_function_entry handle_methods[] = {
     PHP_ME(Handle, __construct,            handle_construct_args,             ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
-    PHP_ME(Handle, __toString,             zero_args,                         ZEND_ACC_PUBLIC)
+    PHP_ME(Handle, __toString,             arginfo_tostring,                  ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_architecture,       handle_one_param_architecture,     ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_assumeinstalled,    handle_one_param_assumeinstalled,  ZEND_ACC_PUBLIC)
     PHP_ME(Handle, add_cachedir,           handle_one_param_cachedir,         ZEND_ACC_PUBLIC)
@@ -223,7 +226,7 @@ static zend_function_entry handle_methods[] = {
 
 static zend_function_entry db_methods[] = {
     /* PHP_ME(Db, __construct,    NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
-    PHP_ME(Db, __toString,            zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, __toString,            arginfo_tostring,    ZEND_ACC_PUBLIC)
     PHP_ME(Db, add_server,            db_server_args,      ZEND_ACC_PUBLIC)
     PHP_ME(Db, check_pgp_signature,   zero_args,           ZEND_ACC_PUBLIC)
     PHP_ME(Db, get_grpcache,          zero_args,           ZEND_ACC_PUBLIC)
@@ -240,7 +243,7 @@ static zend_function_entry db_methods[] = {
 
 static zend_function_entry pkg_methods[] = {
     /* PHP_ME(Pkg, __construct,        NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
-    PHP_ME(Pkg, __toString,         zero_args,  ZEND_ACC_PUBLIC)
+    PHP_ME(Pkg, __toString,         arginfo_tostring,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, compute_requiredby, zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_arch,           zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_backup,         zero_args,  ZEND_ACC_PUBLIC)
