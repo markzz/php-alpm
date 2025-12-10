@@ -32,6 +32,17 @@
 #define PHP_ALPM_TRANSACTION_SC_NAME "AlpmTransaction"
 #define PHP_ALPM_TRANSACTION_EXCEPTION_SC_NAME "AlpmTransactionException"
 
+/* New struct class names */
+#define PHP_ALPM_DEPEND_SC_NAME "AlpmDepend"
+#define PHP_ALPM_FILE_SC_NAME "AlpmFile"
+#define PHP_ALPM_BACKUP_SC_NAME "AlpmBackup"
+#define PHP_ALPM_GROUP_SC_NAME "AlpmGroup"
+#define PHP_ALPM_CONFLICT_SC_NAME "AlpmConflict"
+#define PHP_ALPM_DEPMISSING_SC_NAME "AlpmDepMissing"
+#define PHP_ALPM_FILECONFLICT_SC_NAME "AlpmFileConflict"
+#define PHP_ALPM_SIGRESULT_SC_NAME "AlpmSigResult"
+#define PHP_ALPM_PGPKEY_SC_NAME "AlpmPgpKey"
+
 #define DEFAULT_ROOTDIR "/"
 #define DEFAULT_DBPATH "/var/lib/pacman"
 
@@ -67,6 +78,53 @@ typedef struct _php_alpm_transaction_object {
     zend_object zo;
 } php_alpm_transaction_object;
 
+/* New struct wrapper objects */
+typedef struct _php_alpm_depend_object {
+    alpm_depend_t *depend;
+    zend_bool owned;  /* true if we should free the depend on destruction */
+    zend_object zo;
+} php_alpm_depend_object;
+
+typedef struct _php_alpm_file_object {
+    alpm_file_t *file;
+    zend_object zo;
+} php_alpm_file_object;
+
+typedef struct _php_alpm_backup_object {
+    alpm_backup_t *backup;
+    zend_object zo;
+} php_alpm_backup_object;
+
+typedef struct _php_alpm_group_object {
+    alpm_group_t *group;
+    zend_object zo;
+} php_alpm_group_object;
+
+typedef struct _php_alpm_conflict_object {
+    alpm_conflict_t *conflict;
+    zend_object zo;
+} php_alpm_conflict_object;
+
+typedef struct _php_alpm_depmissing_object {
+    alpm_depmissing_t *depmissing;
+    zend_object zo;
+} php_alpm_depmissing_object;
+
+typedef struct _php_alpm_fileconflict_object {
+    alpm_fileconflict_t *fileconflict;
+    zend_object zo;
+} php_alpm_fileconflict_object;
+
+typedef struct _php_alpm_sigresult_object {
+    alpm_sigresult_t *sigresult;
+    zend_object zo;
+} php_alpm_sigresult_object;
+
+typedef struct _php_alpm_pgpkey_object {
+    alpm_pgpkey_t *pgpkey;
+    zend_object zo;
+} php_alpm_pgpkey_object;
+
 static inline php_alpm_handle_object *php_alpm_handle_fetch_object(zend_object *obj) {
     return (php_alpm_handle_object*)((char*)(obj) - XtOffsetOf(php_alpm_handle_object, zo));
 }
@@ -83,10 +141,55 @@ static inline php_alpm_transaction_object *php_alpm_transaction_fetch_object(zen
     return (php_alpm_transaction_object*)((char*)(obj) - XtOffsetOf(php_alpm_transaction_object, zo));
 }
 
+static inline php_alpm_depend_object *php_alpm_depend_fetch_object(zend_object *obj) {
+    return (php_alpm_depend_object*)((char*)(obj) - XtOffsetOf(php_alpm_depend_object, zo));
+}
+
+static inline php_alpm_file_object *php_alpm_file_fetch_object(zend_object *obj) {
+    return (php_alpm_file_object*)((char*)(obj) - XtOffsetOf(php_alpm_file_object, zo));
+}
+
+static inline php_alpm_backup_object *php_alpm_backup_fetch_object(zend_object *obj) {
+    return (php_alpm_backup_object*)((char*)(obj) - XtOffsetOf(php_alpm_backup_object, zo));
+}
+
+static inline php_alpm_group_object *php_alpm_group_fetch_object(zend_object *obj) {
+    return (php_alpm_group_object*)((char*)(obj) - XtOffsetOf(php_alpm_group_object, zo));
+}
+
+static inline php_alpm_conflict_object *php_alpm_conflict_fetch_object(zend_object *obj) {
+    return (php_alpm_conflict_object*)((char*)(obj) - XtOffsetOf(php_alpm_conflict_object, zo));
+}
+
+static inline php_alpm_depmissing_object *php_alpm_depmissing_fetch_object(zend_object *obj) {
+    return (php_alpm_depmissing_object*)((char*)(obj) - XtOffsetOf(php_alpm_depmissing_object, zo));
+}
+
+static inline php_alpm_fileconflict_object *php_alpm_fileconflict_fetch_object(zend_object *obj) {
+    return (php_alpm_fileconflict_object*)((char*)(obj) - XtOffsetOf(php_alpm_fileconflict_object, zo));
+}
+
+static inline php_alpm_sigresult_object *php_alpm_sigresult_fetch_object(zend_object *obj) {
+    return (php_alpm_sigresult_object*)((char*)(obj) - XtOffsetOf(php_alpm_sigresult_object, zo));
+}
+
+static inline php_alpm_pgpkey_object *php_alpm_pgpkey_fetch_object(zend_object *obj) {
+    return (php_alpm_pgpkey_object*)((char*)(obj) - XtOffsetOf(php_alpm_pgpkey_object, zo));
+}
+
 #define Z_HANDLEO_P(zv) php_alpm_handle_fetch_object(Z_OBJ_P(zv))
 #define Z_DBO_P(zv) php_alpm_db_fetch_object(Z_OBJ_P(zv))
 #define Z_PKGO_P(zv) php_alpm_pkg_fetch_object(Z_OBJ_P(zv))
 #define Z_TRANSO_P(zv) php_alpm_transaction_fetch_object(Z_OBJ_P(zv))
+#define Z_DEPO_P(zv) php_alpm_depend_fetch_object(Z_OBJ_P(zv))
+#define Z_FILEO_P(zv) php_alpm_file_fetch_object(Z_OBJ_P(zv))
+#define Z_BACKUPO_P(zv) php_alpm_backup_fetch_object(Z_OBJ_P(zv))
+#define Z_GROUPO_P(zv) php_alpm_group_fetch_object(Z_OBJ_P(zv))
+#define Z_CONFLICTO_P(zv) php_alpm_conflict_fetch_object(Z_OBJ_P(zv))
+#define Z_DEPMISSINGO_P(zv) php_alpm_depmissing_fetch_object(Z_OBJ_P(zv))
+#define Z_FILECONFLICTO_P(zv) php_alpm_fileconflict_fetch_object(Z_OBJ_P(zv))
+#define Z_SIGRESULTO_P(zv) php_alpm_sigresult_fetch_object(Z_OBJ_P(zv))
+#define Z_PGPKEYO_P(zv) php_alpm_pgpkey_fetch_object(Z_OBJ_P(zv))
 
 extern zend_class_entry *php_alpm_handle_sc_entry;
 extern zend_class_entry *php_alpm_handle_exception_class_entry;
@@ -96,6 +199,17 @@ extern zend_class_entry *php_alpm_pkg_sc_entry;
 extern zend_class_entry *php_alpm_pkg_exception_class_entry;
 extern zend_class_entry *php_alpm_transaction_sc_entry;
 extern zend_class_entry *php_alpm_transaction_exception_class_entry;
+
+/* New struct class entries */
+extern zend_class_entry *php_alpm_depend_sc_entry;
+extern zend_class_entry *php_alpm_file_sc_entry;
+extern zend_class_entry *php_alpm_backup_sc_entry;
+extern zend_class_entry *php_alpm_group_sc_entry;
+extern zend_class_entry *php_alpm_conflict_sc_entry;
+extern zend_class_entry *php_alpm_depmissing_sc_entry;
+extern zend_class_entry *php_alpm_fileconflict_sc_entry;
+extern zend_class_entry *php_alpm_sigresult_sc_entry;
+extern zend_class_entry *php_alpm_pgpkey_sc_entry;
 
 /* handle methods */
 PHP_METHOD(Handle, __construct);
@@ -191,6 +305,34 @@ PHP_METHOD(Trans, prepare);
 PHP_METHOD(Trans, release);
 PHP_METHOD(Trans, remove_pkg);
 PHP_METHOD(Trans, system_upgrade);
+
+/* depend methods */
+PHP_METHOD(Depend, __toString);
+PHP_METHOD(Depend, compute_string);
+
+/* file methods */
+PHP_METHOD(File, __toString);
+
+/* backup methods */
+PHP_METHOD(Backup, __toString);
+
+/* group methods */
+PHP_METHOD(Group, __toString);
+
+/* conflict methods */
+PHP_METHOD(Conflict, __toString);
+
+/* depmissing methods */
+PHP_METHOD(DepMissing, __toString);
+
+/* fileconflict methods */
+PHP_METHOD(FileConflict, __toString);
+
+/* sigresult methods */
+PHP_METHOD(SigResult, __toString);
+
+/* pgpkey methods */
+PHP_METHOD(PgpKey, __toString);
 
 /* callback function wrappers - updated for libalpm 16 API */
 void php_alpm_logcb(void *ctx, alpm_loglevel_t level, const char *fmt, va_list va_args);

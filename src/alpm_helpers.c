@@ -41,48 +41,27 @@ void alpm_pkg_list_to_zval(alpm_list_t *list, zval *zv) {
 }
 
 void alpm_depend_to_zval(alpm_depend_t* d, zval *zv) {
-    zend_string *tmp;
+    php_alpm_depend_object *depo;
 
-    array_init(zv);
-    tmp = zend_string_init(d->name, strlen(d->name), 0);
-    add_assoc_str_ex(zv, "name", strlen("name"), tmp);
-    if (d->version != NULL) {
-        tmp = zend_string_init(d->version, strlen(d->version), 0);
-        add_assoc_str_ex(zv, "version", strlen("version"), tmp);
-    } else {
-        add_assoc_null_ex(zv, "version", strlen("version"));
-    }
-
-    if (d->desc != NULL) {
-        tmp = zend_string_init(d->desc, strlen(d->desc), 0);
-        add_assoc_str_ex(zv, "desc", strlen("desc"), tmp);
-    } else {
-        add_assoc_null_ex(zv, "desc", strlen("desc"));
-    }
-    add_assoc_long_ex(zv, "mod", strlen("mod"), d->mod);
+    object_init_ex(zv, php_alpm_depend_sc_entry);
+    depo = Z_DEPO_P(zv);
+    depo->depend = d;
+    depo->owned = 0; /* not owned, don't free */
 }
 
 void alpm_conflict_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     alpm_conflict_t *conflict;
-    zend_string *tmp;
-    zval inner, dep_zval;
-    const char *pkg1_name, *pkg2_name;
+    zval obj;
+    php_alpm_conflict_object *conflicto;
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
         conflict = (alpm_conflict_t*)item->data;
-        array_init(&inner);
-        /* In libalpm 6.1+, package1/package2 are alpm_pkg_t* not char* */
-        pkg1_name = alpm_pkg_get_name(conflict->package1);
-        pkg2_name = alpm_pkg_get_name(conflict->package2);
-        tmp = zend_string_init(pkg1_name, strlen(pkg1_name), 0);
-        add_assoc_str_ex(&inner, "package1", strlen("package1"), tmp);
-        tmp = zend_string_init(pkg2_name, strlen(pkg2_name), 0);
-        add_assoc_str_ex(&inner, "package2", strlen("package2"), tmp);
-        alpm_depend_to_zval(conflict->reason, &dep_zval);
-        add_assoc_zval_ex(&inner, "reason", strlen("reason"), &dep_zval);
-        add_next_index_zval(zv, &inner);
+        object_init_ex(&obj, php_alpm_conflict_sc_entry);
+        conflicto = Z_CONFLICTO_P(&obj);
+        conflicto->conflict = conflict;
+        add_next_index_zval(zv, &obj);
     }
 }
 
@@ -102,7 +81,8 @@ void alpm_depend_list_to_zval(alpm_list_t *list, zval *zv) {
 void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_list_t *item;
     alpm_group_t *grp;
-    zend_string *tmp;
+    zval obj;
+    php_alpm_group_object *groupo;
 
     array_init(zv);
     if (zv == NULL) {
@@ -111,8 +91,10 @@ void alpm_group_list_to_zval(alpm_list_t *list, zval *zv) {
 
     for (item = list; item; item = alpm_list_next(item)) {
         grp = (alpm_group_t*)item->data;
-        tmp = zend_string_init(grp->name, strlen(grp->name), 0);
-        add_next_index_str(zv, tmp);
+        object_init_ex(&obj, php_alpm_group_sc_entry);
+        groupo = Z_GROUPO_P(&obj);
+        groupo->group = grp;
+        add_next_index_zval(zv, &obj);
     }
 }
 
@@ -154,91 +136,65 @@ void alpm_list_to_db_array(alpm_handle_t *handle, alpm_list_t *list, zval *zv) {
 }
 
 void alpm_fileconflicts_to_zval(alpm_list_t *fc_list, zval *zv) {
-    zval inner;
+    zval obj;
     alpm_list_t *tmp;
     alpm_fileconflict_t *fc;
+    php_alpm_fileconflict_object *fco;
 
     array_init(zv);
     for (tmp = fc_list; tmp; tmp = tmp->next) {
         fc = (alpm_fileconflict_t*)tmp->data;
-        array_init(&inner);
-        add_assoc_string_ex(&inner, "target", strlen("target"), fc->target);
-        add_assoc_long_ex(&inner, "type", strlen("type"), fc->type);
-        add_assoc_string_ex(&inner, "file", strlen("file"), fc->file);
-        add_assoc_string_ex(&inner, "ctarget", strlen("ctarget"), fc->ctarget);
-        add_next_index_zval(zv, &inner);
+        object_init_ex(&obj, php_alpm_fileconflict_sc_entry);
+        fco = Z_FILECONFLICTO_P(&obj);
+        fco->fileconflict = fc;
+        add_next_index_zval(zv, &obj);
     }
 }
 
 void alpm_filelist_to_zval(alpm_filelist_t *flist, zval *zv) {
-    zval inner;
+    zval obj;
     ssize_t i;
+    php_alpm_file_object *fileo;
 
     array_init(zv);
     for (i = 0; i < (ssize_t)flist->count; i++) {
-        const alpm_file_t *file = flist->files + i;
-        array_init(&inner);
-        add_assoc_string_ex(&inner, "filename", strlen("filename"), file->name);
-        add_assoc_long_ex(&inner, "size", strlen("size"), file->size);
-        add_assoc_long_ex(&inner, "mode", strlen("mode"), file->mode);
-        add_next_index_zval(zv, &inner);
+        alpm_file_t *file = (alpm_file_t*)(flist->files + i);
+        object_init_ex(&obj, php_alpm_file_sc_entry);
+        fileo = Z_FILEO_P(&obj);
+        fileo->file = file;
+        add_next_index_zval(zv, &obj);
     }
 }
 
 void alpm_backup_list_to_zval(alpm_list_t *list, zval *zv) {
-    zval inner;
-    zend_string *tmp;
+    zval obj;
     alpm_list_t *item;
     alpm_backup_t *backup;
+    php_alpm_backup_object *backupo;
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
-        array_init(&inner);
         backup = (alpm_backup_t*)item->data;
-        tmp = zend_string_init(backup->name, strlen(backup->name), 0);
-        add_next_index_str(&inner, tmp);
-
-        if (backup->hash == NULL) {
-            add_next_index_null(&inner);
-        } else {
-            tmp = zend_string_init(backup->hash, strlen(backup->hash), 0);
-            add_next_index_str(&inner, tmp);
-        }
-
-        add_next_index_zval(zv, &inner);
+        object_init_ex(&obj, php_alpm_backup_sc_entry);
+        backupo = Z_BACKUPO_P(&obj);
+        backupo->backup = backup;
+        add_next_index_zval(zv, &obj);
     }
 }
 
 void alpm_depmissing_list_to_zval(alpm_list_t *list, zval *zv) {
-    zval inner;
-    zend_string *tmp;
+    zval obj;
     alpm_list_t *item;
     alpm_depmissing_t *dm;
-    alpm_depend_t *d;
+    php_alpm_depmissing_object *dmo;
 
     array_init(zv);
     for (item = list; item; item = alpm_list_next(item)) {
-        array_init(&inner);
         dm = (alpm_depmissing_t*)item->data;
-        if (dm->target == NULL) {
-            add_next_index_null(&inner);
-        } else {
-            tmp = zend_string_init(dm->target, strlen(dm->target), 0);
-            add_next_index_str(&inner, tmp);
-        }
-
-        d = dm->depend;
-        tmp = zend_string_init(d->name, strlen(d->name), 0);
-        add_next_index_str(&inner, tmp);
-
-        if (dm->causingpkg == NULL) {
-            add_next_index_null(&inner);
-        } else {
-            tmp = zend_string_init(dm->causingpkg, strlen(dm->causingpkg), 0);
-            add_next_index_str(&inner, tmp);
-        }
-
-        add_next_index_zval(zv, &inner);
+        object_init_ex(&obj, php_alpm_depmissing_sc_entry);
+        dmo = Z_DEPMISSINGO_P(&obj);
+        dmo->depmissing = dm;
+        add_next_index_zval(zv, &obj);
     }
 }
 
@@ -256,9 +212,9 @@ int zval_to_alpm_list(zval *zv, alpm_list_t **list) {
 }
 
 void alpm_group_to_zval(alpm_group_t *grp, zval *zv) {
-    zval inner;
+    php_alpm_group_object *groupo;
 
-    array_init(zv);
-    alpm_list_to_pkg_array(grp->packages, &inner);
-    add_assoc_zval(zv, grp->name, &inner);
+    object_init_ex(zv, php_alpm_group_sc_entry);
+    groupo = Z_GROUPO_P(zv);
+    groupo->group = grp;
 }

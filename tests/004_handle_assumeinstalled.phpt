@@ -13,14 +13,14 @@ if ($h->add_assumeinstalled("xz=4.0")) {
     echo "added assumeinstalled";
 }
 
-echo $h->assumeinstalled[0]['name'];
-echo $h->assumeinstalled[1]['name'];
-echo $h->assumeinstalled[1]['version'];
-echo $h->assumeinstalled[1]['mod'];
+echo $h->assumeinstalled[0]->name;
+echo $h->assumeinstalled[1]->name;
+echo $h->assumeinstalled[1]->version;
+echo $h->assumeinstalled[1]->mod;
 
 $h->remove_assumeinstalled("perl");
 
-echo $h->assumeinstalled[0]['name'];
+echo $h->assumeinstalled[0]->name;
 
 $h->remove_assumeinstalled("xz");
 

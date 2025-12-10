@@ -1722,6 +1722,15 @@ PHP_MINIT_FUNCTION(alpm) {
     alpm_transaction_object_handlers.free_obj = php_alpm_transaction_free_storage;
     php_alpm_transaction_sc_entry = zend_register_internal_class(&ce);
 
+    /* Register struct wrapper classes */
+    php_alpm_depend_register_class();
+    php_alpm_file_register_class();
+    php_alpm_backup_register_class();
+    php_alpm_group_register_class();
+    php_alpm_conflict_register_class();
+    php_alpm_depmissing_register_class();
+    php_alpm_fileconflict_register_class();
+
     /* alpm_db_usage_t */
     REGISTER_LONG_CONSTANT("ALPM_DB_USAGE_ALL", ALPM_DB_USAGE_ALL, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_DB_USAGE_INSTALL", ALPM_DB_USAGE_INSTALL, CONST_CS|CONST_PERSISTENT);
@@ -1736,6 +1745,10 @@ PHP_MINIT_FUNCTION(alpm) {
     REGISTER_LONG_CONSTANT("ALPM_DEP_MOD_LE", ALPM_DEP_MOD_LE, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_DEP_MOD_GT", ALPM_DEP_MOD_GT, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_DEP_MOD_LT", ALPM_DEP_MOD_LT, CONST_CS|CONST_PERSISTENT);
+
+    /* alpm_fileconflicttype_t */
+    REGISTER_LONG_CONSTANT("ALPM_FILECONFLICT_TARGET", ALPM_FILECONFLICT_TARGET, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_FILECONFLICT_FILESYSTEM", ALPM_FILECONFLICT_FILESYSTEM, CONST_CS|CONST_PERSISTENT);
 
     /* alpm_siglevel_t */
     REGISTER_LONG_CONSTANT("ALPM_SIG_PACKAGE", ALPM_SIG_PACKAGE, CONST_CS|CONST_PERSISTENT);
