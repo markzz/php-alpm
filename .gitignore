@@ -31,7 +31,7 @@ test_root
 *.diff
 *.exp
 *.out
-*.php
+tests/*.php
 cmake-build-debug
 *.dep
 .DS_Store
