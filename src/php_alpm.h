@@ -20,7 +20,7 @@
 #define PHP_ALPM_H
 
 #define PHP_ALPM_EXTNAME "alpm"
-#define PHP_ALPM_VERSION "0.6"
+#define PHP_ALPM_VERSION "0.8"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
