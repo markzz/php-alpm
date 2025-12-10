@@ -1,7 +1,7 @@
 /*
  *  alpmtransaction_class.c
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -182,4 +182,40 @@ PHP_METHOD(Trans, system_upgrade) {
         zend_throw_exception(php_alpm_transaction_exception_class_entry, "unable to perform system upgrade", 0);
     }
     RETURN_NULL();
+}
+
+PHP_METHOD(Trans, get_flags) {
+    php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
+    int flags;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL();
+    }
+
+    flags = alpm_trans_get_flags(intern->handle);
+    RETURN_LONG(flags);
+}
+
+PHP_METHOD(Trans, get_add) {
+    php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
+    alpm_list_t *pkgs;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL();
+    }
+
+    pkgs = alpm_trans_get_add(intern->handle);
+    alpm_list_to_pkg_array(pkgs, return_value);
+}
+
+PHP_METHOD(Trans, get_remove) {
+    php_alpm_transaction_object *intern = Z_TRANSO_P(getThis());
+    alpm_list_t *pkgs;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL();
+    }
+
+    pkgs = alpm_trans_get_remove(intern->handle);
+    alpm_list_to_pkg_array(pkgs, return_value);
 }

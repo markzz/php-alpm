@@ -1,7 +1,7 @@
 /*
  *  alpmdb_class.c
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -100,7 +100,7 @@ PHP_METHOD(Db, get_pkg) {
     php_alpm_db_object *intern = Z_DBO_P(getThis());
     php_alpm_pkg_object *new_obj;
     char *arg;
-    size_t *arg_size;
+    size_t arg_size;
     alpm_pkg_t *pkg;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_size) == FAILURE) {
@@ -249,4 +249,64 @@ PHP_METHOD(Db, update) {
         zend_throw_exception(php_alpm_db_exception_class_entry, alpm_strerror(alpm_errno(intern->handle)), alpm_errno(intern->handle));
         RETURN_FALSE;
     }
+}
+
+PHP_METHOD(Db, check_pgp_signature) {
+    php_alpm_db_object *intern = Z_DBO_P(getThis());
+    alpm_siglist_t siglist;
+    int ret;
+    size_t i;
+    zval results_array, result_item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL();
+    }
+
+    if (!intern->db) {
+        zend_throw_exception(php_alpm_db_exception_class_entry, "alpm db error", 0);
+        RETURN_NULL();
+    }
+
+    memset(&siglist, 0, sizeof(alpm_siglist_t));
+    ret = alpm_db_check_pgp_signature(intern->db, &siglist);
+
+    array_init(return_value);
+    add_assoc_long(return_value, "result", ret);
+
+    array_init(&results_array);
+    for (i = 0; i < siglist.count; i++) {
+        alpm_sigresult_t *result = &siglist.results[i];
+        array_init(&result_item);
+
+        add_assoc_long(&result_item, "status", result->status);
+        add_assoc_long(&result_item, "validity", result->validity);
+
+        if (result->key.fingerprint) {
+            add_assoc_string(&result_item, "fingerprint", result->key.fingerprint);
+        } else {
+            add_assoc_null(&result_item, "fingerprint");
+        }
+        if (result->key.uid) {
+            add_assoc_string(&result_item, "uid", result->key.uid);
+        } else {
+            add_assoc_null(&result_item, "uid");
+        }
+        if (result->key.name) {
+            add_assoc_string(&result_item, "name", result->key.name);
+        } else {
+            add_assoc_null(&result_item, "name");
+        }
+        if (result->key.email) {
+            add_assoc_string(&result_item, "email", result->key.email);
+        } else {
+            add_assoc_null(&result_item, "email");
+        }
+        add_assoc_long(&result_item, "created", result->key.created);
+        add_assoc_long(&result_item, "expires", result->key.expires);
+
+        add_next_index_zval(&results_array, &result_item);
+    }
+    add_assoc_zval(return_value, "signatures", &results_array);
+
+    alpm_siglist_cleanup(&siglist);
 }

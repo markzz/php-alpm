@@ -1,7 +1,7 @@
 /*
  *  alpm_callbacks.c
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -22,18 +22,25 @@
 
 extern zval *global_callback_functions[N_CALLBACKS];
 
-void php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
+/* Updated for libalpm 16: added void *ctx parameter */
+void php_alpm_logcb(void *ctx, alpm_loglevel_t level, const char *fmt, va_list va_args) {
     char *log;
     int status, vasret;
     zval zl, zlog, ret;
     zend_string *tmp;
     zval *func = global_callback_functions[CB_LOG];
 
+    (void)ctx; /* unused */
+
+    if (func == NULL) {
+        return;
+    }
+
     ZVAL_LONG(&zl, level);
 
-    vasret = ap_php_vasprintf(&log, fmt, va_args);
+    vasret = vspprintf(&log, 0, fmt, va_args);
     if (vasret == -1) {
-        log = "logcb: could not allocate memory";
+        log = estrdup("logcb: could not allocate memory");
     }
 
     tmp = zend_string_init(log, strlen(log), 0);
@@ -42,16 +49,60 @@ void php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args) {
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 2, args);
 
+    efree(log);
+
     if (status == FAILURE) {
         php_error(E_ERROR, "could not call logcb");
     }
 }
 
-void php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
+/* Updated for libalpm 16: new event-based download callback API */
+void php_alpm_dlcb(void *ctx, const char *filename, alpm_download_event_type_t event, void *data) {
     int status;
     zval zfn, zxf, zt, ret;
     zend_string *tmp;
     zval *func = global_callback_functions[CB_DOWNLOAD];
+    off_t xfered = 0, total = 0;
+
+    (void)ctx; /* unused */
+
+    if (func == NULL) {
+        return;
+    }
+
+    /* Convert new event-based API to old-style progress values for PHP callback compatibility */
+    switch(event) {
+        case ALPM_DOWNLOAD_INIT:
+            /* Download starting - report 0/0 */
+            xfered = 0;
+            total = 0;
+            break;
+        case ALPM_DOWNLOAD_PROGRESS:
+            {
+                alpm_download_event_progress_t *prog = (alpm_download_event_progress_t *)data;
+                xfered = prog->downloaded;
+                total = prog->total;
+            }
+            break;
+        case ALPM_DOWNLOAD_RETRY:
+            /* Retry - report -1 to indicate retry */
+            xfered = -1;
+            total = 0;
+            break;
+        case ALPM_DOWNLOAD_COMPLETED:
+            {
+                alpm_download_event_completed_t *comp = (alpm_download_event_completed_t *)data;
+                /* result: 0 = success, 1 = up-to-date, -1 = error */
+                if (comp->result == 0 || comp->result == 1) {
+                    xfered = comp->total;
+                    total = comp->total;
+                } else {
+                    xfered = -1;
+                    total = comp->total;
+                }
+            }
+            break;
+    }
 
     ZVAL_LONG(&zxf, xfered);
     ZVAL_LONG(&zt, total);
@@ -67,47 +118,55 @@ void php_alpm_dlcb(const char *filename, off_t xfered, off_t total) {
     }
 }
 
-void php_alpm_fetchcb(off_t total) {
-    int status;
-    zval zt, ret;
-    zval *func = global_callback_functions[CB_FETCH];
-
-    ZVAL_LONG(&zt, total);
-
-    zval args[] = { zt };
-    status = call_user_function(CG(function_table), NULL, func, &ret, 1, args);
-
-    if (status == FAILURE) {
-        php_error(E_ERROR, "could not call fetchcb");
-    }
-}
-
-void php_alpm_totaldlcb(const char *url, const char *localpath, int force) {
+/* Updated for libalpm 16: added void *ctx parameter, changed signature */
+int php_alpm_fetchcb(void *ctx, const char *url, const char *localpath, int force) {
     int status;
     zval zu, zlp, zf, ret;
     zend_string *tmp;
-    zval *func = global_callback_functions[CB_TOTALDL];
+    zval *func = global_callback_functions[CB_FETCH];
 
-    ZVAL_BOOL(&zf, force == 0 ? IS_FALSE : IS_TRUE);
+    (void)ctx; /* unused */
+
+    if (func == NULL) {
+        return -1;
+    }
+
     tmp = zend_string_init(url, strlen(url), 0);
     ZVAL_STR(&zu, tmp);
     tmp = zend_string_init(localpath, strlen(localpath), 0);
-
     ZVAL_STR(&zlp, tmp);
+    ZVAL_BOOL(&zf, force != 0);
+
     zval args[] = { zu, zlp, zf };
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 3, args);
 
     if (status == FAILURE) {
-        php_error(E_ERROR, "could not call totaldlcb");
+        php_error(E_ERROR, "could not call fetchcb");
+        return -1;
     }
+
+    /* Return value should indicate success (0) or failure (-1) */
+    if (Z_TYPE(ret) == IS_LONG) {
+        return (int)Z_LVAL(ret);
+    }
+    return 0;
 }
 
-void php_alpm_eventcb(alpm_event_t *event) {
+/* NOTE: php_alpm_totaldlcb removed - alpm_cb_totaldl was removed in libalpm 6.0 */
+
+/* Updated for libalpm 16: added void *ctx parameter */
+void php_alpm_eventcb(void *ctx, alpm_event_t *event) {
     int status;
     const char *eventstr;
     zval ret, val, type;
     zval *func = global_callback_functions[CB_EVENT];
+
+    (void)ctx; /* unused */
+
+    if (func == NULL || event == NULL) {
+        return;
+    }
 
     switch (event->type) {
         case ALPM_EVENT_CHECKDEPS_START:
@@ -133,6 +192,12 @@ void php_alpm_eventcb(alpm_event_t *event) {
             break;
         case ALPM_EVENT_INTERCONFLICTS_DONE:
             eventstr = "Done checking inter conflicts";
+            break;
+        case ALPM_EVENT_TRANSACTION_START:
+            eventstr = "Starting transaction";
+            break;
+        case ALPM_EVENT_TRANSACTION_DONE:
+            eventstr = "Done with transaction";
             break;
         case ALPM_EVENT_PACKAGE_OPERATION_START:
             eventstr = "Operating on a package";
@@ -210,6 +275,27 @@ void php_alpm_eventcb(alpm_event_t *event) {
         case ALPM_EVENT_HOOK_DONE:
         case ALPM_EVENT_HOOK_RUN_START:
         case ALPM_EVENT_HOOK_RUN_DONE:
+            eventstr = "hook/key event";
+            break;
+        /* New events in libalpm 6.0+ */
+        case ALPM_EVENT_DB_RETRIEVE_START:
+            eventstr = "Retrieving database";
+            break;
+        case ALPM_EVENT_DB_RETRIEVE_DONE:
+            eventstr = "Done retrieving database";
+            break;
+        case ALPM_EVENT_DB_RETRIEVE_FAILED:
+            eventstr = "Failed to retrieve database";
+            break;
+        case ALPM_EVENT_PKG_RETRIEVE_START:
+            eventstr = "Retrieving packages";
+            break;
+        case ALPM_EVENT_PKG_RETRIEVE_DONE:
+            eventstr = "Done retrieving packages";
+            break;
+        case ALPM_EVENT_PKG_RETRIEVE_FAILED:
+            eventstr = "Failed to retrieve packages";
+            break;
         default:
             eventstr = "unknown event";
     }
@@ -218,17 +304,24 @@ void php_alpm_eventcb(alpm_event_t *event) {
     ZVAL_STRING(&val, eventstr);
     zval args[] = { type, val };
 
-    status = call_user_function(CG(function_table), NULL, func, &ret, 1, args);
+    status = call_user_function(CG(function_table), NULL, func, &ret, 2, args);
 
     if (status == FAILURE) {
         php_error(E_ERROR, "could not call eventcb");
     }
 }
 
-void php_alpm_questioncb(alpm_question_t *question) {
+/* Updated for libalpm 16: added void *ctx parameter */
+void php_alpm_questioncb(void *ctx, alpm_question_t *question) {
     int status;
     zval type, ret;
     zval *func = global_callback_functions[CB_QUESTION];
+
+    (void)ctx; /* unused */
+
+    if (func == NULL || question == NULL) {
+        return;
+    }
 
     ZVAL_LONG(&type, question->type);
     zval args[] = { type };
@@ -240,16 +333,23 @@ void php_alpm_questioncb(alpm_question_t *question) {
     }
 }
 
-void php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target) {
+/* Updated for libalpm 16: added void *ctx parameter */
+void php_alpm_progresscb(void *ctx, alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target) {
     int status;
     zval zop, ztn, zp, znt, zct, ret;
     zval *func = global_callback_functions[CB_PROGRESS];
+
+    (void)ctx; /* unused */
+
+    if (func == NULL) {
+        return;
+    }
 
     ZVAL_LONG(&zop, op);
     ZVAL_LONG(&zp, percentage);
     ZVAL_LONG(&znt, n_targets);
     ZVAL_LONG(&zct, cur_target);
-    ZVAL_STRING(&ztn, target_name);
+    ZVAL_STRING(&ztn, target_name ? target_name : "");
     zval args[] = { zop, ztn, zp, znt, zct };
 
     status = call_user_function(CG(function_table), NULL, func, &ret, 5, args);

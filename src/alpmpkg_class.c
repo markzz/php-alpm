@@ -1,7 +1,7 @@
 /*
  *  alpmpkg_class.c
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -34,7 +34,7 @@ PHP_METHOD(Pkg, __toString) {
     pnsize = strlen(pkgname);
     pvsize = strlen(pkgver);
 
-    tmp = (char*)emalloc(sizeof(char*) * (pnsize + pvsize + strlen(" ")));
+    tmp = (char*)emalloc(pnsize + pvsize + 2); /* +2 for space and null terminator */
     sprintf(tmp, "%s %s", pkgname, pkgver);
 
     ret = zend_string_init(tmp, strlen(tmp), 0);
@@ -266,13 +266,10 @@ PHP_METHOD(Pkg, get_has_scriptlet) {
     }
 
     has_scriptlet = alpm_pkg_has_scriptlet(intern->pkg);
-    if (has_scriptlet == 0) {
+    if (has_scriptlet) {
         RETURN_TRUE;
-    } else {
-        RETURN_FALSE;
     }
-
-    RETURN_NULL();
+    RETURN_FALSE;
 }
 
 PHP_METHOD(Pkg, get_installdate) {
@@ -321,23 +318,8 @@ PHP_METHOD(Pkg, get_licenses) {
     alpm_list_to_zval(list, return_value);
 }
 
-PHP_METHOD(Pkg, get_md5sum) {
-    php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_md5sum() deprecated, use AlpmHandle->md5sum instead");
-
-    php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
-    const char *ret;
-
-    if (zend_parse_parameters_none() == FAILURE) {
-        RETURN_NULL();
-    }
-
-    ret = alpm_pkg_get_md5sum(intern->pkg);
-    if (ret == NULL) {
-        RETURN_NULL();
-    }
-
-    RETURN_STRING(ret);
-}
+/* NOTE: get_md5sum removed - alpm_pkg_get_md5sum() was removed in libalpm 5.2
+ * Use get_sha256sum() instead */
 
 PHP_METHOD(Pkg, get_name) {
     php_error(E_DEPRECATED, "(removed in 1.0) AlpmHandle->get_name() deprecated, use AlpmHandle->name instead");
@@ -528,4 +510,78 @@ PHP_METHOD(Pkg, set_reason) {
         RETURN_FALSE;
     }
     RETURN_TRUE;
+}
+
+PHP_METHOD(Pkg, get_xdata) {
+    php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
+    alpm_list_t *xdata_list, *item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL();
+    }
+
+    xdata_list = alpm_pkg_get_xdata(intern->pkg);
+    array_init(return_value);
+
+    for (item = xdata_list; item; item = alpm_list_next(item)) {
+        alpm_pkg_xdata_t *xdata = (alpm_pkg_xdata_t *)item->data;
+        if (xdata && xdata->name && xdata->value) {
+            add_assoc_string(return_value, xdata->name, xdata->value);
+        }
+    }
+}
+
+PHP_METHOD(Pkg, check_pgp_signature) {
+    php_alpm_pkg_object *intern = Z_PKGO_P(getThis());
+    alpm_siglist_t siglist;
+    int ret;
+    size_t i;
+    zval results_array, result_item;
+
+    if (zend_parse_parameters_none() == FAILURE) {
+        RETURN_NULL();
+    }
+
+    memset(&siglist, 0, sizeof(alpm_siglist_t));
+    ret = alpm_pkg_check_pgp_signature(intern->pkg, &siglist);
+
+    array_init(return_value);
+    add_assoc_long(return_value, "result", ret);
+
+    array_init(&results_array);
+    for (i = 0; i < siglist.count; i++) {
+        alpm_sigresult_t *result = &siglist.results[i];
+        array_init(&result_item);
+
+        add_assoc_long(&result_item, "status", result->status);
+        add_assoc_long(&result_item, "validity", result->validity);
+
+        if (result->key.fingerprint) {
+            add_assoc_string(&result_item, "fingerprint", result->key.fingerprint);
+        } else {
+            add_assoc_null(&result_item, "fingerprint");
+        }
+        if (result->key.uid) {
+            add_assoc_string(&result_item, "uid", result->key.uid);
+        } else {
+            add_assoc_null(&result_item, "uid");
+        }
+        if (result->key.name) {
+            add_assoc_string(&result_item, "name", result->key.name);
+        } else {
+            add_assoc_null(&result_item, "name");
+        }
+        if (result->key.email) {
+            add_assoc_string(&result_item, "email", result->key.email);
+        } else {
+            add_assoc_null(&result_item, "email");
+        }
+        add_assoc_long(&result_item, "created", result->key.created);
+        add_assoc_long(&result_item, "expires", result->key.expires);
+
+        add_next_index_zval(&results_array, &result_item);
+    }
+    add_assoc_zval(return_value, "signatures", &results_array);
+
+    alpm_siglist_cleanup(&siglist);
 }

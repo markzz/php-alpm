@@ -1,7 +1,7 @@
 /*
  *  php_alpm_defs.h
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -39,7 +39,7 @@ typedef enum _alpm_callback_id {
     CB_LOG,
     CB_DOWNLOAD,
     CB_FETCH,
-    CB_TOTALDL,
+    /* CB_TOTALDL removed - alpm_cb_totaldl was removed in libalpm 6.0 */
     CB_EVENT,
     CB_QUESTION,
     CB_PROGRESS,
@@ -135,6 +135,7 @@ PHP_METHOD(Handle, set_checkspace);
 /* db methods */
 PHP_METHOD(Db, __toString);
 PHP_METHOD(Db, add_server);
+PHP_METHOD(Db, check_pgp_signature);
 PHP_METHOD(Db, get_grpcache);
 PHP_METHOD(Db, get_name);
 PHP_METHOD(Db, get_pkg);
@@ -164,7 +165,7 @@ PHP_METHOD(Pkg, get_has_scriptlet);
 PHP_METHOD(Pkg, get_installdate);
 PHP_METHOD(Pkg, get_isize);
 PHP_METHOD(Pkg, get_licenses);
-PHP_METHOD(Pkg, get_md5sum);
+/* PHP_METHOD(Pkg, get_md5sum); - REMOVED: alpm_pkg_get_md5sum() removed in libalpm 5.2 */
 PHP_METHOD(Pkg, get_name);
 PHP_METHOD(Pkg, get_optdepends);
 PHP_METHOD(Pkg, get_packager);
@@ -175,24 +176,29 @@ PHP_METHOD(Pkg, get_sha256sum);
 PHP_METHOD(Pkg, get_size);
 PHP_METHOD(Pkg, get_url);
 PHP_METHOD(Pkg, get_version);
+PHP_METHOD(Pkg, get_xdata);
 PHP_METHOD(Pkg, set_reason);
+PHP_METHOD(Pkg, check_pgp_signature);
 
 /* transaction methods */
 PHP_METHOD(Trans, add_pkg);
 PHP_METHOD(Trans, commit);
+PHP_METHOD(Trans, get_add);
+PHP_METHOD(Trans, get_flags);
+PHP_METHOD(Trans, get_remove);
 PHP_METHOD(Trans, interrupt);
 PHP_METHOD(Trans, prepare);
 PHP_METHOD(Trans, release);
 PHP_METHOD(Trans, remove_pkg);
 PHP_METHOD(Trans, system_upgrade);
 
-/* callback function wrappers */
-void php_alpm_logcb(alpm_loglevel_t level, const char *fmt, va_list va_args);
-void php_alpm_dlcb(const char *filename, off_t xfered, off_t total);
-void php_alpm_fetchcb(off_t total);
-void php_alpm_totaldlcb(const char *url, const char *localpath, int force);
-void php_alpm_eventcb(alpm_event_t *event);
-void php_alpm_questioncb(alpm_question_t *question);
-void php_alpm_progresscb(alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target);
+/* callback function wrappers - updated for libalpm 16 API */
+void php_alpm_logcb(void *ctx, alpm_loglevel_t level, const char *fmt, va_list va_args);
+void php_alpm_dlcb(void *ctx, const char *filename, alpm_download_event_type_t event, void *data);
+int php_alpm_fetchcb(void *ctx, const char *url, const char *localpath, int force);
+/* php_alpm_totaldlcb removed - alpm_cb_totaldl was removed in libalpm 6.0 */
+void php_alpm_eventcb(void *ctx, alpm_event_t *event);
+void php_alpm_questioncb(void *ctx, alpm_question_t *question);
+void php_alpm_progresscb(void *ctx, alpm_progress_t op, const char *target_name, int percentage, size_t n_targets, size_t cur_target);
 
 #endif /* PHP_ALPM_DEFS_H */

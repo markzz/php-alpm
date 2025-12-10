@@ -1,7 +1,7 @@
 /*
  *  alpm.c
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -223,17 +223,18 @@ static zend_function_entry handle_methods[] = {
 
 static zend_function_entry db_methods[] = {
     /* PHP_ME(Db, __construct,    NULL, ZEND_ACC_PRIVATE|ZEND_ACC_CTOR) */
-    PHP_ME(Db, __toString,     zero_args,           ZEND_ACC_PUBLIC)
-    PHP_ME(Db, add_server,     db_server_args,      ZEND_ACC_PUBLIC)
-    PHP_ME(Db, get_grpcache,   zero_args,           ZEND_ACC_PUBLIC)
-    PHP_ME(Db, get_name,       zero_args,           ZEND_ACC_PUBLIC)
-    PHP_ME(Db, get_pkg,        zero_args,           ZEND_ACC_PUBLIC)
-    PHP_ME(Db, get_pkgcache,   zero_args,           ZEND_ACC_PUBLIC)
-    PHP_ME(Db, get_servers,    zero_args,           ZEND_ACC_PUBLIC)
-    PHP_ME(Db, search,         db_search,           ZEND_ACC_PUBLIC)
-    PHP_ME(Db, read_grp,       one_param_group,     ZEND_ACC_PUBLIC)
-    PHP_ME(Db, remove_server,  db_server_args,      ZEND_ACC_PUBLIC)
-    PHP_ME(Db, update,         db_update,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, __toString,            zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, add_server,            db_server_args,      ZEND_ACC_PUBLIC)
+    PHP_ME(Db, check_pgp_signature,   zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, get_grpcache,          zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, get_name,              zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, get_pkg,               zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, get_pkgcache,          zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, get_servers,           zero_args,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, search,                db_search,           ZEND_ACC_PUBLIC)
+    PHP_ME(Db, read_grp,              one_param_group,     ZEND_ACC_PUBLIC)
+    PHP_ME(Db, remove_server,         db_server_args,      ZEND_ACC_PUBLIC)
+    PHP_ME(Db, update,                db_update,           ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
@@ -257,7 +258,7 @@ static zend_function_entry pkg_methods[] = {
     PHP_ME(Pkg, get_installdate,    zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_isize,          zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_licenses,       zero_args,  ZEND_ACC_PUBLIC)
-    PHP_ME(Pkg, get_md5sum,         zero_args,  ZEND_ACC_PUBLIC)
+    /* PHP_ME(Pkg, get_md5sum, ...) - REMOVED: alpm_pkg_get_md5sum() removed in libalpm 5.2 */
     PHP_ME(Pkg, get_name,           zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_optdepends,     zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_packager,       zero_args,  ZEND_ACC_PUBLIC)
@@ -268,13 +269,18 @@ static zend_function_entry pkg_methods[] = {
     PHP_ME(Pkg, get_size,           zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_url,            zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, get_version,        zero_args,  ZEND_ACC_PUBLIC)
+    PHP_ME(Pkg, get_xdata,          zero_args,  ZEND_ACC_PUBLIC)
     PHP_ME(Pkg, set_reason,         pkg_reason, ZEND_ACC_PUBLIC)
+    PHP_ME(Pkg, check_pgp_signature, zero_args, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
 static zend_function_entry trans_methods[] = {
     PHP_ME(Trans, add_pkg,        one_alpmpkg, ZEND_ACC_PUBLIC)
     PHP_ME(Trans, commit,         zero_args,   ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, get_add,        zero_args,   ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, get_flags,      zero_args,   ZEND_ACC_PUBLIC)
+    PHP_ME(Trans, get_remove,     zero_args,   ZEND_ACC_PUBLIC)
     PHP_ME(Trans, interrupt,      zero_args,   ZEND_ACC_PUBLIC)
     PHP_ME(Trans, prepare,        zero_args,   ZEND_ACC_PUBLIC)
     PHP_ME(Trans, release,        zero_args,   ZEND_ACC_PUBLIC)
@@ -435,8 +441,10 @@ static zend_object *php_alpm_transaction_object_new(zend_class_entry *class_type
  * this feature. This is also consistent with pyalpm (the project php-alpm is
  * modeled against). If ANYONE has a better method of implementing this, I
  * will happily accept a patch and you deserve a cookie.
+ *
+ * Updated for libalpm 16: callback setters now take a context parameter.
  */
-typedef int (*alpm_cb_setter)(alpm_handle_t*, void*);
+typedef int (*alpm_cb_setter)(alpm_handle_t*, void*, void*);
 struct _alpm_cb_getset {
     alpm_cb_setter setter;
     void *cb_wrapper;
@@ -447,6 +455,7 @@ static struct _alpm_cb_getset cb_getsets[N_CALLBACKS] = {
         { (alpm_cb_setter)alpm_option_set_logcb, php_alpm_logcb, CB_LOG },
         { (alpm_cb_setter)alpm_option_set_dlcb, php_alpm_dlcb, CB_DOWNLOAD },
         { (alpm_cb_setter)alpm_option_set_fetchcb, php_alpm_fetchcb, CB_FETCH },
+        /* CB_TOTALDL removed - alpm_cb_totaldl was removed in libalpm 6.0 */
         { (alpm_cb_setter)alpm_option_set_eventcb, php_alpm_eventcb, CB_EVENT },
         { (alpm_cb_setter)alpm_option_set_questioncb, php_alpm_questioncb, CB_QUESTION },
         { (alpm_cb_setter)alpm_option_set_progresscb, php_alpm_progresscb, CB_PROGRESS },
@@ -463,11 +472,13 @@ static zval *_get_cb_attr(php_alpm_handle_object *ho, const struct _alpm_cb_gets
 static int _set_cb_attr(php_alpm_handle_object *ho, zval *value, const struct _alpm_cb_getset *closure) {
     if (Z_TYPE_P(value) == IS_NULL) {
         efree(global_callback_functions[closure->id]);
-        closure->setter(ho->handle, NULL);
+        /* libalpm 16: pass NULL context */
+        closure->setter(ho->handle, NULL, NULL);
     } else if (zend_is_callable(value, IS_CALLABLE, NULL)) {
         efree(global_callback_functions[closure->id]);
         global_callback_functions[closure->id] = value;
-        closure->setter(ho->handle, closure->cb_wrapper);
+        /* libalpm 16: pass NULL context */
+        closure->setter(ho->handle, closure->cb_wrapper, NULL);
     } else {
         php_error(E_NOTICE, "value must be null or a callable");
         return -1;
@@ -649,16 +660,7 @@ zval *php_alpm_handle_read_property(zend_object *object, zend_string *member, in
             ZVAL_LONG(retval, alpm_option_get_remote_file_siglevel(intern->handle));
         } else if (strcmp(ZSTR_VAL(member), "root") == 0) {
             RET_STRING_VAL(alpm_option_get_root, handle);
-        } else if (strcmp(ZSTR_VAL(member), "totaldlcb") == 0) {
-            retval = rv;
-            zval *tmp;
-            struct _alpm_cb_getset closure = cb_getsets[CB_TOTALDL];
-            tmp = _get_cb_attr(intern, &closure);
-            if (Z_TYPE_P(tmp) == IS_STRING) {
-                ZVAL_STRING(retval, Z_STRVAL_P(tmp));
-            } else {
-                ZVAL_NULL(retval);
-            }
+        /* totaldlcb property removed - alpm_cb_totaldl was removed in libalpm 6.0 */
         } else if (strcmp(ZSTR_VAL(member), "usesyslog") == 0) {
             retval = rv;
             ZVAL_BOOL(retval, alpm_option_get_usesyslog(intern->handle));
@@ -724,7 +726,7 @@ zval *php_alpm_db_read_property(zend_object *object, zend_string *member, int ty
             ZVAL_LONG(retval, tmp);
         } else if (strcmp(ZSTR_VAL(member), "valid") == 0) {
             retval = rv;
-            ZVAL_BOOL(retval, alpm_db_get_valid(intern->db) == 0 ? IS_TRUE : IS_FALSE);
+            ZVAL_BOOL(retval, alpm_db_get_valid(intern->db) == 0);
         }
     }
 
@@ -855,8 +857,7 @@ zval *php_alpm_pkg_read_property(zend_object *object, zend_string *member, int t
             } else {
                 ZVAL_NULL(retval);
             }
-        } else if (strcmp(ZSTR_VAL(member), "md5sum") == 0) {
-            RET_STRING_VAL(alpm_pkg_get_md5sum, pkg);
+        /* md5sum property removed - alpm_pkg_get_md5sum() removed in libalpm 5.2 */
         } else if (strcmp(ZSTR_VAL(member), "name") == 0) {
             RET_STRING_VAL(alpm_pkg_get_name, pkg);
         } else if (strcmp(ZSTR_VAL(member), "optdepends") == 0) {
@@ -1006,9 +1007,7 @@ zval *php_alpm_handle_write_property(zend_object *object, zend_string *member, z
         }
     } else if (strcmp(ZSTR_VAL(member), "root") == 0) {
         php_error(E_NOTICE, "Cannot set root");
-    } else if (strcmp(ZSTR_VAL(member), "totaldlcb") == 0) {
-        struct _alpm_cb_getset closure = cb_getsets[CB_TOTALDL];
-        _set_cb_attr(intern, value, &closure);
+    /* totaldlcb setter removed - alpm_cb_totaldl was removed in libalpm 6.0 */
     } else if (strcmp(ZSTR_VAL(member), "usesyslog") == 0) {
         if (Z_TYPE_P(value) == IS_TRUE || Z_TYPE_P(value) == IS_FALSE) {
             alpm_option_set_usesyslog(intern->handle, Z_TYPE_P(value) == IS_TRUE ? 1 : 0);
@@ -1228,7 +1227,7 @@ static HashTable *php_alpm_handle_get_properties(zend_object *object) {
     } else {
         ZVAL_NULL(&zv);
     }
-    key = zend_string_init("cachedirs", strlen("cachedrs"), 0);
+    key = zend_string_init("cachedirs", strlen("cachedirs"), 0);
     zend_hash_add(props, key, &zv);
     zend_string_release(key);
 
@@ -1377,15 +1376,7 @@ static HashTable *php_alpm_handle_get_properties(zend_object *object) {
 
     ADD_STRING_TO_HASH(alpm_option_get_root, handle, "root");
 
-    zv2 = global_callback_functions[CB_TOTALDL];
-    if (zv2 == NULL) {
-        ZVAL_NULL(&zv);
-    } else if (Z_TYPE_P(zv2) == IS_STRING) {
-        ZVAL_STRING(&zv, Z_STRVAL_P(zv2));
-    }
-    key = zend_string_init("totaldlcb", strlen("totaldlcb"), 0);
-    zend_hash_add(props, key, &zv);
-    zend_string_release(key);
+    /* totaldlcb property removed - alpm_cb_totaldl was removed in libalpm 6.0 */
 
     itmp = alpm_option_get_usesyslog(intern->handle);
     ZVAL_BOOL(&zv, itmp);
@@ -1456,7 +1447,7 @@ static HashTable *php_alpm_db_get_properties(zend_object *object) {
     zend_string_release(key);
 
     lotmp = alpm_db_get_valid(intern->db);
-    ZVAL_BOOL(&zv, lotmp == 0 ? IS_TRUE : IS_FALSE);
+    ZVAL_BOOL(&zv, lotmp == 0);
     key = zend_string_init("valid", strlen("valid"), 0);
     zend_hash_add(props, key, &zv);
     zend_string_release(key);
@@ -1606,7 +1597,7 @@ static HashTable *php_alpm_pkg_get_properties(zend_object *object) {
     zend_hash_add(props, key, &zv);
     zend_string_release(key);
 
-    ADD_STRING_TO_HASH(alpm_pkg_get_md5sum, pkg, "md5sum");
+    /* ADD_STRING_TO_HASH(alpm_pkg_get_md5sum, ...) - REMOVED in libalpm 5.2 */
     ADD_STRING_TO_HASH(alpm_pkg_get_name, pkg, "name");
 
     ltmp = alpm_pkg_get_optdepends(intern->pkg);
@@ -1811,6 +1802,38 @@ PHP_MINIT_FUNCTION(alpm) {
     REGISTER_LONG_CONSTANT("ALPM_QUESTION_REMOVE_PKGS", ALPM_QUESTION_REMOVE_PKGS, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_QUESTION_SELECT_PROVIDER", ALPM_QUESTION_SELECT_PROVIDER, CONST_CS|CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("ALPM_QUESTION_IMPORT_KEY", ALPM_QUESTION_IMPORT_KEY, CONST_CS|CONST_PERSISTENT);
+
+    /* transaction flags */
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NODEPS", ALPM_TRANS_FLAG_NODEPS, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NOSAVE", ALPM_TRANS_FLAG_NOSAVE, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NODEPVERSION", ALPM_TRANS_FLAG_NODEPVERSION, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_CASCADE", ALPM_TRANS_FLAG_CASCADE, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_RECURSE", ALPM_TRANS_FLAG_RECURSE, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_DBONLY", ALPM_TRANS_FLAG_DBONLY, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NOHOOKS", ALPM_TRANS_FLAG_NOHOOKS, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_ALLDEPS", ALPM_TRANS_FLAG_ALLDEPS, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_DOWNLOADONLY", ALPM_TRANS_FLAG_DOWNLOADONLY, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NOSCRIPTLET", ALPM_TRANS_FLAG_NOSCRIPTLET, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NOCONFLICTS", ALPM_TRANS_FLAG_NOCONFLICTS, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NEEDED", ALPM_TRANS_FLAG_NEEDED, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_ALLEXPLICIT", ALPM_TRANS_FLAG_ALLEXPLICIT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_UNNEEDED", ALPM_TRANS_FLAG_UNNEEDED, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_RECURSEALL", ALPM_TRANS_FLAG_RECURSEALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_TRANS_FLAG_NOLOCK", ALPM_TRANS_FLAG_NOLOCK, CONST_CS|CONST_PERSISTENT);
+
+    /* signature status */
+    REGISTER_LONG_CONSTANT("ALPM_SIGSTATUS_VALID", ALPM_SIGSTATUS_VALID, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGSTATUS_KEY_EXPIRED", ALPM_SIGSTATUS_KEY_EXPIRED, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGSTATUS_SIG_EXPIRED", ALPM_SIGSTATUS_SIG_EXPIRED, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGSTATUS_KEY_UNKNOWN", ALPM_SIGSTATUS_KEY_UNKNOWN, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGSTATUS_KEY_DISABLED", ALPM_SIGSTATUS_KEY_DISABLED, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGSTATUS_INVALID", ALPM_SIGSTATUS_INVALID, CONST_CS|CONST_PERSISTENT);
+
+    /* signature validity */
+    REGISTER_LONG_CONSTANT("ALPM_SIGVALIDITY_FULL", ALPM_SIGVALIDITY_FULL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGVALIDITY_MARGINAL", ALPM_SIGVALIDITY_MARGINAL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGVALIDITY_NEVER", ALPM_SIGVALIDITY_NEVER, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("ALPM_SIGVALIDITY_UNKNOWN", ALPM_SIGVALIDITY_UNKNOWN, CONST_CS|CONST_PERSISTENT);
 
     return SUCCESS;
 }

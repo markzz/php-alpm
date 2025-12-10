@@ -1,7 +1,7 @@
 /*
  *  alpmhandle_class.c
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -29,8 +29,8 @@ PHP_METHOD(Handle, __construct) {
     alpm_handle_t *h;
 
     if (ZEND_NUM_ARGS() == 0) {
-        rootpath = emalloc(sizeof(char) * strlen(DEFAULT_ROOTDIR));
-        dbpath = emalloc(sizeof(char) * strlen(DEFAULT_DBPATH));
+        rootpath = emalloc(strlen(DEFAULT_ROOTDIR) + 1);
+        dbpath = emalloc(strlen(DEFAULT_DBPATH) + 1);
 
         strcpy(rootpath, DEFAULT_ROOTDIR);
         strcpy(dbpath, DEFAULT_DBPATH);
@@ -115,7 +115,7 @@ PHP_METHOD(Handle, add_assumeinstalled) {
     }
 
     if (!intern->handle) {
-        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm hendle error", 0);
+        zend_throw_exception(php_alpm_handle_exception_class_entry, "alpm handle error", 0);
         RETURN_NULL();
     }
 

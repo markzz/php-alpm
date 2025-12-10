@@ -1,7 +1,7 @@
 /*
  *  php_alpm.h
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -20,7 +20,7 @@
 #define PHP_ALPM_H
 
 #define PHP_ALPM_EXTNAME "alpm"
-#define PHP_ALPM_VERSION "0.5"
+#define PHP_ALPM_VERSION "0.6"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

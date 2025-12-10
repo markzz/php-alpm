@@ -1,7 +1,7 @@
 /*
  *  alpm_helpers.c
  *
- *  Copyright (c) 2016-2019 Mark Weiman <mark.weiman@markzz.com>
+ *  Copyright (c) 2016-2025 Mark King <mark.king@markzz.com>
  *
  *  This extension is free software; you can redistribute it and/or
  *  modify it under the terms of version 2.1 of the GNU Lesser General
@@ -67,14 +67,18 @@ void alpm_conflict_list_to_zval(alpm_list_t *list, zval *zv) {
     alpm_conflict_t *conflict;
     zend_string *tmp;
     zval inner, dep_zval;
+    const char *pkg1_name, *pkg2_name;
 
     array_init(zv);
-    for (item = list; item; alpm_list_next(item)) {
+    for (item = list; item; item = alpm_list_next(item)) {
         conflict = (alpm_conflict_t*)item->data;
         array_init(&inner);
-        tmp = zend_string_init(conflict->package1, strlen(conflict->package1), 0);
+        /* In libalpm 6.1+, package1/package2 are alpm_pkg_t* not char* */
+        pkg1_name = alpm_pkg_get_name(conflict->package1);
+        pkg2_name = alpm_pkg_get_name(conflict->package2);
+        tmp = zend_string_init(pkg1_name, strlen(pkg1_name), 0);
         add_assoc_str_ex(&inner, "package1", strlen("package1"), tmp);
-        tmp = zend_string_init(conflict->package2, strlen(conflict->package2), 0);
+        tmp = zend_string_init(pkg2_name, strlen(pkg2_name), 0);
         add_assoc_str_ex(&inner, "package2", strlen("package2"), tmp);
         alpm_depend_to_zval(conflict->reason, &dep_zval);
         add_assoc_zval_ex(&inner, "reason", strlen("reason"), &dep_zval);
